@@ -1,3 +1,14 @@
+#root, #root > [data-reactroot], html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+#root, #root > [data-reactroot] {
+  display: flex;
+  flex-direction: column;
+}
+
 .App {
   text-align: center;
 }
