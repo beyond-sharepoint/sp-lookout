@@ -27,8 +27,8 @@
         "npm-run-all": "^4.0.2"
   },
   "scripts": {
-    "build-css": "node-sass-chokidar src/ -o src/",
-    "watch-css": "npm run build-css && node-sass-chokidar src/ -o src/ --watch --recursive",
+    "build-css": "node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/",
+    "watch-css": "npm run build-css && node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/ --watch --recursive",
     "start": "react-scripts-ts start",
     "start-js": "npm-run-all -p watch-css react-scripts-ts start",
     "build": "npm run build-css && react-scripts-ts build",
