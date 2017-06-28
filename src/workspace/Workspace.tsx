@@ -55,14 +55,13 @@ export default class Workspace extends React.Component<any, any> {
                     [
                         {
                             name: 'Dashboard',
-                            url: '/dashboard',
+                            url: '#!/dashboard',
                             key: 'dashboard',
                             icon: 'PanoIndicator',
                             onClick: this._onClickHandler2
                         },
                         {
                             name: 'Charts',
-                            url: '/charts',
                             key: 'charts',
                             icon: 'BarChart4',
                             onClick: this._onClickHandler2,
@@ -80,7 +79,6 @@ export default class Workspace extends React.Component<any, any> {
                         },
                         {
                             name: 'Fiddles',
-                            url: '/fiddles',
                             key: 'fiddles',
                             icon: 'Embed',
                             onClick: this._onClickHandler2,

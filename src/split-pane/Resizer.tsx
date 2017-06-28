@@ -11,7 +11,7 @@ export default class Resizer extends React.Component<ResizerProps, any> {
         let allowResizeClass = allowResize ? '' : 'resize-not-allowed';
         return (
             <div
-                className={`resizer ${split} ${allowResizeClass}`}
+                className={`resizer ${split} ${allowResizeClass} ms-bgColor-neutralLighter`}
                 onMouseDown={(e) => {
                     onMouseDown(e);
                 }}
