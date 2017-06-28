@@ -71,31 +71,23 @@ export default class Workspace extends React.Component<any, any> {
                                 key: 'key1'
                             },
                             {
-                                name: 'Storage',
-                                url: '/charts/storage',
+                                name: 'Usage',
+                                url: '/charts/usage',
                                 key: 'key2'
-                            }],
+                            },
+                             {
+                                name: 'Custom',
+                                url: '/charts/custom',
+                                key: 'key3'
+                            }
+                            ],
                             isExpanded: true
                         },
                         {
-                            name: 'Fiddles',
-                            key: 'fiddles',
+                            name: 'SPO Fiddle',
+                            key: 'fiddle',
                             icon: 'Embed',
-                            onClick: this._onClickHandler2,
-                            links: [{
-                                name: 'SP JSOM',
-                                url: '/fiddles/jsom',
-                                key: 'key1',
-                                onClick: this._onClickHandler2,
-                                icon: 'SharepointLogo',
-                            },
-                            {
-                                name: 'MS Graph',
-                                url: '/fiddles/graph',
-                                key: 'key2',
-                                onClick: this._onClickHandler2,
-                                icon: 'AzureLogo',
-                            }],
+                            onClick: this._onClickHandler2
                         }
                     ]
                 }
