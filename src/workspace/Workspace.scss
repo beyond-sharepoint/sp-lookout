@@ -1,3 +1,14 @@
+#main {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+#workspace {
+    display: flex;
+    flex: 2;
+}
+
 .ms-NavExample-LeftPane {
     width: 208px;
     height: 500px;
@@ -5,3 +16,29 @@
     border: 1px solid #EEE;
     overflow-y: auto;
   }
+
+  .settings-modal-container {
+    height: 80vh;
+    width: 80vw;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: stretch;
+  }
+
+.settings-modal-header {
+    flex: 1 1 auto;
+    background: #402312;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    font-size: 21px;
+    font-weight: 400;
+    padding-left: 28px;
+    min-height: 40px;
+}
+
+.settings-modal-body {
+    flex: 4 4 auto;
+    padding: 5px 28px;
+    overflow-y: auto;
+}

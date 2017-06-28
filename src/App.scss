@@ -9,27 +9,36 @@
   flex-direction: column;
 }
 
-.App {
-  text-align: center;
+.Resizer {
+    box-sizing: border-box;
+    background: #eee;
+    opacity: .9;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 80px;
+.Resizer:focus {
+  outline: none;
+  background-color: #888;
 }
 
-.App-header {
-  background-color: #222;
-  height: 150px;
-  padding: 20px;
-  color: white;
+.Resizer.horizontal {
+    height: 5px;
+    margin: -5px 0;
+    cursor: row-resize;
+    width: 100%;
 }
 
-.App-intro {
-  font-size: large;
+.Resizer.vertical {
+    width: 5px;
+    margin: 0 -5px;
+    cursor: col-resize;
 }
 
-@keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+.ResizerHandle.vertical {
+  background-color: #444;
+  width: 3px;
+  height: 16px;
 }
