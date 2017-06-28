@@ -3,22 +3,25 @@ import URI from 'urijs'
 import * as _ from 'lodash'
 import SPProxy from './SPProxy.js'
 
-const SPContexts = {};
-
 /**
  * Represents a SharePoint Context.
  */
 export default class SPContext {
-    constructor(webUrl, settings) {
+    private static $contexts: {};
+    private $window: Window;
+    private $webUrl: string;
+    private $settings: any;
+
+    private constructor(webUrl: string, settings: SPContextSettings) {
         this.$window = window;
-        this.siteUrl = siteUrl;
-        this.settings = this.getDefaultSettings(settings);
+        this.$webUrl = webUrl;
+        this.$settings = this.getDefaultSettings(settings);
 
         this.proxyFullPath = URI.joinPaths(this.settings.siteUrl, this.settings.proxyUrl).absoluteTo(this.settings.siteUrl).normalize().toString();
         this.contextFullPath = URI.joinPaths(this.siteUrl, this.settings.contextPath).absoluteTo(this.siteUrl).normalize().toString();
     }
 
-    str2ab(str) {
+    private str2ab(str) {
         let len = str.length;
         let bytes = new Uint8Array(len);
         for (let i = 0; i < len; i++) {
@@ -34,7 +37,7 @@ export default class SPContext {
      * @param {any} headers
      * @returns
      */
-    getDefaultHeaders(headers) {
+    private getDefaultHeaders(headers) {
         let result = _.cloneDeep(this.settings.headers);
         if (this.contextInfo) {
             result["X-RequestDigest"] = this.contextInfo.FormDigestValue;
@@ -59,7 +62,7 @@ export default class SPContext {
 
         let targetUri = URI(siteRelativeUrl);
         if (targetUri.is("absolute"))
-            targetUri = targetUri.relativeTo(this.siteUrl);
+            targetUri = targetUri.relativeTo(this.$webUrl);
 
         return targetUri
             .normalize()
@@ -69,7 +72,7 @@ export default class SPContext {
     /**
      * Ensures that a current context is active.
      */
-    async ensureContext() {
+    public async ensureContext() {
         let proxy;
 
         //Ensure that a SharePoint proxy is open. If it times out, redirect to the SharePoint Authentication page.
@@ -137,7 +140,7 @@ export default class SPContext {
      * Executes http requests through a proxy.
      * @returns promise that resolves with the response.
      */
-    async fetch(settings, rawResponse) {
+    public async fetch(settings, rawResponse) {
 
         if (!settings)
             throw "Fetch settings must be supplied as the first argument.";
@@ -196,7 +199,7 @@ export default class SPContext {
         return channel.invoke('Fetch', mergedSettings);
     };
 
-    static getDefaultSettings(settings) {
+    public static getDefaultSettings(settings) {
         return _.defaultsDeep(settings, {
             contextPath: "/_api/contextinfo",
             proxyUrl: "/Shared%20Documents/HostWebProxy.aspx",
@@ -213,7 +216,7 @@ export default class SPContext {
     /**
      * Returns a SPContext for the given web url.
      */
-    static getContext(webUrl, settings) {
+    public static getContext(webUrl: string, settings: SPContextSettings) {
 
         if (!webUrl) {
             throw Error("A url to the desired SharePoint Web must be specified as the first argument.");
@@ -224,12 +227,16 @@ export default class SPContext {
             .normalize()
             .toString();
 
-        if (SPContexts[targetSiteUrl]) {
-            return SPContexts[targetSiteUrl];
+        if (this.$contexts[webUrl]) {
+            return this.$contexts[webUrl];
         }
 
-        let result = new SPContext(targetSiteUrl, settings);
-        SPContexts[targetSiteUrl] = result;
+        let result = new SPContext(webUrl, settings);
+        this.$contexts[webUrl] = result;
         return result;
     }
+}
+
+export interface SPContextSettings {
+
 }

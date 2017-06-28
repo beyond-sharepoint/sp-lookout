@@ -5,27 +5,19 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import SplitPane from '../split-pane/SplitPane';
 
 import './Workspace.css';
-import { autobind } from "office-ui-fabric-react/lib";
+import { autobind } from 'office-ui-fabric-react/lib';
 
 export default class Workspace extends React.Component<any, any> {
-    constructor() {
+    public constructor() {
         super();
 
         this.state = {
             dockIsVisible: false,
-            code: "",
+            code: '',
             readOnly: false,
             showSettingsModal: false,
             showShortcutsModal: false
         };
-
-        this.showSettings = this.showSettings.bind(this);
-        this.hideSettings = this.hideSettings.bind(this);
-        this.showShortcuts = this.showShortcuts.bind(this);
-        this.hideShortcuts = this.hideShortcuts.bind(this);
-        this.onUpdateCode = this.onUpdateCode.bind(this);
-        this.toggleSidebar = this.toggleSidebar.bind(this);
-        this.updateSidebarSize = this.updateSidebarSize.bind(this);
 
         this.state.appBarItems = [
             {
@@ -33,17 +25,17 @@ export default class Workspace extends React.Component<any, any> {
                 onClick: this.toggleSidebar,
             },
             {
-                name: "SPO Lookout",
+                name: 'SP Lookout',
                 style: {
-                    fontSize: "21px"
+                    fontSize: '21px'
                 }
             }
-        ]
+        ];
 
         this.state.appBarFarItems = [
             {
                 icon: 'settings',
-                title: "Settings",
+                title: 'Settings',
                 onClick: this.showSettings,
             }
         ];
@@ -75,7 +67,7 @@ export default class Workspace extends React.Component<any, any> {
                                 url: '/charts/usage',
                                 key: 'key2'
                             },
-                             {
+                            {
                                 name: 'Custom',
                                 url: '/charts/custom',
                                 key: 'key3'
@@ -84,7 +76,7 @@ export default class Workspace extends React.Component<any, any> {
                             isExpanded: true
                         },
                         {
-                            name: 'SPO Fiddle',
+                            name: 'SP Fiddle',
                             key: 'fiddle',
                             icon: 'Embed',
                             onClick: this._onClickHandler2
@@ -94,76 +86,9 @@ export default class Workspace extends React.Component<any, any> {
             ] as INavLinkGroup[];
 
         this.state.sidebarSize = 215;
-    };
-
-    @autobind
-    private _onClickHandler2(e: React.MouseEvent<HTMLElement>) {
-        return false;
     }
 
-    onUpdateCode(newCode) {
-        this.setState({
-            code: newCode
-        });
-    }
-
-    brewPackage() {
-    }
-
-    debugPackage() {
-    }
-
-    tidyUp() {
-    }
-
-    showKeyboardShortcuts() {
-    }
-
-    showSettings() {
-        this.setState({
-            showSettingsModal: true
-        });
-    }
-
-    hideSettings() {
-        this.setState({
-            showSettingsModal: false
-        });
-    }
-
-    showShortcuts() {
-        this.setState({
-            showShortcutsModal: true
-        });
-    }
-
-    hideShortcuts() {
-        this.setState({
-            showShortcutsModal: false
-        });
-    }
-
-    toggleSidebar() {
-
-        if (this.state.sidebarSize) {
-            this.setState({
-                sidebarSize: 0,
-                sidebarPrevSize: this.state.sidebarSize
-            });
-        } else {
-            this.setState({
-                sidebarSize: this.state.sidebarPrevSize || 215
-            });
-        }
-    }
-
-    updateSidebarSize(size: number) {
-        this.setState({
-            sidebarSize: size
-        });
-    }
-
-    render() {
+    public render() {
         return (
             <div id="main">
                 <CommandBar
@@ -201,12 +126,12 @@ export default class Workspace extends React.Component<any, any> {
                     isOpen={this.state.showSettingsModal}
                     onDismiss={this.hideSettings}
                     isBlocking={false}
-                    containerClassName='settings-modal-container'
+                    containerClassName="settings-modal-container"
                 >
-                    <div className='settings-modal-header'>
+                    <div className="settings-modal-header">
                         <span>Lorem Ipsum</span>
                     </div>
-                    <div className='settings-modal-body'>
+                    <div className="settings-modal-body">
                         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas lorem nulla, malesuada ut sagittis sit amet, vulputate in leo. Maecenas vulputate congue sapien eu tincidunt. Etiam eu sem turpis. Fusce tempor sagittis nunc, ut interdum ipsum vestibulum non. Proin dolor elit, aliquam eget tincidunt non, vestibulum ut turpis. In hac habitasse platea dictumst. In a odio eget enim porttitor maximus. Aliquam nulla nibh, ullamcorper aliquam placerat eu, viverra et dui. Phasellus ex lectus, maximus in mollis ac, luctus vel eros. Vivamus ultrices, turpis sed malesuada gravida, eros ipsum venenatis elit, et volutpat eros dui et ante. Quisque ultricies mi nec leo ultricies mollis. Vivamus egestas volutpat lacinia. Quisque pharetra eleifend efficitur. </p>
                         <p>Mauris at nunc eget lectus lobortis facilisis et eget magna. Vestibulum venenatis augue sapien, rhoncus faucibus magna semper eget. Proin rutrum libero sagittis sapien aliquet auctor. Suspendisse tristique a magna at facilisis. Duis rhoncus feugiat magna in rutrum. Suspendisse semper, dolor et vestibulum lacinia, nunc felis malesuada ex, nec hendrerit justo ex et massa. Quisque quis mollis nulla. Nam commodo est ornare, rhoncus odio eu, pharetra tellus. Nunc sed velit mi. </p>
                         <p>Sed condimentum ultricies turpis convallis pharetra. Sed sagittis quam pharetra luctus porttitor. Cras vel consequat lectus. Sed nec fringilla urna, a aliquet libero. Aenean sed nisl purus. Vivamus vulputate felis et odio efficitur suscipit. Ut volutpat dictum lectus, ac rutrum massa accumsan at. Sed pharetra auctor finibus. In augue libero, commodo vitae nisi non, sagittis convallis ante. Phasellus malesuada eleifend mollis. Curabitur ultricies leo ac metus venenatis elementum. </p>
@@ -217,4 +142,46 @@ export default class Workspace extends React.Component<any, any> {
             </div>
         );
     }
+
+    @autobind
+    private _onClickHandler2(e: React.MouseEvent<HTMLElement>) {
+        return false;
+    }
+
+    @autobind
+    private showSettings() {
+        this.setState({
+            showSettingsModal: true
+        });
+    }
+
+    @autobind
+    private hideSettings() {
+        this.setState({
+            showSettingsModal: false
+        });
+    }
+
+    @autobind
+    private toggleSidebar() {
+
+        if (this.state.sidebarSize) {
+            this.setState({
+                sidebarSize: 0,
+                sidebarPrevSize: this.state.sidebarSize
+            });
+        } else {
+            this.setState({
+                sidebarSize: this.state.sidebarPrevSize || 215
+            });
+        }
+    }
+
+    @autobind
+    private updateSidebarSize(size: number) {
+        this.setState({
+            sidebarSize: size
+        });
+    }
+
 }

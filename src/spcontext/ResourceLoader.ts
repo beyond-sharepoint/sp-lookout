@@ -4,14 +4,13 @@ import URI from 'urijs'
 /**
  * Represents an object that dynamically loads resources into the current page. For instance, iframe content, javascript and css.
  */
-class ResourceLoader {
+export default class ResourceLoader {
     private $document: HTMLDocument;
-    private _promises:Object;
+    private $promises: Object;
 
-    constructor() {
+    public constructor() {
         this.$document = document;
-
-        this._promises = {};
+        this.$promises = {};
     }
 
     /**
@@ -20,10 +19,10 @@ class ResourceLoader {
      * @param createElement a custom function that performs the actual resource loading for a given dom element.
      * @returns {*} Promise that will be resolved once the resource has been loaded.
      */
-    _loader(url, createElement) {
+    private _loader(url: string, createElement: (url: string) => HTMLElement): Promise {
 
-        if (this._promises[url])
-            return this._promises[url];
+        if (this.$promises[url])
+            return this.$promises[url];
 
         let resolve, reject;
         let promise = new Promise((innerRequest, innerReject) => {
@@ -32,8 +31,8 @@ class ResourceLoader {
         });
         let element = createElement(url);
 
-        element.onload = element.onreadystatechange = (e) => {
-            if (element.readyState && element.readyState !== 'complete' && element.readyState !== 'loaded') {
+        element.onload = (<any>element).onreadystatechange = (e) => {
+            if ((<any>element).readyState && (<any>element).readyState !== 'complete' && (<any>element).readyState !== 'loaded') {
                 return;
             }
 
@@ -44,7 +43,7 @@ class ResourceLoader {
             reject(element);
         };
 
-        return this._promises[url] = promise;
+        return this.$promises[url] = promise;
     };
 
     /**
@@ -53,7 +52,7 @@ class ResourceLoader {
      * @param sandbox If specified, indicates that the iframe is a sandbox with the indicated restictions.
      * @returns {*} Promise that will be resolved once the iframe has been loaded.
      */
-    loadIFrame(src, sandbox) {
+    public loadIFrame(src: string, sandbox?: string): Promise {
         if (!src) {
             throw Error("The url of the page to load in the iframe must be specified as the first parameter.");
         }
@@ -61,7 +60,7 @@ class ResourceLoader {
         sandbox = sandbox || "allow-forms allow-scripts allow-same-origin";
 
         src = URI(src).normalize().toString();
-        return this._loader(src, () => {
+        return this._loader(src, (src) => {
             let iframe = this.$document.createElement('iframe');
             iframe.tabIndex = -1;
             iframe.style.display = "none";
@@ -69,8 +68,7 @@ class ResourceLoader {
             iframe.width = "0";
             iframe.frameBorder = "0";
             if (sandbox) {
-                // tslint:disable-next-line
-                iframe.sandbox = sandbox as DOMSettableTokenList;
+                (<any>iframe).sandbox = sandbox;
             }
 
             iframe.src = src;
@@ -85,13 +83,13 @@ class ResourceLoader {
      * @param src The url of the script to load dynamically
      * @returns {*} Promise that will be resolved once the script has been loaded.
      */
-    loadScript(src) {
+    public loadScript(src: string): Promise {
         if (!src) {
             throw Error("The url of the script to load must be specified as the first parameter.");
         }
 
         src = URI(src).normalize().toString();
-        return this._loader(src, () => {
+        return this._loader(src, (src) => {
             let script = this.$document.createElement('script');
 
             script.src = src;
@@ -106,13 +104,13 @@ class ResourceLoader {
      * @param href The url of the CSS to load dynamically
      * @returns {*} Promise that will be resolved once the CSS file has been loaded.
      */
-    loadCSS(href) {
+    public loadCSS(href) {
         if (!href) {
             throw Error("The url of the css to load must be specified as the first parameter.");
         }
 
         href = URI(href).normalize().toString();
-        return this._loader(href, () => {
+        return this._loader(href, (href) => {
             let style = this.$document.createElement('link');
 
             style.rel = 'stylesheet';
@@ -124,5 +122,3 @@ class ResourceLoader {
         });
     }
 }
-
-export default ResourceLoader;
