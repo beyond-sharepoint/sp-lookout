@@ -147,7 +147,8 @@ export default class Workspace extends React.Component<any, any> {
     @autobind
     private async _onClickHandler2(e: React.MouseEvent<HTMLElement>) {
         let context = await SPContext.getContext('https://baristalabs.sharepoint.com');
-        await context.ensureContext();
+        let result = await context.eval("6*7;");
+        console.dir(result);
         return false;
     }
 

@@ -111,8 +111,14 @@ export default class SPContext {
     /**
      * Evaluates the specified script 
      */
-    public async eval(script: string): Promise<any> {
-        throw Error('Not Implemented.');
+    public async eval(code: string, timeout?: number | undefined): Promise<any> {
+        if (!code) {
+            throw Error('The code to execute must be supplied as the first argument.');
+        }
+
+        let proxy = await this.ensureContext();
+
+        return proxy.invoke('Eval', { code }, undefined, timeout);
     }
 
     /**

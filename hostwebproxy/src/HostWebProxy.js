@@ -43,48 +43,6 @@ docReady(() => {
 
     let importedScripts = {};
 
-    let redirectedConsole = {
-        error: [],
-        log: [],
-        warn: []
-    };
-
-    let resetRedirectedConsole = function () {
-        redirectedConsole = {
-            error: [],
-            log: [],
-            warn: []
-        }
-    };
-
-    let redirectConsole = function () {
-        let console = window.console
-        if (!console) return
-        function intercept(method) {
-            let original = console[method]
-            console[method] = function () {
-                let args = [arguments.length];
-                for (let arg of arguments) {
-                    args.push(JSON.stringify(arg));
-                }
-                redirectedConsole[method].push(args);
-                if (original.apply) {
-                    // Do this for normal browsers
-                    original.apply(console, arguments)
-                } else {
-                    // Do this for IE
-                    let message = Array.prototype.slice.apply(arguments).join(' ')
-                    original(message)
-                }
-            }
-        }
-        let methods = ['log', 'warn', 'error']
-        for (let i = 0; i < methods.length; i++) {
-            intercept(methods[i])
-        }
-    };
-    redirectConsole();
-
     window.addEventListener("message", async (event, origin) => {
         origin = event.origin || event.originalEvent.origin;
         let request = event.data;
@@ -198,9 +156,9 @@ docReady(() => {
                 importedScripts[request.src] = script;
                 break;
             case "Eval":
+                let evalResult;
                 try {
-                    resetRedirectedConsole();
-                    eval(request.code);
+                    evalResult = eval(request.code);
                 } catch (err) {
                     postMessage({
                         "$$postMessageId": postMessageId,
@@ -211,14 +169,14 @@ docReady(() => {
                         message: err.message,
                         name: err.name
                     });
-                    throw e;
+                    throw err;
                 }
 
                 postMessage({
                     "$$postMessageId": postMessageId,
                     postMessageId: postMessageId,
                     result: "success",
-                    console: redirectedConsole
+                    evalResult,
                 });
                 break;
             case "Fetch":
