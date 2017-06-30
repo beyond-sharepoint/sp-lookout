@@ -77,7 +77,20 @@ export default class Workspace extends React.Component<any, any> {
                             isExpanded: true
                         },
                         {
-                            name: 'SP Fiddle',
+                            name: 'Actions',
+                            key: 'actions',
+                            icon: 'SetAction',
+                            onClick: this._onClickHandler2,
+                            links: [{
+                                name: 'JSLink',
+                                icon: 'Link',
+                                onClick: this._onClickHandler2,
+                                key: 'key1'
+                            }],
+                            isExpanded: true
+                        },
+                        {
+                            name: 'SPFiddle',
                             key: 'fiddle',
                             icon: 'Embed',
                             onClick: this._onClickHandler2
