@@ -1,4 +1,9 @@
 import * as React from 'react';
+import {
+    HashRouter as Router,
+    Route,
+    Link
+} from 'react-router-dom'
 import { CommandBar } from 'office-ui-fabric-react/lib/CommandBar';
 import { Nav, INavLinkGroup } from 'office-ui-fabric-react/lib/Nav';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
@@ -48,7 +53,7 @@ export default class Workspace extends React.Component<any, any> {
                     [
                         {
                             name: 'Dashboard',
-                            url: '#!/dashboard',
+                            url: '#/',
                             key: 'dashboard',
                             icon: 'PanoIndicator',
                             onClick: this._onClickHandler2
@@ -91,6 +96,7 @@ export default class Workspace extends React.Component<any, any> {
                         },
                         {
                             name: 'SPFiddle',
+                            url: '#/spfiddle',
                             key: 'fiddle',
                             icon: 'Embed',
                             onClick: this._onClickHandler2
@@ -100,6 +106,33 @@ export default class Workspace extends React.Component<any, any> {
             ] as INavLinkGroup[];
 
         this.state.sidebarSize = 215;
+
+        this.state.routes = [
+            {
+                path: '/',
+                exact: true,
+                main: () => <h2>Home</h2>
+            },
+            {
+                path: '/bubblegum',
+                main: () => <h2>Bubblegum</h2>
+            },
+            {
+                path: '/spfiddle',
+                sidebar: () => <div>shoelaces!</div>,
+                main: () => <SplitPane
+                    split="vertical"
+                    className="left-sidebar"
+                    primaryPaneMaxWidth="100%"
+                    primaryPaneMinWidth={0}
+                    primaryPaneWidth="50%"
+                >
+                    <div>asdf</div>
+                    <div>fdsa</div>
+                </SplitPane>
+            }
+        ];
+
     }
 
     public render() {
@@ -111,31 +144,33 @@ export default class Workspace extends React.Component<any, any> {
                     farItems={this.state.appBarFarItems}
                 />
                 <div id="workspace">
-                    <SplitPane
-                        split="vertical"
-                        className="left-sidebar"
-                        primaryPaneMaxWidth="400px"
-                        primaryPaneMinWidth={0}
-                        primaryPaneWidth={this.state.sidebarSize}
-                    >
-                        <Nav
-                            groups={this.state.groups}
-                            expandedStateText={'expanded'}
-                            collapsedStateText={'collapsed'}
-                            selectedKey={'dashboard'}
-                            className='aside'
-                        />
+                    <Router>
                         <SplitPane
                             split="vertical"
                             className="left-sidebar"
-                            primaryPaneMaxWidth="100%"
+                            primaryPaneMaxWidth="400px"
                             primaryPaneMinWidth={0}
-                            primaryPaneWidth="50%"
+                            primaryPaneWidth={this.state.sidebarSize}
                         >
-                            <div>asdf</div>
-                            <div>fdsa</div>
+                            <Nav
+                                groups={this.state.groups}
+                                expandedStateText={'expanded'}
+                                collapsedStateText={'collapsed'}
+                                selectedKey={'dashboard'}
+                                className='aside'
+                            />
+                            <div style={{width: '100%', height: '100%'}}>
+                                {this.state.routes.map((route, index) => (
+                                    <Route
+                                        key={index}
+                                        path={route.path}
+                                        exact={route.exact}
+                                        component={route.main}
+                                    />
+                                ))}
+                            </div>
                         </SplitPane>
-                    </SplitPane>
+                    </Router>
                 </div>
                 <Modal
                     isOpen={this.state.showSettingsModal}
