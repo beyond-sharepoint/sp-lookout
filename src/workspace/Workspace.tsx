@@ -26,7 +26,7 @@ export default class Workspace extends React.Component<any, any> {
                 onClick: this.toggleSidebar,
             },
             {
-                name: 'SP Lookout',
+                name: 'SP Lookout!',
                 style: {
                     fontSize: '21px'
                 }
@@ -147,7 +147,7 @@ export default class Workspace extends React.Component<any, any> {
     @autobind
     private async _onClickHandler2(e: React.MouseEvent<HTMLElement>) {
         let context = await SPContext.getContext('https://baristalabs.sharepoint.com');
-        let result = await context.eval("6*7;");
+        let result = await context.eval("6*7; var moose = { foo: 'bar' }; moose;");
         console.dir(result);
         return false;
     }
