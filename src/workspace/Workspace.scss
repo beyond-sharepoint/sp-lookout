@@ -4,6 +4,22 @@
     height: 100%;
 }
 
+.sp-lookout-nav .ms-CommandBar-primaryCommands,
+.sp-lookout-nav .ms-FocusZone {
+  background-color: #0078d7;
+}
+
+.sp-lookout-nav .ms-CommandBarItem-commandText,
+.sp-lookout-nav .ms-CommandBarItem-iconColor {
+  color: white;
+}
+
+.sp-lookout-nav .ms-CommandBarItem,
+.sp-lookout-nav .ms-CommandBarItem-text:hover,
+.sp-lookout-nav .ms-CommandBarItem-commandText:hover {
+  color: #0078d7;
+}
+
 #workspace {
     display: flex;
     flex: 2;

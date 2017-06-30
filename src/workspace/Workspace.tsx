@@ -22,7 +22,9 @@ export default class Workspace extends React.Component<any, any> {
             code: '',
             readOnly: false,
             showSettingsModal: false,
-            showShortcutsModal: false
+            showShortcutsModal: false,
+            sidebarSize: 215,
+            fiddlePaneSize: '50%'
         };
 
         this.state.appBarItems = [
@@ -32,6 +34,7 @@ export default class Workspace extends React.Component<any, any> {
             },
             {
                 name: 'SP Lookout!',
+                className: 'sp-lookout-nav',
                 style: {
                     fontSize: '21px'
                 }
@@ -105,9 +108,6 @@ export default class Workspace extends React.Component<any, any> {
                 }
             ] as INavLinkGroup[];
 
-        this.state.sidebarSize = 215;
-        this.state.fiddlePaneSize = "50%";
-
         this.state.routes = [
             {
                 path: '/',
@@ -142,6 +142,7 @@ export default class Workspace extends React.Component<any, any> {
         return (
             <div id="main">
                 <CommandBar
+                    className="sp-lookout-nav"
                     isSearchBoxVisible={false}
                     items={this.state.appBarItems}
                     farItems={this.state.appBarFarItems}

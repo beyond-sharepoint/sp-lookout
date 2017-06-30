@@ -214,11 +214,15 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
             }
             case 'vertical':
             default: {
+                console.log("yuuup");
                 if (lastX >= maxMousePosition) {
+                    console.log("1");
                     primaryPanePosition = maxMousePosition - resizerOffsetFromParent;
                 } else if ((lastX - resizerOffsetFromParent) <= primaryPaneMinWidth) {
+                    console.log("2");
                     primaryPanePosition = primaryPaneMinWidth + 0.001;
                 } else {
+                    console.log("3" + " " + resizerOffsetFromParent);
                     primaryPanePosition = lastX - resizerOffsetFromParent;
                 }
                 break;
@@ -319,6 +323,7 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
             isDragging: true,
             handleBarOffsetFromParent
         });
+        console.log("asdf" + handleBarOffsetFromParent);
         document.addEventListener('mousemove', this.handleMouseMove);
         document.addEventListener('touchmove', this.handleMouseMove);
     }
