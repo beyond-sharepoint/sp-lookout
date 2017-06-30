@@ -55,6 +55,10 @@
     address "^1.0.1"
     debug "^2.6.0"
 
+"@types/bluebird@^3.5.8":
+  version "3.5.8"
+  resolved "https://registry.yarnpkg.com/@types/bluebird/-/bluebird-3.5.8.tgz#242a83379f06c90f96acf6d1aeab3af6faebdb98"
+
 "@types/core-js@^0.9.42":
   version "0.9.42"
   resolved "https://registry.yarnpkg.com/@types/core-js/-/core-js-0.9.42.tgz#dd6da92cd7d5ab5ca0b4477524537c3e633b6bce"
@@ -70,6 +74,10 @@
 "@types/jest@^20.0.2":
   version "20.0.2"
   resolved "https://registry.yarnpkg.com/@types/jest/-/jest-20.0.2.tgz#86c751121fb53dbd39bb1a08c45083da13f2dc67"
+
+"@types/jquery@*":
+  version "3.2.5"
+  resolved "https://registry.yarnpkg.com/@types/jquery/-/jquery-3.2.5.tgz#c082efaab6a791b98131c011343b1d92a56b6019"
 
 "@types/lodash@4.14.52":
   version "4.14.52"
@@ -96,6 +104,12 @@
 "@types/react@*", "@types/react@^15.0.33":
   version "15.0.33"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-15.0.33.tgz#442b025b3ee7d65f25c5cf495b7bd773855c079b"
+
+"@types/urijs@^1.15.33":
+  version "1.15.33"
+  resolved "https://registry.yarnpkg.com/@types/urijs/-/urijs-1.15.33.tgz#7fa28fb3995c25355a83fbaacaf99ff286f70536"
+  dependencies:
+    "@types/jquery" "*"
 
 "@types/webpack-env@1.13.0":
   version "1.13.0"

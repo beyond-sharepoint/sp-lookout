@@ -6,12 +6,14 @@
     "@microsoft/microsoft-graph-client": "^1.0.0",
     "@microsoft/sp-client-base": "^1.0.0",
     "@microsoft/sp-core-library": "^1.1.0",
+    "@types/bluebird": "^3.5.8",
     "@types/core-js": "^0.9.42",
     "@types/jest": "^20.0.2",
     "@types/lodash": "^4.14.67",
     "@types/node": "^8.0.4",
     "@types/react": "^15.0.33",
     "@types/react-dom": "^15.5.1",
+    "@types/urijs": "^1.15.33",
     "font-awesome": "^4.7.0",
     "localforage": "^1.5.0",
     "lodash": "^4.17.4",
@@ -31,11 +33,13 @@
     "react-scripts-ts": "2.3.2"
   },
   "scripts": {
+    "postinstall": "cd hostwebproxy && npm install && cd..",
+    "build-proxy": "cd hostwebproxy && npm run build && cd ..",
     "build-css": "node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/",
     "watch-css": "npm run build-css && node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/ --watch --recursive",
     "start": "npm-run-all -p watch-css start-js",
     "start-js": "react-scripts-ts start",
-    "build": "npm run build-css && react-scripts-ts build",
+    "build": "npm run build-proxy && npm run build-css && react-scripts-ts build",
     "test": "react-scripts-ts test --env=jsdom",
     "eject": "react-scripts-ts eject"
   }

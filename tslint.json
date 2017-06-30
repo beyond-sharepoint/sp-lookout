@@ -24,7 +24,7 @@
         "label-position": true,
         "max-line-length": [ false, 120 ],
         "member-ordering": [
-            true,
+            false,
             "public-before-private",
             "static-before-instance",
             "variables-before-functions"
@@ -49,7 +49,7 @@
         "no-empty": true,
         "no-eval": true,
         "no-shadowed-variable": true,
-        "no-string-literal": true,
+        "no-string-literal": false,
         "no-switch-case-fall-through": true,
         "no-trailing-whitespace": false,
         "no-unused-expression": true,
@@ -86,7 +86,7 @@
         ],
         "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore", "allow-pascal-case"],
         "whitespace": [
-            true,
+            false,
             "check-branch",
             "check-decl",
             "check-module",

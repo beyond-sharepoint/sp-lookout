@@ -6,6 +6,7 @@ import SplitPane from '../split-pane/SplitPane';
 
 import './Workspace.css';
 import { autobind } from 'office-ui-fabric-react/lib';
+import { SPContext } from '../spcontext';
 
 export default class Workspace extends React.Component<any, any> {
     public constructor() {
@@ -144,7 +145,9 @@ export default class Workspace extends React.Component<any, any> {
     }
 
     @autobind
-    private _onClickHandler2(e: React.MouseEvent<HTMLElement>) {
+    private async _onClickHandler2(e: React.MouseEvent<HTMLElement>) {
+        let context = await SPContext.getContext('https://baristalabs.sharepoint.com');
+        await context.ensureContext();
         return false;
     }
 
