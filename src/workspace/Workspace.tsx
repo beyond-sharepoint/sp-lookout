@@ -123,6 +123,7 @@ export default class Workspace extends React.Component<any, any> {
                             expandedStateText={'expanded'}
                             collapsedStateText={'collapsed'}
                             selectedKey={'dashboard'}
+                            className='aside'
                         />
                         <SplitPane
                             split="vertical"

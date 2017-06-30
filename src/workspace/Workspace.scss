@@ -9,14 +9,6 @@
     flex: 2;
 }
 
-.ms-NavExample-LeftPane {
-    width: 208px;
-    height: 500px;
-    box-sizing: border-box;
-    border: 1px solid #EEE;
-    overflow-y: auto;
-  }
-
   .settings-modal-container {
     height: 80vh;
     width: 80vw;
@@ -41,4 +33,13 @@
     flex: 4 4 auto;
     padding: 5px 28px;
     overflow-y: auto;
+}
+
+.left-sidebar .pane .ms-FocusZone {
+  height: 100%;
+}
+
+.aside {
+  height: 100%;
+  overflow-x: hidden;
 }
