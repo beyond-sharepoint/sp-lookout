@@ -106,6 +106,7 @@ export default class Workspace extends React.Component<any, any> {
             ] as INavLinkGroup[];
 
         this.state.sidebarSize = 215;
+        this.state.fiddlePaneSize = "50%";
 
         this.state.routes = [
             {
@@ -125,7 +126,9 @@ export default class Workspace extends React.Component<any, any> {
                     className="left-sidebar"
                     primaryPaneMaxWidth="100%"
                     primaryPaneMinWidth={0}
-                    primaryPaneWidth="50%"
+                    onPaneResized={(size) => { this.setState({ fiddlePaneSize: size }); }}
+                    onResizerDoubleClick={() => { this.setState({ fiddlePaneSize: '50%' }); }}
+                    primaryPaneWidth={this.state.fiddlePaneSize}
                 >
                     <div>asdf</div>
                     <div>fdsa</div>
@@ -150,6 +153,8 @@ export default class Workspace extends React.Component<any, any> {
                             className="left-sidebar"
                             primaryPaneMaxWidth="400px"
                             primaryPaneMinWidth={0}
+                            onPaneResized={(size) => { this.setState({ sidebarSize: size }) }}
+                            onResizerDoubleClick={() => { this.setState({ sidebarSize: 215 }) }}
                             primaryPaneWidth={this.state.sidebarSize}
                         >
                             <Nav
@@ -159,7 +164,7 @@ export default class Workspace extends React.Component<any, any> {
                                 selectedKey={'dashboard'}
                                 className='aside'
                             />
-                            <div style={{width: '100%', height: '100%'}}>
+                            <div style={{ width: '100%', height: '100%' }}>
                                 {this.state.routes.map((route, index) => (
                                     <Route
                                         key={index}
@@ -217,7 +222,6 @@ export default class Workspace extends React.Component<any, any> {
 
     @autobind
     private toggleSidebar() {
-
         if (this.state.sidebarSize) {
             this.setState({
                 sidebarSize: 0,
@@ -229,12 +233,4 @@ export default class Workspace extends React.Component<any, any> {
             });
         }
     }
-
-    @autobind
-    private updateSidebarSize(size: number) {
-        this.setState({
-            sidebarSize: size
-        });
-    }
-
 }

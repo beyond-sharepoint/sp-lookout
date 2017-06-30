@@ -18,14 +18,7 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
         primaryPaneWidth: '50%',
         primaryPaneMaxHeight: '80%',
         primaryPaneMinHeight: 300,
-        primaryPaneHeight: '50%',
-        onResizerDoubleClick: (e, SplitPane) => {
-            //TODO: Reset the SplitPane to the original primaryPaneWith.
-            //console.log("2x click");
-            // SplitPane.setState({
-            //     primaryPane: SplitPane.props.primaryPaneWidth
-            // });
-        }
+        primaryPaneHeight: '50%'
     };
 
     private paneWrapper: any;
@@ -68,7 +61,6 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
 
         const {
             handleBarClonePosition,
-            primaryPane,
             isVisible
         } = this.state;
 
@@ -89,7 +81,7 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
                     };
                 } else {
                     paneStyle = {
-                        width: primaryPane ? `${primaryPane}px` : primaryPaneWidth,
+                        width: primaryPaneWidth,
                         minWidth: primaryPaneMinWidth,
                         maxWidth: primaryPaneMaxWidth
                     };
@@ -111,7 +103,7 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
                     };
                 } else {
                     paneStyle = {
-                        height: primaryPane ? `${primaryPane}px` : primaryPaneHeight,
+                        height: primaryPaneHeight,
                         minHeight: primaryPaneMinHeight,
                         maxHeight: primaryPaneMaxHeight
                     };
@@ -352,6 +344,7 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
 
         const {
             split,
+            onPaneResized,
             primaryPaneMinWidth,
             primaryPaneMinHeight,
             postponed
@@ -378,8 +371,8 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
                 isVisible: true
             });
         } else {
+            onPaneResized(primaryPanePosition);
             this.setState({
-                primaryPane: primaryPanePosition,
                 lastX: clientX,
                 lastY: clientY
             });
@@ -399,6 +392,7 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
 
         const {
             split,
+            onPaneResized,
             primaryPaneMinWidth,
             primaryPaneMinHeight,
             postponed
@@ -409,13 +403,12 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
         if (postponed) {
             this.setState({
                 isDragging: false,
-                isVisible: false,
-                primaryPane: primaryPanePosition
+                isVisible: false
             });
         } else {
+            onPaneResized(primaryPanePosition);
             this.setState({
-                isDragging: false,
-                primaryPane: primaryPanePosition
+                isDragging: false
             });
         }
 
@@ -456,6 +449,7 @@ export interface SplitPaneProps {
     maximizedPrimaryPane?: Boolean;
     minimalizedPrimaryPane?: Boolean;
     postponed?: Boolean;
+    onPaneResized: Function;
     onDragFinished?: Function;
     onResizerDoubleClick?: (e: React.MouseEvent<HTMLDivElement>, splitPane: SplitPane) => void;
     allowResize?: Boolean;
@@ -465,7 +459,7 @@ export interface SplitPaneState {
     isDragging?: boolean;
     maxMousePosition?: number | any;
     handleBarOffsetFromParent?: number | any;
-    primaryPane?: number | any;
+    //primaryPane?: number | any;
     lastX?: number | any;
     lastY?: number | any;
     handleBarClonePos?: number | any;
