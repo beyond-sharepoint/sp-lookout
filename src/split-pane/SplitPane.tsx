@@ -6,126 +6,76 @@ import Resizer from './Resizer';
 import { splitType } from './Common';
 import './SplitPane.css';
 
-// TODO: Make this stateless.
-
 export default class SplitPane extends React.Component<SplitPaneProps, SplitPaneState> {
     public static defaultProps: Partial<SplitPaneProps> = {
+        allowResize: true,
         split: 'vertical',
-        postponed: false,
-        dispatchResize: false,
-        primaryPaneMaxWidth: '80%',
-        primaryPaneMinWidth: 300,
-        primaryPaneWidth: '50%',
-        primaryPaneMaxHeight: '80%',
-        primaryPaneMinHeight: 300,
-        primaryPaneHeight: '50%'
+        primaryPaneMinSize: 0,
+        primaryPaneSize: '50%'
     };
 
-    private paneWrapper: any;
-    private panePrimary: any;
-    private paneSecondary: any;
-    private resizer: any;
+    private paneWrapper: HTMLDivElement;
+    private panePrimary: Pane;
+    private paneSecondary: Pane;
+    private resizer: Resizer;
 
     constructor() {
         super();
 
         this.state = {
-            isDragging: false
+            isDragging: false,
+            dragStartPosition: null,
+            dragStartPaneSize: null,
+            calculatedMaxSize: null
         };
     }
 
     public componentDidMount() {
-        /********************************
-        * Sets event listeners after component is mounted.
-        * If there is only one pane, the resize event listener won't be added
-        ********************************/
         document.addEventListener('mouseup', this.handleMouseUp);
         document.addEventListener('touchend', this.handleMouseUp);
-        if (React.Children.count(this.props.children) > 1) {
-            window.addEventListener('resize', this.getSize);
-        }
+    }
+
+    public componentWillUnmount() {
+        document.removeEventListener('mouseup', this.handleMouseUp);
+        document.removeEventListener('touchend', this.handleMouseUp);
     }
 
     public render() {
-        /********************************
-         * set width of primary pane according to props, or state
-        ********************************/
         const {
-            children, split,
-            primaryPaneMinWidth, primaryPaneWidth, primaryPaneMaxWidth,
-            primaryPaneMinHeight, primaryPaneHeight, primaryPaneMaxHeight,
+            allowResize, children, split,
+            primaryPaneSize, primaryPaneMinSize, primaryPaneMaxSize,
             className, primaryPaneClassName, secondaryPaneClassName,
-            maximizedPrimaryPane, minimalizedPrimaryPane, postponed, allowResize,
             onResizerDoubleClick
         } = this.props;
-
-        const {
-            handleBarClonePosition,
-            isVisible
-        } = this.state;
 
         let paneStyle;
         switch (split) {
             case 'vertical': {
-                if (maximizedPrimaryPane) {
-                    paneStyle = {
-                        width: '100%',
-                        minWidth: primaryPaneMinWidth,
-                        maxWidth: '100%'
-                    };
-                } else if (minimalizedPrimaryPane) {
-                    paneStyle = {
-                        width: '0px',
-                        minWidth: 0,
-                        maxWidth: primaryPaneMaxWidth
-                    };
-                } else {
-                    paneStyle = {
-                        width: primaryPaneWidth,
-                        minWidth: primaryPaneMinWidth,
-                        maxWidth: primaryPaneMaxWidth
-                    };
-                }
+                paneStyle = {
+                    width: primaryPaneSize,
+                    minWidth: primaryPaneMinSize,
+                    maxWidth: primaryPaneMaxSize
+                };
                 break;
             }
             case 'horizontal': {
-                if (maximizedPrimaryPane) {
-                    paneStyle = {
-                        height: '100%',
-                        minHeight: 0,
-                        maxHeight: '100%'
-                    };
-                } else if (minimalizedPrimaryPane) {
-                    paneStyle = {
-                        height: '0px',
-                        minHeight: 0,
-                        maxHeight: primaryPaneMaxHeight
-                    };
-                } else {
-                    paneStyle = {
-                        height: primaryPaneHeight,
-                        minHeight: primaryPaneMinHeight,
-                        maxHeight: primaryPaneMaxHeight
-                    };
-                }
+                paneStyle = {
+                    height: primaryPaneSize,
+                    minHeight: primaryPaneMinSize,
+                    maxHeight: primaryPaneMaxSize
+                };
                 break;
             }
             default:
                 throw Error(`Unknown or unexpected split type: ${split}`);
         }
 
-        if (!children[1]) {
-            var onePaneStyle: any = {
+        let onePaneStyle: any;
+        if (!children || children.length < 2) {
+            onePaneStyle = {
                 width: '100%',
                 maxWidth: '100%',
                 height: '100%'
-            };
-        }
-
-        let handlebarClone;
-        if (React.Children.count(children) > 1 && postponed) {
-            handlebarClone = {
-                [split === 'vertical' ? 'left' : 'top']: handleBarClonePosition + 'px'
             };
         }
 
@@ -133,13 +83,13 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
             <div
                 className={`splitter ${split === 'vertical' ? 'vertical' : 'horizontal'} ${className || ''}`}
                 style={onePaneStyle !== 'undefined' ? onePaneStyle : null}
-                ref={node => this.paneWrapper = node}
+                ref={node => { if (node !== null) { this.paneWrapper = node; } }}
             >
                 <Pane
                     className={`primary ${primaryPaneClassName || ''}`}
                     split={split}
                     style={paneStyle}
-                    ref={(node) => this.panePrimary = node}
+                    ref={(node) => { if (node !== null) { this.panePrimary = node; } }}
                 >
                     {!children[1] ? children : children[0]}
                 </Pane>
@@ -150,17 +100,8 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
                             split={split}
                             onMouseDown={this.handleMouseDown}
                             onDoubleClick={(e) => onResizerDoubleClick ? onResizerDoubleClick(e, this) : undefined}
-                            ref={node => this.resizer = node}
+                            ref={node => { if (node !== null) { this.resizer = node; } }}
                             allowResize={allowResize}
-                        />
-                        : null
-                }
-
-                {
-                    postponed && isVisible
-                        ? <div
-                            className={`resizer resizer_clone ${split === 'vertical' ? 'vertical' : 'horizontal'} `}
-                            style={handlebarClone}
                         />
                         : null
                 }
@@ -170,8 +111,7 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
                         ? <Pane
                             className={secondaryPaneClassName || ''}
                             split={split}
-                            hasDetailPane={this.props.hasDetailPane}
-                            ref={node => this.paneSecondary = node}
+                            ref={node => { if (node !== null) { this.paneSecondary = node; } }}
                         >
                             {children[1]}
                         </Pane>
@@ -181,123 +121,25 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
         );
     }
 
-    private unselectAll(): void {
-        try {
-            window.getSelection().removeAllRanges();
-        } catch (e) {
-            console.warn(e);
-        }
-    }
-
-    private getPrimaryPaneWidth(
-        position: string,
-        lastX: number,
-        lastY: number,
-        maxMousePosition: number,
-        resizerOffsetFromParent: number,
-        primaryPaneMinHeight: number,
-        primaryPaneMinWidth: number
-    ): number {
-
-        let primaryPanePosition;
-
-        switch (position) {
-            case 'horizontal': {
-                if (lastY > maxMousePosition) {
-                    primaryPanePosition = maxMousePosition - resizerOffsetFromParent;
-                } else if ((lastY - resizerOffsetFromParent) <= primaryPaneMinHeight) {
-                    primaryPanePosition = primaryPaneMinHeight + 0.001;
-                } else {
-                    primaryPanePosition = lastY - resizerOffsetFromParent;
-                }
-                break;
-            }
-            case 'vertical':
-            default: {
-                console.log("yuuup");
-                if (lastX >= maxMousePosition) {
-                    console.log("1");
-                    primaryPanePosition = maxMousePosition - resizerOffsetFromParent;
-                } else if ((lastX - resizerOffsetFromParent) <= primaryPaneMinWidth) {
-                    console.log("2");
-                    primaryPanePosition = primaryPaneMinWidth + 0.001;
-                } else {
-                    console.log("3" + " " + resizerOffsetFromParent);
-                    primaryPanePosition = lastX - resizerOffsetFromParent;
-                }
-                break;
-            }
-        }
-
-        return primaryPanePosition;
-    }
-
-    /**
-     * Calculates the max position of a mouse in the current splitter from given percentage.
-     * @param cX 
-     * @param cY 
-     */
-    @autobind
-    private getSize(cX?: Number | any, cY?: Number | any) {
-        let maxMousePosition;
-        let nodeWrapperSize;
-        let primaryPaneOffset;
-        let wrapper = ReactDOM.findDOMNode(this.paneWrapper).getBoundingClientRect();
-        let primaryPane = ReactDOM.findDOMNode(this.panePrimary).getBoundingClientRect();
-        let resizerSize = ReactDOM.findDOMNode(this.resizer).getBoundingClientRect();
-        const posInHandleBar = this.props.split === 'vertical'
-            ? resizerSize.left - cX
-            : resizerSize.top - cY;
-
-        // find only letters from string
-        const regEx = new RegExp(/\D+/gi);
-
-        if (this.props.split === 'vertical') {
-            // split the maxWidth/maxHeight string to string and numbers
-            let maxWidthStr = this.props.primaryPaneMaxWidth.match(regEx)[0].toLowerCase();
-            let maxWidthNum = parseFloat(this.props.primaryPaneMaxWidth.split(regEx)[0]);
-            nodeWrapperSize = wrapper.width;
-            primaryPaneOffset = primaryPane.left;
-
-            if (maxWidthStr === '%') {
-                maxMousePosition =
-                    Math.floor((nodeWrapperSize * (maxWidthNum / 100)) + primaryPaneOffset - (resizerSize.width + posInHandleBar));
-            } else if (maxWidthStr === 'px') {
-                maxMousePosition =
-                    Math.floor((maxWidthNum + primaryPaneOffset) - resizerSize.width);
-            }
+    private unFocus(document: any, window: any): void {
+        if (document.selection) {
+            document.selection.empty();
         } else {
-            let maxHeightStr = this.props.primaryPaneMaxHeight.match(regEx)[0].toLowerCase();
-            let maxHeightNum = parseFloat(this.props.primaryPaneMaxHeight.split(regEx)[0]);
-            nodeWrapperSize = wrapper.height;
-            primaryPaneOffset = primaryPane.top;
-
-            if (maxHeightStr === '%') {
-                maxMousePosition =
-                    Math.floor((nodeWrapperSize * (maxHeightNum / 100)) + primaryPaneOffset - (resizerSize.height + posInHandleBar));
-            } else if (maxHeightStr === 'px') {
-                maxMousePosition =
-                    Math.floor((maxHeightNum + primaryPaneOffset) - resizerSize.height);
+            try {
+                window.getSelection().removeAllRanges();
+            } catch (e) {
+                console.warn(e);
             }
         }
-
-        this.setState({
-            maxMousePosition
-        });
     }
 
     @autobind
     private handleMouseDown(e: any) {
-        /********************************
-        * If the right button was clicked - stop the function
-        * If there is more then one pane, we get the sizes of panes + max pos of mouse in splitter
-        * add event listener for touch move and mouse move
-        ********************************/
-        if (e.button === 2 || this.props.allowResize === false) {
+        const { allowResize, primaryPaneMaxSize, onDragStarted, split } = this.props;
+        if (e.button === 2 || allowResize === false) {
             return;
         }
 
-        let handleBarOffsetFromParent;
         let clientX;
         let clientY;
 
@@ -309,51 +151,49 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
             clientY = e.touches[0].clientY;
         }
 
-        if (React.Children.count(this.props.children) > 1) {
-            this.getSize(clientX, clientY);
+        const dragStartPosition = split === 'vertical' ? clientX : clientY;
+        const pane = ReactDOM.findDOMNode(this.panePrimary);
+        const boundingClientRect = pane.getBoundingClientRect();
+        const dragStartPaneSize = split === 'vertical' ? boundingClientRect.width : boundingClientRect.height;
+
+        const resizer = ReactDOM.findDOMNode(this.resizer);
+        const resizerBoundingClientRect = resizer.getBoundingClientRect();
+        const resizerSize = split === 'vertical' ? resizerBoundingClientRect.width : resizerBoundingClientRect.height;
+
+        let calculatedMaxSize: number;
+        if (!primaryPaneMaxSize) {
+            const paneWrapper = ReactDOM.findDOMNode(this.paneWrapper);
+            const paneWrapperBoundingClientRect = paneWrapper.getBoundingClientRect();
+            const paneWrapperSize = split === 'vertical' ? paneWrapperBoundingClientRect.width : paneWrapperBoundingClientRect.height;
+            calculatedMaxSize = paneWrapperSize - resizerSize;
+        } else {
+            calculatedMaxSize = primaryPaneMaxSize - resizerSize;
         }
 
-        if (this.props.split === 'horizontal') {
-            handleBarOffsetFromParent = clientY - e.target.offsetTop;
-        } else if (this.props.split === 'vertical') {
-            handleBarOffsetFromParent = clientX - e.target.offsetLeft;
+        if (typeof onDragStarted === 'function') {
+            onDragStarted();
         }
 
         this.setState({
             isDragging: true,
-            handleBarOffsetFromParent
+            dragStartPosition,
+            dragStartPaneSize,
+            calculatedMaxSize
         });
-        console.log("asdf" + handleBarOffsetFromParent);
         document.addEventListener('mousemove', this.handleMouseMove);
         document.addEventListener('touchmove', this.handleMouseMove);
     }
 
     @autobind
     private handleMouseMove(e: any) {
-        /********************************
-        * check if the state is still isDragging, if not, stop the function
-        * unselectAll - unselect all selected text
-        * check position of mouse in the splitter and and set the width or height of primary pane
-        * save last positions of X and Y coords (that is necessary for touch screen)
-        ********************************/
-        if (!this.state.isDragging) {
+        const { allowResize, primaryPaneMinSize, primaryPaneMaxSize, onPaneResized, split } = this.props;
+        const { isDragging, dragStartPosition, dragStartPaneSize, calculatedMaxSize } = this.state;
+
+        if (!isDragging || !allowResize || dragStartPosition == null || dragStartPaneSize == null || calculatedMaxSize == null) {
             return;
         }
 
-        this.unselectAll();
-
-        const {
-            handleBarOffsetFromParent,
-            maxMousePosition
-        } = this.state;
-
-        const {
-            split,
-            onPaneResized,
-            primaryPaneMinWidth,
-            primaryPaneMinHeight,
-            postponed
-        } = this.props;
+        this.unFocus(document, window);
 
         let clientX;
         let clientY;
@@ -366,108 +206,62 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
             clientY = e.touches[0].clientY;
         }
 
-        const primaryPanePosition = this.getPrimaryPaneWidth(split, clientX, clientY, maxMousePosition, handleBarOffsetFromParent, primaryPaneMinHeight, primaryPaneMinWidth);
+        const currentPosition = split === 'vertical' ? clientX : clientY;
+        const newPosition = dragStartPosition - currentPosition;
+        let newPaneSize = dragStartPaneSize - newPosition;
 
-        if (postponed) {
-            this.setState({
-                handleBarClonePosition: primaryPanePosition,
-                lastX: clientX,
-                lastY: clientY,
-                isVisible: true
-            });
-        } else {
-            onPaneResized(primaryPanePosition);
-            this.setState({
-                lastX: clientX,
-                lastY: clientY
-            });
+        if (newPaneSize < primaryPaneMinSize) {
+            newPaneSize = primaryPaneMinSize;
+        } else if (newPaneSize > calculatedMaxSize) {
+            newPaneSize = calculatedMaxSize;
         }
+
+        onPaneResized(newPaneSize);
     }
 
     @autobind
     private handleMouseUp(e: any) {
-        if (!this.state.isDragging) {
+        const { allowResize, onDragFinished } = this.props;
+        const { isDragging, dragStartPosition } = this.state;
+        if (!isDragging || !allowResize) {
             return;
         }
 
-        const {
-            handleBarOffsetFromParent,
-            lastX, lastY, maxMousePosition
-        } = this.state;
-
-        const {
-            split,
-            onPaneResized,
-            primaryPaneMinWidth,
-            primaryPaneMinHeight,
-            postponed
-        } = this.props;
-
-        const primaryPanePosition = this.getPrimaryPaneWidth(split, lastX, lastY, maxMousePosition, handleBarOffsetFromParent, primaryPaneMinHeight, primaryPaneMinWidth);
-
-        if (postponed) {
-            this.setState({
-                isDragging: false,
-                isVisible: false
-            });
-        } else {
-            onPaneResized(primaryPanePosition);
-            this.setState({
-                isDragging: false
-            });
-        }
+        this.setState({
+            isDragging: false,
+            dragStartPosition: null,
+            dragStartPaneSize: null,
+            calculatedMaxSize: null
+        });
 
         document.removeEventListener('mousemove', this.handleMouseMove);
         document.removeEventListener('touchmove', this.handleMouseMove);
 
-        // call resize event to trigger method for updating of DataGrid width
-        // TODO: add this event for IE11
-        if (typeof this.props.dispatchResize === 'boolean') {
-            window.dispatchEvent(new Event('resize'));
-        }
-
-        // callback function from parent component
-        if (typeof this.props.onDragFinished === 'function') {
-            this.props.onDragFinished();
-        }
-
-        if (React.Children.count(this.props.children) > 1) {
-            this.getSize(lastX, lastY);
+        if (typeof onDragFinished === 'function') {
+            onDragFinished();
         }
     }
 }
 
 export interface SplitPaneProps {
-    children?: {} | any;
+    allowResize?: Boolean;
     split: splitType;
-    hasDetailPane?: boolean;
-    primaryPaneMinWidth?: number | any;
-    primaryPaneWidth?: string | any;
-    primaryPaneMaxWidth?: string | any;
-    primaryPaneMinHeight?: number | any;
-    primaryPaneHeight?: string | any;
-    primaryPaneMaxHeight?: string | any;
+    primaryPaneSize: string | any;
+    primaryPaneMinSize: number;
+    primaryPaneMaxSize?: number;
     className?: string;
     primaryPaneClassName?: string;
     secondaryPaneClassName?: string;
-    dispatchResize?: Boolean;
-    maximizedPrimaryPane?: Boolean;
-    minimalizedPrimaryPane?: Boolean;
-    postponed?: Boolean;
     onPaneResized: Function;
+    onDragStarted?: Function;
     onDragFinished?: Function;
     onResizerDoubleClick?: (e: React.MouseEvent<HTMLDivElement>, splitPane: SplitPane) => void;
-    allowResize?: Boolean;
+    children: React.ReactNode[];
 }
 
 export interface SplitPaneState {
-    isDragging?: boolean;
-    maxMousePosition?: number | any;
-    handleBarOffsetFromParent?: number | any;
-    //primaryPane?: number | any;
-    lastX?: number | any;
-    lastY?: number | any;
-    handleBarClonePos?: number | any;
-    isVisible?: Boolean;
-    handleBarClonePosition?: number;
+    isDragging: boolean;
+    dragStartPosition: number | null;
+    dragStartPaneSize: number | null;
+    calculatedMaxSize: number | null;
 }

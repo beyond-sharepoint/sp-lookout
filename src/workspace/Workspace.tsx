@@ -3,7 +3,7 @@ import {
     HashRouter as Router,
     Route,
     Link
-} from 'react-router-dom'
+} from 'react-router-dom';
 import { CommandBar } from 'office-ui-fabric-react/lib/CommandBar';
 import { Nav, INavLinkGroup } from 'office-ui-fabric-react/lib/Nav';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
@@ -121,18 +121,19 @@ export default class Workspace extends React.Component<any, any> {
             {
                 path: '/spfiddle',
                 sidebar: () => <div>shoelaces!</div>,
-                main: () => <SplitPane
-                    split="vertical"
-                    className="left-sidebar"
-                    primaryPaneMaxWidth="100%"
-                    primaryPaneMinWidth={0}
-                    onPaneResized={(size) => { this.setState({ fiddlePaneSize: size }); }}
-                    onResizerDoubleClick={() => { this.setState({ fiddlePaneSize: '50%' }); }}
-                    primaryPaneWidth={this.state.fiddlePaneSize}
-                >
-                    <div>asdf</div>
-                    <div>fdsa</div>
-                </SplitPane>
+                main: () => (
+                    <SplitPane
+                        split="vertical"
+                        className="left-sidebar"
+                        primaryPaneSize={this.state.fiddlePaneSize}
+                        primaryPaneMinSize={0}
+                        onPaneResized={(size) => { this.setState({ fiddlePaneSize: size }); }}
+                        onResizerDoubleClick={() => { this.setState({ fiddlePaneSize: '50%' }); }}
+                    >
+                        <div>asdf</div>
+                        <div>fdsa</div>
+                    </SplitPane>
+                )
             }
         ];
 
@@ -152,18 +153,18 @@ export default class Workspace extends React.Component<any, any> {
                         <SplitPane
                             split="vertical"
                             className="left-sidebar"
-                            primaryPaneMaxWidth="400px"
-                            primaryPaneMinWidth={0}
-                            onPaneResized={(size) => { this.setState({ sidebarSize: size }) }}
-                            onResizerDoubleClick={() => { this.setState({ sidebarSize: 215 }) }}
-                            primaryPaneWidth={this.state.sidebarSize}
+                            primaryPaneSize={this.state.sidebarSize}
+                            primaryPaneMinSize={0}
+                            primaryPaneMaxSize={400}
+                            onPaneResized={(size) => { this.setState({ sidebarSize: size }); }}
+                            onResizerDoubleClick={() => { this.setState({ sidebarSize: 215 }); }}
                         >
                             <Nav
+                                className="aside"
                                 groups={this.state.groups}
                                 expandedStateText={'expanded'}
                                 collapsedStateText={'collapsed'}
                                 selectedKey={'dashboard'}
-                                className='aside'
                             />
                             <div style={{ width: '100%', height: '100%' }}>
                                 {this.state.routes.map((route, index) => (
@@ -202,7 +203,7 @@ export default class Workspace extends React.Component<any, any> {
     @autobind
     private async _onClickHandler2(e: React.MouseEvent<HTMLElement>) {
         let context = await SPContext.getContext('https://baristalabs.sharepoint.com');
-        let result = await context.eval("6*7; var moose = { foo: 'bar' }; moose;");
+        let result = await context.eval('6*7; var moose = { foo: "bar" }; moose;');
         console.dir(result);
         return false;
     }
