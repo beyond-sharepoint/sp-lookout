@@ -156,27 +156,29 @@ export default class Workspace extends React.Component<any, any> {
                     farItems={this.state.appBarFarItems}
                 />
                 <Router>
-                    <SplitPane
-                        split="vertical"
-                        className="left-sidebar"
-                        primaryPaneSize={this.state.sidebarSize}
-                        primaryPaneMinSize={0}
-                        primaryPaneMaxSize={400}
-                        onPaneResized={(size) => { this.setState({ sidebarSize: size }); }}
-                        onResizerDoubleClick={() => { this.setState({ sidebarSize: 215 }); }}
-                    >
-                        <Aside navItems={this.state.asideItems}></Aside>
-                        <div style={{ width: '100%', height: '100%' }}>
-                            {this.state.routes.map((route, index) => (
-                                <Route
-                                    key={index}
-                                    path={route.path}
-                                    exact={route.exact}
-                                    component={route.main}
-                                />
-                            ))}
-                        </div>
-                    </SplitPane>
+                    <div id="workspace">
+                        <SplitPane
+                            split="vertical"
+                            className="left-sidebar"
+                            primaryPaneSize={this.state.sidebarSize}
+                            primaryPaneMinSize={0}
+                            primaryPaneMaxSize={400}
+                            onPaneResized={(size) => { this.setState({ sidebarSize: size }); }}
+                            onResizerDoubleClick={() => { this.setState({ sidebarSize: 215 }); }}
+                        >
+                            <Aside navItems={this.state.asideItems}></Aside>
+                            <div style={{ width: '100%', height: '100%', overflow: 'auto' }}>
+                                {this.state.routes.map((route, index) => (
+                                    <Route
+                                        key={index}
+                                        path={route.path}
+                                        exact={route.exact}
+                                        component={route.main}
+                                    />
+                                ))}
+                            </div>
+                        </SplitPane>
+                    </div>
                 </Router>
                 <Modal
                     isOpen={this.state.showSettingsModal}

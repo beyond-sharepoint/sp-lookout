@@ -5,10 +5,10 @@ export default class Pane extends React.Component<PaneProps, any> {
     public render() {
         const { id, style, split, className } = this.props;
         let paneStyle: React.CSSProperties = {
-            ...style,
             ...{
                 overflow: 'hidden'
-            }
+            },
+            ...style
         };
 
         return (
