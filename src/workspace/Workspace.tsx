@@ -5,8 +5,10 @@ import {
     Link
 } from 'react-router-dom';
 import { CommandBar } from 'office-ui-fabric-react/lib/CommandBar';
-import { Nav, INavLinkGroup } from 'office-ui-fabric-react/lib/Nav';
+import { INavLinkGroup } from 'office-ui-fabric-react/lib/Nav';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
+import Dashboard from './dashboard';
+import Aside from './aside';
 import SplitPane from '../split-pane/SplitPane';
 
 import './Workspace.css';
@@ -49,7 +51,7 @@ export default class Workspace extends React.Component<any, any> {
             }
         ];
 
-        this.state.groups =
+        this.state.asideItems =
             [
                 {
                     links:
@@ -62,24 +64,29 @@ export default class Workspace extends React.Component<any, any> {
                             onClick: this._onClickHandler2
                         },
                         {
-                            name: 'Charts',
-                            key: 'charts',
+                            name: 'Governance',
+                            key: 'governance',
                             icon: 'BarChart4',
                             onClick: this._onClickHandler2,
                             links: [{
-                                name: 'Activity',
-                                url: '/charts/activity',
+                                name: 'Structure',
+                                url: '#/charts/structure',
                                 key: 'key1'
                             },
                             {
-                                name: 'Usage',
-                                url: '/charts/usage',
+                                name: 'Activity',
+                                url: '#/charts/activity',
                                 key: 'key2'
                             },
                             {
-                                name: 'Custom',
-                                url: '/charts/custom',
+                                name: 'Usage',
+                                url: '#/charts/usage',
                                 key: 'key3'
+                            },
+                            {
+                                name: 'Custom',
+                                url: '#/charts/custom',
+                                key: 'key4'
                             }
                             ],
                             isExpanded: true
@@ -112,7 +119,7 @@ export default class Workspace extends React.Component<any, any> {
             {
                 path: '/',
                 exact: true,
-                main: () => <h2>Home</h2>
+                main: () => <Dashboard></Dashboard>
             },
             {
                 path: '/bubblegum',
@@ -148,37 +155,29 @@ export default class Workspace extends React.Component<any, any> {
                     items={this.state.appBarItems}
                     farItems={this.state.appBarFarItems}
                 />
-                <div id="workspace">
-                    <Router>
-                        <SplitPane
-                            split="vertical"
-                            className="left-sidebar"
-                            primaryPaneSize={this.state.sidebarSize}
-                            primaryPaneMinSize={0}
-                            primaryPaneMaxSize={400}
-                            onPaneResized={(size) => { this.setState({ sidebarSize: size }); }}
-                            onResizerDoubleClick={() => { this.setState({ sidebarSize: 215 }); }}
-                        >
-                            <Nav
-                                className="aside"
-                                groups={this.state.groups}
-                                expandedStateText={'expanded'}
-                                collapsedStateText={'collapsed'}
-                                selectedKey={'dashboard'}
-                            />
-                            <div style={{ width: '100%', height: '100%' }}>
-                                {this.state.routes.map((route, index) => (
-                                    <Route
-                                        key={index}
-                                        path={route.path}
-                                        exact={route.exact}
-                                        component={route.main}
-                                    />
-                                ))}
-                            </div>
-                        </SplitPane>
-                    </Router>
-                </div>
+                <Router>
+                    <SplitPane
+                        split="vertical"
+                        className="left-sidebar"
+                        primaryPaneSize={this.state.sidebarSize}
+                        primaryPaneMinSize={0}
+                        primaryPaneMaxSize={400}
+                        onPaneResized={(size) => { this.setState({ sidebarSize: size }); }}
+                        onResizerDoubleClick={() => { this.setState({ sidebarSize: 215 }); }}
+                    >
+                        <Aside navItems={this.state.asideItems}></Aside>
+                        <div style={{ width: '100%', height: '100%' }}>
+                            {this.state.routes.map((route, index) => (
+                                <Route
+                                    key={index}
+                                    path={route.path}
+                                    exact={route.exact}
+                                    component={route.main}
+                                />
+                            ))}
+                        </div>
+                    </SplitPane>
+                </Router>
                 <Modal
                     isOpen={this.state.showSettingsModal}
                     onDismiss={this.hideSettings}

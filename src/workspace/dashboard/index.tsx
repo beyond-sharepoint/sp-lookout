@@ -1,0 +1,54 @@
+import * as React from 'react';
+import * as ReactGridLayout from 'react-grid-layout';
+import * as _ from 'lodash';
+import './index.css';
+
+const Layout = ReactGridLayout.WidthProvider(ReactGridLayout);
+
+export default class Dashboard extends React.Component<DashboardProps, any> {
+    public static defaultProps: Partial<DashboardProps> = {
+        items: 50,
+        columns: 12,
+        rowHeight: 30,
+        onLayoutChange: () => { }
+    };
+
+    public constructor(props) {
+        super(props);
+
+        const { items } = props;
+
+        this.state = {
+            layout: _.map(new Array(items), function (item, i) {
+                let y = Math.ceil(Math.random() * 4) + 1;
+                return { x: i * 2 % 12, y: Math.floor(i / 6) * y, w: 2, h: y, i: i.toString() };
+            })
+        }
+    }
+
+    public render() {
+        const { items, columns, rowHeight, onLayoutChange } = this.props;
+
+        return (
+            <Layout
+                className="dashboard"
+                layout={this.state.layout}
+                cols={columns}
+                rowHeight={rowHeight}
+                verticalCompact={false}
+                onLayoutChange={onLayoutChange}
+                {...this.props}>
+                {_.map(_.range(items || 50), function (i) {
+                    return (<div key={i}><span className="text">{i}</span></div>);
+                })}
+            </Layout>
+        )
+    }
+}
+
+export interface DashboardProps {
+    items?: number;
+    columns?: number;
+    rowHeight?: number
+    onLayoutChange?: (Layout) => void;
+}
