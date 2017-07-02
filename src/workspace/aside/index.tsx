@@ -11,7 +11,7 @@ export default class Aside extends React.Component<AsideProps, any> {
                 collapsedStateText={'collapsed'}
                 selectedKey={'dashboard'}
             />
-        )
+        );
     }
 }
 

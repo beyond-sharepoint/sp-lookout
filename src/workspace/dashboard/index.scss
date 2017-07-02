@@ -20,6 +20,7 @@
   transition: none;
   z-index: 3;
   will-change: transform;
+  user-select: none;
 }
 
 .react-grid-item.react-grid-placeholder {

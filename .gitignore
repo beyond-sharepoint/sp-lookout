@@ -22,3 +22,6 @@ yarn-error.log*
 
 # ignore .css files
 /src/**/*.css
+
+# ignore monaco editor files
+public/vs

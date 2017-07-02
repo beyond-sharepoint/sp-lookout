@@ -7,9 +7,13 @@ import {
 import { CommandBar } from 'office-ui-fabric-react/lib/CommandBar';
 import { INavLinkGroup } from 'office-ui-fabric-react/lib/Nav';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
+import SplitPane from '../split-pane/SplitPane';
+
 import Dashboard from './dashboard';
 import Aside from './aside';
-import SplitPane from '../split-pane/SplitPane';
+import Fiddle from './fiddle';
+
+
 
 import './Workspace.css';
 import { autobind } from 'office-ui-fabric-react/lib';
@@ -25,8 +29,7 @@ export default class Workspace extends React.Component<any, any> {
             readOnly: false,
             showSettingsModal: false,
             showShortcutsModal: false,
-            sidebarSize: 215,
-            fiddlePaneSize: '50%'
+            sidebarSize: 215
         };
 
         this.state.appBarItems = [
@@ -129,17 +132,7 @@ export default class Workspace extends React.Component<any, any> {
                 path: '/spfiddle',
                 sidebar: () => <div>shoelaces!</div>,
                 main: () => (
-                    <SplitPane
-                        split="vertical"
-                        className="left-sidebar"
-                        primaryPaneSize={this.state.fiddlePaneSize}
-                        primaryPaneMinSize={0}
-                        onPaneResized={(size) => { this.setState({ fiddlePaneSize: size }); }}
-                        onResizerDoubleClick={() => { this.setState({ fiddlePaneSize: '50%' }); }}
-                    >
-                        <div>asdf</div>
-                        <div>fdsa</div>
-                    </SplitPane>
+                    <Fiddle></Fiddle>
                 )
             }
         ];
