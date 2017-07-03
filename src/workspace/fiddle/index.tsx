@@ -5,6 +5,7 @@ import * as ts from 'typescript';
 import * as URI from 'urijs';
 import { CommandBar } from 'office-ui-fabric-react/lib/CommandBar';
 import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
+import { ObjectInspector } from 'react-inspector';
 import { SPContext } from '../../spcontext';
 import SplitPane from '../../split-pane/SplitPane';
 import MonacoEditor from '../../monaco-editor';
@@ -98,8 +99,11 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
             fileName: 'splookout-fiddle.js'
         });
 
+        let lastBrewResult = undefined;
+
         this.setState({
-            isBrewing: true
+            isBrewing: true,
+            lastBrewResult: lastBrewResult
         });
 
         try {
@@ -109,18 +113,20 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
             const result = await spContext.require('splookout-fiddle');
             //const result = await spContext.eval("require.undef('splookout-fiddle'); require.config({ urlArgs: 'v=' + (new Date()).getTime()}); new Promise((resolve, reject) => { require(['splookout-fiddle'], result => resolve(result), err => reject(err)); });");
             console.dir(result);
+            lastBrewResult = result.requireResult;
         } catch (ex) {
             console.dir(ex);
         } finally {
             this.setState({
-                isBrewing: false
+                isBrewing: false,
+                lastBrewResult
             });
             console.log("your brew is complete!");
         }
     }
 
     public render() {
-        const { isBrewing }  = this.state;
+        const { isBrewing, lastBrewResult } = this.state;
 
         return (
             <SplitPane
@@ -147,9 +153,12 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
                     </div>
                 </div>
                 <div className="fiddle-results">
-                    { isBrewing ?
-                        <Spinner size={ SpinnerSize.large } label='Brewing...' ariaLive='assertive' /> 
-                        : null }
+                    {isBrewing ?
+                        <Spinner size={SpinnerSize.large} label='Brewing...' ariaLive='assertive' />
+                        : null}
+                    {!isBrewing ?
+                        <ObjectInspector data={lastBrewResult} expandLevel={3}/>
+                        : null}
                 </div>
             </SplitPane>
         )
