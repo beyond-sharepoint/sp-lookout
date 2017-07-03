@@ -43,6 +43,7 @@ export default class Workspace extends React.Component<any, any> {
             {
                 name: 'SP Lookout!',
                 className: 'sp-lookout-nav',
+                href: './#/',
                 style: {
                     fontSize: '21px'
                 }
