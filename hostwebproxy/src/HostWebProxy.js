@@ -59,6 +59,11 @@ docReady(() => {
                     errorMessage[key] = err[key];
                 }
             }
+
+            //Prevent Events and nested Errors from preventing cloning.
+            if (errorMessage.originalError) {
+                errorMessage.originalError = JSON.stringify(errorMessage.originalError);
+            }
         }
 
         return postMessage(errorMessage);
@@ -122,7 +127,7 @@ docReady(() => {
             case "InjectScript":
 
                 let script = document.createElement('script');
-                for (let key of ['type', 'src', 'charset', 'async', 'defer', 'text']) {
+                for (let key of ['id', 'type', 'src', 'charset', 'async', 'defer', 'text']) {
                     if (typeof request[key] !== 'undefined') {
                         script[key] = request[key];
                     }
@@ -170,15 +175,17 @@ docReady(() => {
                     postMessage({
                         "$$postMessageId": postMessageId,
                         postMessageId: postMessageId,
-                        result: "success",
-                        src: request.src
+                        result: "success"
                     });
                 }
                 break;
             case "Require":
-                const requirejs = window.require;
-                requirejs.config({ urlArgs: 'v=' + (new Date()).getTime() });
-                requirejs.undef(request.id);
+                if (request.config) {
+                    requirejs.config(request.config);
+                } else if (request.bustCache) {
+                    requirejs.config({ urlArgs: 'v=' + (new Date()).getTime() });
+                }
+
                 try {
                     let requirePromise = new Promise((resolve, reject) => {
                         requirejs([request.id], result => resolve(result), err => reject(err));
@@ -202,6 +209,9 @@ docReady(() => {
                 } catch (err) {
                     return postErrorMessage(postMessageId, err);
                 }
+                break;
+            case "Require.Undef":
+                requirejs.undef(request.id);
                 break;
             case "Eval":
                 try {

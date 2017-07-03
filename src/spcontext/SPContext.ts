@@ -228,6 +228,20 @@ export default class SPContext {
     }
 
     /**
+     * Undefines the specified module from within the proxy.
+     * @param id 
+     */
+    public async requireUndefine(id: string, timeout?: number) {
+        if (!id) {
+            throw Error('Module id must be supplied as the first argument.');
+        }
+
+        let proxy = await this.ensureContext();
+
+        return proxy.invoke('Require.Undef', { id }, undefined, timeout);
+    }
+
+    /**
      * Returns a header object of the default headers defined in the settings plus the X-RequestDigest value.
      * If a headers object is supplied, it is merged with default headers.
      * 

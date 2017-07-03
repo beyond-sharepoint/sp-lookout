@@ -111,9 +111,8 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
         try {
             const spContext = await SPContext.getContext(webFullUrl);
             let fiddleName = `splookout-fiddle-${(new Date()).getTime()}`;
-            //await spContext.injectScript({ text: jsCode.outputText.replace("define([", `define('splookout-fiddle',[`) });
-            await this.uploadModule(spContext, jsCode.outputText);
-            const result = await spContext.require('splookout-fiddle');
+            await spContext.injectScript({ id: fiddleName, type: 'text/javascript', text: jsCode.outputText.replace("define([", `define('${fiddleName}',[`) });
+            const result = await spContext.require(fiddleName);
             console.dir(result);
             lastBrewResult = result.requireResult;
         } catch (ex) {
