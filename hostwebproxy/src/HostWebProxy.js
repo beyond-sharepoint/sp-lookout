@@ -42,15 +42,26 @@ docReady(() => {
      * @param {*} err 
      */
     let postErrorMessage = async (postMessageId, err) => {
-        return postMessage({
+        let errorMessage = {
             "$$postMessageId": postMessageId,
             postMessageId: postMessageId,
             result: "error",
-            name: err.name,
-            message: err.message,
-            stack: err.stack,
+            message: err,
             type: Object.prototype.toString.call(err)
-        });
+        }
+
+        if (err instanceof Error) {
+            errorMessage.name = err.name;
+            errorMessage.message = err.message;
+            errorMessage.stack = err.stack;
+            for (let key in err) {
+                if (err.hasOwnProperty(key)) {
+                    errorMessage[key] = err[key];
+                }
+            }
+        }
+
+        return postMessage(errorMessage);
     };
 
     let currentErrorHandler = () => { };
@@ -184,17 +195,21 @@ docReady(() => {
                         requirejs([request.id], result => resolve(result), err => reject(err));
                     });
 
-                    requirePromise
-                        .then(requireResult => {
-                            return postMessage({
-                                "$$postMessageId": postMessageId,
-                                postMessageId: postMessageId,
-                                result: "success",
-                                requireResult
-                            });
-                        }, err => {
-                            return postErrorMessage(postMessageId, err);
-                        });
+                    let requireResult = await requirePromise;
+
+                    //Resolve any promises defined on exported properties of the module.
+                    for (let key in requireResult) {
+                        if (requireResult.hasOwnProperty(key)) {
+                            requireResult[key] = await Promise.resolve(requireResult[key]);
+                        }
+                    }
+
+                    postMessage({
+                        "$$postMessageId": postMessageId,
+                        postMessageId: postMessageId,
+                        result: "success",
+                        requireResult
+                    });
                 } catch (err) {
                     return postErrorMessage(postMessageId, err);
                 }
@@ -206,17 +221,13 @@ docReady(() => {
                         resolve(evalResult);
                     });
 
-                    evalPromise
-                        .then(evalResult => {
-                            return postMessage({
-                                "$$postMessageId": postMessageId,
-                                postMessageId: postMessageId,
-                                result: "success",
-                                evalResult
-                            });
-                        }, err => {
-                            postErrorMessage(postMessageId, err);
-                        });
+                    let evalResult = await evalPromise;
+                    postMessage({
+                        "$$postMessageId": postMessageId,
+                        postMessageId: postMessageId,
+                        result: "success",
+                        evalResult
+                    });
                 } catch (err) {
                     postErrorMessage(postMessageId, err);
                     throw err;

@@ -92,18 +92,20 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
 
         const jsCode = ts.transpileModule(code, {
             compilerOptions: {
-                target: ts.ScriptTarget.ES5,
+                target: ts.ScriptTarget.ES2015,
                 module: ts.ModuleKind.AMD,
-                checkJs: true
+                //importHelpers: true,
             },
             fileName: 'splookout-fiddle.js'
         });
 
-        let lastBrewResult = undefined;
+        let lastBrewResult: any = undefined;
+        let lastBrewResultIsError = false;
 
         this.setState({
             isBrewing: true,
-            lastBrewResult: lastBrewResult
+            lastBrewResult,
+            lastBrewResultIsError
         });
 
         try {
@@ -111,22 +113,32 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
             //await spContext.importScript("https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js");
             await this.uploadModule(spContext, jsCode.outputText);
             const result = await spContext.require('splookout-fiddle');
-            //const result = await spContext.eval("require.undef('splookout-fiddle'); require.config({ urlArgs: 'v=' + (new Date()).getTime()}); new Promise((resolve, reject) => { require(['splookout-fiddle'], result => resolve(result), err => reject(err)); });");
             console.dir(result);
             lastBrewResult = result.requireResult;
         } catch (ex) {
             console.dir(ex);
+            lastBrewResultIsError = true;
+            lastBrewResult = {
+                name: ex.name,
+                message: ex.message,
+                stack: ex.stack
+            };
         } finally {
             this.setState({
                 isBrewing: false,
-                lastBrewResult
+                lastBrewResult,
+                lastBrewResultIsError
             });
             console.log("your brew is complete!");
         }
     }
 
     public render() {
-        const { isBrewing, lastBrewResult } = this.state;
+        const { isBrewing, lastBrewResult, lastBrewResultIsError } = this.state;
+        let fiddleResultPaneStyle: any = {};
+        if (lastBrewResultIsError) {
+            fiddleResultPaneStyle.backgroundColor = "rgb(255, 214, 214)";
+        }
 
         return (
             <SplitPane
@@ -157,7 +169,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
                         <Spinner size={SpinnerSize.large} label='Brewing...' ariaLive='assertive' />
                         : null}
                     {!isBrewing ?
-                        <ObjectInspector data={lastBrewResult} expandLevel={3}/>
+                        <ObjectInspector data={lastBrewResult} expandLevel={3} />
                         : null}
                 </div>
             </SplitPane>
