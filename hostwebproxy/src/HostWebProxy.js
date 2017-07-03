@@ -36,6 +36,23 @@ docReady(() => {
         window.parent.postMessage(message, responseOrigin, message.data ? [message.data] : undefined);
     };
 
+    /**
+     * postMessage helper to facilitate posting errors back to the parent.
+     * @param {*} postMessageId 
+     * @param {*} err 
+     */
+    let postErrorMessage = async (postMessageId, err) => {
+        return postMessage({
+            "$$postMessageId": postMessageId,
+            postMessageId: postMessageId,
+            result: "error",
+            name: err.name,
+            message: err.message,
+            stack: err.stack,
+            type: Object.prototype.toString.call(err)
+        });
+    };
+
     let currentErrorHandler = () => { };
     window.addEventListener('error', function (message) {
         currentErrorHandler(message);
@@ -149,7 +166,7 @@ docReady(() => {
                 script.onerror = failure;
                 script.onload = success;
                 script.onreadystatechange = function () {
-                    var state = script.readyState;
+                    let state = script.readyState;
                     if (state === 'loaded' || state === 'complete') {
                         success();
                     }
@@ -158,6 +175,30 @@ docReady(() => {
                 document.body.appendChild(script);
                 importedScripts[request.src] = script;
                 break;
+            case "Require":
+                const requirejs = window.require;
+                requirejs.config({ urlArgs: 'v=' + (new Date()).getTime() });
+                requirejs.undef("splookout-fiddle");
+                try {
+                    let requirePromise = new Promise((resolve, reject) => {
+                        requirejs([request.id], result => resolve(result), err => reject(err));
+                    });
+
+                    requirePromise
+                        .then(requireResult => {
+                            return postMessage({
+                                "$$postMessageId": postMessageId,
+                                postMessageId: postMessageId,
+                                result: "success",
+                                requireResult
+                            });
+                        }, err => {
+                            return postErrorMessage(postMessageId, err);
+                        });
+                } catch (err) {
+                    return postErrorMessage(postMessageId, err);
+                }
+                break;
             case "Eval":
                 try {
                     let evalPromise = new Promise((resolve, reject) => {
@@ -165,34 +206,19 @@ docReady(() => {
                         resolve(evalResult);
                     });
 
-                    evalPromise.then(evalResult => {
-                        return postMessage({
-                            "$$postMessageId": postMessageId,
-                            postMessageId: postMessageId,
-                            result: "success",
-                            evalResult,
+                    evalPromise
+                        .then(evalResult => {
+                            return postMessage({
+                                "$$postMessageId": postMessageId,
+                                postMessageId: postMessageId,
+                                result: "success",
+                                evalResult
+                            });
+                        }, err => {
+                            postErrorMessage(postMessageId, err);
                         });
-                    }, err => {
-                        return postMessage({
-                            "$$postMessageId": postMessageId,
-                            postMessageId: postMessageId,
-                            result: "error",
-                            name: err.name,
-                            message: err.message,
-                            stack: err.stack,
-                            type: Object.prototype.toString.call(err)
-                        });
-                    });
                 } catch (err) {
-                    postMessage({
-                        "$$postMessageId": postMessageId,
-                        postMessageId: postMessageId,
-                        result: "error",
-                        name: err.name,
-                        message: err.message,
-                        stack: err.stack,
-                        type: Object.prototype.toString.call(err)
-                    });
+                    postErrorMessage(postMessageId, err);
                     throw err;
                 }
                 break;
@@ -231,15 +257,7 @@ docReady(() => {
                     }, response);
                 }
                 catch (err) {
-                    postMessage({
-                        "$$postMessageId": postMessageId,
-                        postMessageId: postMessageId,
-                        result: "error",
-                        name: err.name,
-                        message: err.message,
-                        stack: err.stack,
-                        type: Object.prototype.toString.call(err)
-                    });
+                    postErrorMessage(postMessageId, err);
                 }
                 break;
             case "Ping":

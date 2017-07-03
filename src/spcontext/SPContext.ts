@@ -122,24 +122,10 @@ export default class SPContext {
     }
 
     /**
-     * Loads the script at the specified url into the context of the HostWebProxy.
-     * @param src Absolute URL to the script resource.
-     */
-    public async importScript(src: string, timeout?: number): Promise<any> {
-        if (!src) {
-            throw Error('An absolute url to the desired script resource must be specified.');
-        }
-
-        let proxy = await this.ensureContext();
-
-        return proxy.invoke('ImportScript', { src });
-    }
-
-    /**
      * Executes http requests through a proxy.
      * @returns promise that resolves with the response.
      */
-    public async fetch(url: string, init?: RequestInit ): Promise<Response> {
+    public async fetch(url: string, init?: RequestInit): Promise<Response> {
 
         if (!url) {
             throw Error('Fetch url must be supplied as the first argument.');
@@ -198,6 +184,34 @@ export default class SPContext {
         }
 
         return proxy.invoke('Fetch', mergedSettings);
+    }
+
+    /**
+     * Loads the script at the specified url into the context of the HostWebProxy.
+     * @param src Absolute URL to the script resource.
+     */
+    public async importScript(src: string, timeout?: number): Promise<any> {
+        if (!src) {
+            throw Error('An absolute url to the desired script resource must be specified.');
+        }
+
+        let proxy = await this.ensureContext();
+
+        return proxy.invoke('ImportScript', { src });
+    }
+
+    /**
+     * Using RequireJS within the proxy, dynamically requires the module with the specified id and returns the result.
+     * @param id The id of the module to load
+     */
+    public async require(id: string, timeout?: number) {
+        if (!id) {
+            throw Error('Module id must be supplied as the first argument.');
+        }
+
+        let proxy = await this.ensureContext();
+
+        return proxy.invoke('Require', { id }, undefined, timeout);
     }
 
     private str2ab(str: string): ArrayBuffer {

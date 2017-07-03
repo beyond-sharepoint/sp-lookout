@@ -83,6 +83,11 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
 
     private async brew(code: string) {
         const { webFullUrl } = this.props;
+        const { isBrewing } = this.state;
+
+        if (isBrewing) {
+            return;
+        }
 
         const jsCode = ts.transpileModule(code, {
             compilerOptions: {
@@ -99,9 +104,10 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
 
         try {
             const spContext = await SPContext.getContext(webFullUrl);
-            await spContext.importScript("https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js");
+            //await spContext.importScript("https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js");
             await this.uploadModule(spContext, jsCode.outputText);
-            const result = await spContext.eval("require.undef('splookout-fiddle'); require.config({ urlArgs: 'v=' + (new Date()).getTime()}); new Promise((resolve, reject) => { require(['splookout-fiddle'], result => resolve(result), err => reject(err)); });");
+            const result = await spContext.require('splookout-fiddle');
+            //const result = await spContext.eval("require.undef('splookout-fiddle'); require.config({ urlArgs: 'v=' + (new Date()).getTime()}); new Promise((resolve, reject) => { require(['splookout-fiddle'], result => resolve(result), err => reject(err)); });");
             console.dir(result);
         } catch (ex) {
             console.dir(ex);
