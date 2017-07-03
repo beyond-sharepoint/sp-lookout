@@ -141,7 +141,7 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps, {}>
         const { language, theme, options } = this.props;
         const containerElement = this.refs.container;
         const context = this.props.context || window;
-        console.dir(options);
+        
         if (typeof context.monaco !== 'undefined') {
             // Before initializing monaco editor
             this.editorWillMount(context.monaco);

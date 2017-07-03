@@ -130,14 +130,17 @@ docReady(() => {
                     });
                 }
 
-                let failure = function (message) {
+                let failure = function (ev) {
                     clear();
                     postMessage({
                         "$$postMessageId": postMessageId,
                         postMessageId: postMessageId,
                         result: "error",
                         src: request.src,
-                        message: message
+                        message: ev.message,
+                        filename: ev.filename,
+                        lineno: ev.lineno,
+                        colno: ev.colno
                     });
                 }
 
@@ -152,32 +155,46 @@ docReady(() => {
                     }
                 }
 
-                parentNode.appendChild(script);
+                document.body.appendChild(script);
                 importedScripts[request.src] = script;
                 break;
             case "Eval":
-                let evalResult;
                 try {
-                    evalResult = eval(request.code);
+                    let evalPromise = new Promise((resolve, reject) => {
+                        let evalResult = eval(request.code);
+                        resolve(evalResult);
+                    });
+
+                    evalPromise.then(evalResult => {
+                        return postMessage({
+                            "$$postMessageId": postMessageId,
+                            postMessageId: postMessageId,
+                            result: "success",
+                            evalResult,
+                        });
+                    }, err => {
+                        return postMessage({
+                            "$$postMessageId": postMessageId,
+                            postMessageId: postMessageId,
+                            result: "error",
+                            name: err.name,
+                            message: err.message,
+                            stack: err.stack,
+                            type: Object.prototype.toString.call(err)
+                        });
+                    });
                 } catch (err) {
                     postMessage({
                         "$$postMessageId": postMessageId,
                         postMessageId: postMessageId,
                         result: "error",
-                        src: request.src,
-                        error: err,
+                        name: err.name,
                         message: err.message,
-                        name: err.name
+                        stack: err.stack,
+                        type: Object.prototype.toString.call(err)
                     });
                     throw err;
                 }
-
-                postMessage({
-                    "$$postMessageId": postMessageId,
-                    postMessageId: postMessageId,
-                    result: "success",
-                    evalResult,
-                });
                 break;
             case "Fetch":
 
@@ -218,9 +235,10 @@ docReady(() => {
                         "$$postMessageId": postMessageId,
                         postMessageId: postMessageId,
                         result: "error",
-                        error: err,
+                        name: err.name,
                         message: err.message,
-                        name: err.name
+                        stack: err.stack,
+                        type: Object.prototype.toString.call(err)
                     });
                 }
                 break;
@@ -234,7 +252,7 @@ docReady(() => {
                     "$$postMessageId": postMessageId,
                     postMessageId: postMessageId,
                     result: "error",
-                    errorMessage: `Unknown or unsupported command: ${command}`
+                    message: `Unknown or unsupported command: ${command}`
                 });
                 break;
         }

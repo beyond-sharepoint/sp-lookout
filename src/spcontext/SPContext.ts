@@ -111,7 +111,7 @@ export default class SPContext {
     /**
      * Evaluates the specified script 
      */
-    public async eval(code: string, timeout?: number | undefined): Promise<any> {
+    public async eval(code: string, timeout?: number): Promise<any> {
         if (!code) {
             throw Error('The code to execute must be supplied as the first argument.');
         }
@@ -122,10 +122,24 @@ export default class SPContext {
     }
 
     /**
+     * Loads the script at the specified url into the context of the HostWebProxy.
+     * @param src Absolute URL to the script resource.
+     */
+    public async importScript(src: string, timeout?: number): Promise<any> {
+        if (!src) {
+            throw Error('An absolute url to the desired script resource must be specified.');
+        }
+
+        let proxy = await this.ensureContext();
+
+        return proxy.invoke('ImportScript', { src });
+    }
+
+    /**
      * Executes http requests through a proxy.
      * @returns promise that resolves with the response.
      */
-    public async fetch(url: string, init?: RequestInit | undefined): Promise<Response> {
+    public async fetch(url: string, init?: RequestInit ): Promise<Response> {
 
         if (!url) {
             throw Error('Fetch url must be supplied as the first argument.');
@@ -143,7 +157,7 @@ export default class SPContext {
             {},
             init,
             {
-                url: this._webFullUrl,
+                url: targetUri.href(),
                 method: 'GET',
                 credentials: 'same-origin',
                 headers: this.getDefaultHeaders(),
@@ -180,7 +194,7 @@ export default class SPContext {
                     break;
             }
 
-            return await proxy.invoke('Fetch', mergedSettings, undefined, undefined, 'body');
+            return proxy.invoke('Fetch', mergedSettings, undefined, undefined, 'body');
         }
 
         return proxy.invoke('Fetch', mergedSettings);

@@ -4,6 +4,7 @@ import {
     Route,
     Link
 } from 'react-router-dom';
+import { autobind } from 'office-ui-fabric-react/lib';
 import { CommandBar } from 'office-ui-fabric-react/lib/CommandBar';
 import { INavLinkGroup } from 'office-ui-fabric-react/lib/Nav';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
@@ -13,26 +14,28 @@ import Dashboard from './dashboard';
 import Aside from './aside';
 import Fiddle from './fiddle';
 
-
-
 import './Workspace.css';
-import { autobind } from 'office-ui-fabric-react/lib';
-import { SPContext } from '../spcontext';
+
 
 export default class Workspace extends React.Component<any, any> {
+    private _appBarItems;
+    private _appBarFarItems;
+
     public constructor() {
         super();
 
         this.state = {
             dockIsVisible: false,
-            code: '',
             readOnly: false,
             showSettingsModal: false,
             showShortcutsModal: false,
-            sidebarSize: 215
+            sidebarSize: 215,
+            code: 'const foo = "Hello, world!";\nexport default foo;',
+            webFullUrl: 'https://baristalabs.sharepoint.com',
+            fiddleScriptsPath: '/Shared Documents'
         };
 
-        this.state.appBarItems = [
+        this._appBarItems = [
             {
                 icon: 'SidePanel',
                 onClick: this.toggleSidebar,
@@ -46,7 +49,7 @@ export default class Workspace extends React.Component<any, any> {
             }
         ];
 
-        this.state.appBarFarItems = [
+        this._appBarFarItems = [
             {
                 icon: 'settings',
                 title: 'Settings',
@@ -132,7 +135,7 @@ export default class Workspace extends React.Component<any, any> {
                 path: '/spfiddle',
                 sidebar: () => <div>shoelaces!</div>,
                 main: () => (
-                    <Fiddle></Fiddle>
+                    <Fiddle webFullUrl={this.state.webFullUrl} fiddleScriptsPath={this.state.fiddleScriptsPath} code={this.state.code} onCodeChange={(code) => this.setState({code: code}) }></Fiddle>
                 )
             }
         ];
@@ -145,8 +148,8 @@ export default class Workspace extends React.Component<any, any> {
                 <CommandBar
                     className="sp-lookout-nav"
                     isSearchBoxVisible={false}
-                    items={this.state.appBarItems}
-                    farItems={this.state.appBarFarItems}
+                    items={this._appBarItems}
+                    farItems={this._appBarFarItems}
                 />
                 <Router>
                     <div id="workspace">
@@ -196,9 +199,6 @@ export default class Workspace extends React.Component<any, any> {
 
     @autobind
     private async _onClickHandler2(e: React.MouseEvent<HTMLElement>) {
-        let context = await SPContext.getContext('https://baristalabs.sharepoint.com');
-        let result = await context.eval('6*7; var moose = { foo: "bar" }; moose;');
-        console.dir(result);
         return false;
     }
 

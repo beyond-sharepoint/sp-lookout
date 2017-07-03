@@ -119,7 +119,7 @@ export default class SPProxy {
             //TODO: Add things like response time.
 
             if (response.result === 'error') {
-                let err = new Error();
+                let err = new Error(response.error);
                 merge(err, response);
                 reject(err);
             } else {
