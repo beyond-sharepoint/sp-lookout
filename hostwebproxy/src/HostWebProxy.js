@@ -69,7 +69,13 @@ docReady(() => {
         currentErrorHandler(message);
     });
 
-    let importedScripts = {};
+    let clearScriptElement = function (el) {
+        el.onload = null;
+        el.onerror = null;
+        el.onreadystatechange = null;
+        el.parentNode.removeChild(el);
+        currentErrorHandler = () => { };
+    };
 
     window.addEventListener("message", async (event, origin) => {
         origin = event.origin || event.originalEvent.origin;
@@ -113,53 +119,17 @@ docReady(() => {
         }
 
         switch (command) {
-            case "ImportScript":
-
-                //If no src is specified, pass back an error and get outta dodge.
-                if (!request.src) {
-                    postMessage({
-                        "$$postMessageId": postMessageId,
-                        postMessageId: postMessageId,
-                        result: "error",
-                        message: "Script Source must be specified."
-                    });
-                    return;
-                }
-
-                //If we've already imported a script with the same url, pass success and get outta dodge.
-                if (importedScripts[request.src]) {
-                    postMessage({
-                        "$$postMessageId": postMessageId,
-                        postMessageId: postMessageId,
-                        result: "success",
-                        src: request.src
-                    });
-                    return;
-                }
+            case "InjectScript":
 
                 let script = document.createElement('script');
-                script.src = request.src;
-
-                let clear = function () {
-                    script.onload = null;
-                    script.onerror = null;
-                    script.onreadystatechange = null;
-                    script.parentNode.removeChild(script);
-                    currentErrorHandler = () => { };
+                for (let key of ['type', 'src', 'charset', 'async', 'defer', 'text']) {
+                    if (typeof request[key] !== 'undefined') {
+                        script[key] = request[key];
+                    }
                 }
 
-                let success = function () {
-                    clear();
-                    postMessage({
-                        "$$postMessageId": postMessageId,
-                        postMessageId: postMessageId,
-                        result: "success",
-                        src: request.src
-                    });
-                }
-
-                let failure = function (ev) {
-                    clear();
+                script.onerror = (ev) => {
+                    clearScriptElement(script);
                     postMessage({
                         "$$postMessageId": postMessageId,
                         postMessageId: postMessageId,
@@ -170,26 +140,45 @@ docReady(() => {
                         lineno: ev.lineno,
                         colno: ev.colno
                     });
-                }
+                };
 
-                currentErrorHandler = failure;
+                //Inline scripts don't raise these events.
+                if (script.src) {
+                    script.onload = () => {
+                        clearScriptElement(script);
+                        postMessage({
+                            "$$postMessageId": postMessageId,
+                            postMessageId: postMessageId,
+                            result: "success",
+                            src: request.src
+                        });
+                    };
 
-                script.onerror = failure;
-                script.onload = success;
-                script.onreadystatechange = function () {
-                    let state = script.readyState;
-                    if (state === 'loaded' || state === 'complete') {
-                        success();
+                    script.onreadystatechange = function () {
+                        let state = script.readyState;
+                        if (state === 'loaded' || state === 'complete') {
+                            script.onload();
+                        }
                     }
                 }
 
+                currentErrorHandler = script.onerror;
                 document.body.appendChild(script);
-                importedScripts[request.src] = script;
+
+                if (!script.src) {
+                    clearScriptElement(script);
+                    postMessage({
+                        "$$postMessageId": postMessageId,
+                        postMessageId: postMessageId,
+                        result: "success",
+                        src: request.src
+                    });
+                }
                 break;
             case "Require":
                 const requirejs = window.require;
                 requirejs.config({ urlArgs: 'v=' + (new Date()).getTime() });
-                requirejs.undef("splookout-fiddle");
+                requirejs.undef(request.id);
                 try {
                     let requirePromise = new Promise((resolve, reject) => {
                         requirejs([request.id], result => resolve(result), err => reject(err));

@@ -190,14 +190,18 @@ export default class SPContext {
      * Loads the script at the specified url into the context of the HostWebProxy.
      * @param src Absolute URL to the script resource.
      */
-    public async importScript(src: string, timeout?: number): Promise<any> {
+    public async injectScript(src: string | object, timeout?: number): Promise<any> {
         if (!src) {
             throw Error('An absolute url to the desired script resource must be specified.');
         }
 
         let proxy = await this.ensureContext();
 
-        return proxy.invoke('ImportScript', { src });
+        if (src instanceof Object) {
+            return proxy.invoke('InjectScript', src);
+        } else {
+            return proxy.invoke('InjectScript', { src });
+        }
     }
 
     /**
