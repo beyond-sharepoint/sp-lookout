@@ -4,9 +4,12 @@ import * as Mousetrap from 'mousetrap';
 import * as ts from 'typescript';
 import * as URI from 'urijs';
 import { CommandBar } from 'office-ui-fabric-react/lib/CommandBar';
+import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
 import { SPContext } from '../../spcontext';
 import SplitPane from '../../split-pane/SplitPane';
 import MonacoEditor from '../../monaco-editor';
+
+import './index.css';
 
 export default class Fiddle extends React.Component<FiddleProps, any> {
     private editorOptions;
@@ -48,8 +51,9 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
     private editorWillMount(monaco) {
         monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
             target: monaco.languages.typescript.ScriptTarget.ES5,
-            module: ts.ModuleKind.System,
-            allowNonTsExtensions: true
+            module: ts.ModuleKind.AMD,
+            allowNonTsExtensions: true,
+            checkJs: true
         });
 
         //monaco.languages.typescript.javaScriptDefaults.
@@ -68,7 +72,6 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
         const { webFullUrl, fiddleScriptsPath } = this.props;
         const spContext = await SPContext.getContext(webFullUrl);
 
-        //TODO: Make the location configurable.
         const webUri = URI(webFullUrl).path(fiddleScriptsPath);
         const url = `/_api/web/getfolderbyserverrelativeurl('${URI.encode(webUri.path())}')/files/add(overwrite=true,url='splookout-fiddle.js')`;
 
@@ -84,7 +87,8 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
         const jsCode = ts.transpileModule(code, {
             compilerOptions: {
                 target: ts.ScriptTarget.ES5,
-                module: ts.ModuleKind.AMD
+                module: ts.ModuleKind.AMD,
+                checkJs: true
             },
             fileName: 'splookout-fiddle.js'
         });
@@ -97,7 +101,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
             const spContext = await SPContext.getContext(webFullUrl);
             await spContext.importScript("https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.3/require.min.js");
             await this.uploadModule(spContext, jsCode.outputText);
-            const result = await spContext.eval("require.undef('splookout-fiddle'); require.config({ urlArgs: 'v=' + (new Date()).getTime()}); new Promise((resolve, reject) => { require(['splookout-fiddle'], (result) => { resolve(result); }); });");
+            const result = await spContext.eval("require.undef('splookout-fiddle'); require.config({ urlArgs: 'v=' + (new Date()).getTime()}); new Promise((resolve, reject) => { require(['splookout-fiddle'], result => resolve(result), err => reject(err)); });");
             console.dir(result);
         } catch (ex) {
             console.dir(ex);
@@ -110,6 +114,8 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
     }
 
     public render() {
+        const { isBrewing }  = this.state;
+
         return (
             <SplitPane
                 split="vertical"
@@ -134,7 +140,11 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
                         ></MonacoEditor>
                     </div>
                 </div>
-                <div>fdsa</div>
+                <div className="fiddle-results">
+                    { isBrewing ?
+                        <Spinner size={ SpinnerSize.large } label='Brewing...' ariaLive='assertive' /> 
+                        : null }
+                </div>
             </SplitPane>
         )
     }
