@@ -4,6 +4,8 @@ import {
     Route,
     Link
 } from 'react-router-dom';
+import { observer } from 'mobx-react';
+import * as localforage from 'localforage';
 import { autobind } from 'office-ui-fabric-react/lib';
 import { CommandBar } from 'office-ui-fabric-react/lib/CommandBar';
 import { INavLinkGroup } from 'office-ui-fabric-react/lib/Nav';
@@ -14,15 +16,22 @@ import Dashboard from './dashboard';
 import Aside from './aside';
 import Fiddle from './fiddle';
 
+import { WorkspaceState } from '../AppStore';
+
 import './Workspace.css';
 
 
-export default class Workspace extends React.Component<any, any> {
+@observer
+export default class Workspace extends React.Component<WorkspaceProps, any> {
     private _appBarItems;
     private _appBarFarItems;
 
-    public constructor() {
-        super();
+    public constructor(props) {
+        super(props);
+
+        //TODO: Can we do this without forcing an update???
+        this.props.workspaceState.loadFiddles()
+            .then(() => this.forceUpdate());
 
         this.state = {
             dockIsVisible: false,
@@ -30,7 +39,6 @@ export default class Workspace extends React.Component<any, any> {
             showSettingsModal: false,
             showShortcutsModal: false,
             sidebarSize: 215,
-            code: 'const foo = "Hello, world!";\nexport default foo;',
             webFullUrl: 'https://baristalabs.sharepoint.com',
             fiddleScriptsPath: '/Shared Documents'
         };
@@ -136,11 +144,14 @@ export default class Workspace extends React.Component<any, any> {
                 path: '/spfiddle',
                 sidebar: () => <div>shoelaces!</div>,
                 main: () => (
-                    <Fiddle webFullUrl={this.state.webFullUrl} fiddleScriptsPath={this.state.fiddleScriptsPath} code={this.state.code} onCodeChange={(code) => this.setState({code: code}) }></Fiddle>
+                    <Fiddle
+                        webFullUrl={this.state.webFullUrl}
+                        fiddleScriptsPath={this.state.fiddleScriptsPath}
+                        fiddleState={this.props.workspaceState.selectedFiddle}>
+                    </Fiddle>
                 )
             }
         ];
-
     }
 
     public render() {
@@ -230,4 +241,9 @@ export default class Workspace extends React.Component<any, any> {
             });
         }
     }
+}
+
+
+export interface WorkspaceProps {
+    workspaceState: WorkspaceState
 }

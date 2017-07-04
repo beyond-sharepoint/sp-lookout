@@ -1,9 +1,11 @@
 import * as React from 'react';
 import './App.css';
-
+import { observer } from 'mobx-react';
 import { Fabric } from 'office-ui-fabric-react';
 import Workspace from './workspace/Workspace';
+import appStore from './AppStore';
 
+@observer
 class App extends React.Component<{}, {}> {
   public constructor(props: any) {
     super(props);
@@ -12,7 +14,7 @@ class App extends React.Component<{}, {}> {
   render() {
     return (
       <Fabric>
-        <Workspace />
+        <Workspace workspaceState={appStore.workspaceState} />
       </Fabric>
     );
   }

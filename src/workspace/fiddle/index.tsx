@@ -1,5 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import { action } from 'mobx';
+import { observer } from 'mobx-react';
 import * as Mousetrap from 'mousetrap';
 import * as ts from 'typescript';
 import * as URI from 'urijs';
@@ -10,8 +12,10 @@ import { SPContext } from '../../spcontext';
 import SplitPane from '../../split-pane/SplitPane';
 import MonacoEditor from '../../monaco-editor';
 
+import { FiddleState } from '../../AppStore';
 import './index.css';
 
+@observer
 export default class Fiddle extends React.Component<FiddleProps, any> {
     private editorOptions;
     private commandBarItems;
@@ -42,7 +46,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
                 name: 'Run',
                 icon: 'Play',
                 ariaLabel: 'Execute current Script',
-                onClick: () => { this.brew(this.props.code) },
+                onClick: () => { this.brew(this.props.fiddleState.code) },
             }
         ]
 
@@ -65,7 +69,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
             ReactDOM.findDOMNode(this)
         );
         this._mousetrap.bind(['ctrl+return'], () => {
-            this.brew(this.props.code);
+            this.brew(this.props.fiddleState.code);
         });
     }
 
@@ -80,6 +84,11 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
             method: "POST",
             body: code
         });
+    }
+
+    @action.bound
+    private updateCode(code) {
+        this.props.fiddleState.code = code;
     }
 
     private async brew(code: string) {
@@ -134,6 +143,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
     }
 
     public render() {
+        const { fiddleState } = this.props;
         const { isBrewing, lastBrewResult, lastBrewResultIsError } = this.state;
         let fiddleResultPaneStyle: any = {};
         if (lastBrewResultIsError) {
@@ -157,11 +167,12 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
                     />
                     <div style={{ flex: '1' }}>
                         <MonacoEditor
-                            value={this.props.code}
-                            onChange={this.props.onCodeChange}
+                            value={this.props.fiddleState.code}
+                            onChange={this.updateCode}
                             editorWillMount={this.editorWillMount}
                             options={this.editorOptions}
-                        ></MonacoEditor>
+                        >
+                        </MonacoEditor>
                     </div>
                 </div>
                 <div className="fiddle-results">
@@ -181,6 +192,5 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
 export interface FiddleProps {
     webFullUrl: string;
     fiddleScriptsPath: string;
-    code: string;
-    onCodeChange: (val: string, ev: any) => void;
+    fiddleState: FiddleState;
 }
