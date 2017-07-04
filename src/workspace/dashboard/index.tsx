@@ -37,7 +37,8 @@ export default class Dashboard extends React.Component<DashboardProps, any> {
                 rowHeight={rowHeight}
                 verticalCompact={false}
                 onLayoutChange={onLayoutChange}
-                {...this.props}>
+                {...this.props}
+            >
                 {_.map(_.range(items || 50), function (i) {
                     return (<div key={i}><span className="text">{i}</span></div>);
                 })}

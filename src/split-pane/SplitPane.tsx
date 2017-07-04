@@ -45,6 +45,7 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
             allowResize, children, split,
             primaryPaneSize, primaryPaneMinSize, primaryPaneMaxSize,
             className, primaryPaneClassName, secondaryPaneClassName,
+            primaryPaneStyle, secondaryPaneStyle,
             onResizerDoubleClick
         } = this.props;
 
@@ -111,6 +112,7 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
                         ? <Pane
                             className={secondaryPaneClassName || ''}
                             split={split}
+                            style={secondaryPaneStyle}
                             ref={node => { if (node !== null) { this.paneSecondary = node; } }}
                         >
                             {children[1]}
@@ -252,6 +254,8 @@ export interface SplitPaneProps {
     className?: string;
     primaryPaneClassName?: string;
     secondaryPaneClassName?: string;
+    primaryPaneStyle?: React.CSSProperties;
+    secondaryPaneStyle?: React.CSSProperties;
     onPaneResized: Function;
     onDragStarted?: Function;
     onDragFinished?: Function;

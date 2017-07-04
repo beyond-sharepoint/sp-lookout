@@ -87,7 +87,7 @@
   version "4.14.52"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.52.tgz#de5c7ab14da1289733233c9b0ec6f9e377db90f5"
 
-"@types/lodash@^4.14.67":
+"@types/lodash@^4.14.68":
   version "4.14.68"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.68.tgz#754fbab68bd2bbb69547dc8ce7574f7012eed7f6"
 
@@ -99,7 +99,7 @@
   version "6.0.64"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-6.0.64.tgz#cdc901411f6301e1437dfed23bc68f54442e4dc8"
 
-"@types/node@^8.0.4":
+"@types/node@^8.0.7":
   version "8.0.7"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.7.tgz#fb0ad04b5b6f6eabe0372a32a8f1fbba5c130cae"
 
@@ -122,7 +122,7 @@
     "@types/history" "*"
     "@types/react" "*"
 
-"@types/react@*", "@types/react@^15.0.33":
+"@types/react@*", "@types/react@^15.0.34":
   version "15.0.34"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-15.0.34.tgz#c4f7235f3d245216a706887b7d1ffedaf5b1dc06"
 
@@ -140,9 +140,9 @@
   version "3.16.20-alpha"
   resolved "https://registry.yarnpkg.com/@types/z-schema/-/z-schema-3.16.20-alpha.tgz#36f588ccca27d8e86dd6bb595a973aede8803766"
 
-"@uifabric/styling@>=0.12.0 <1.0.0":
-  version "0.12.0"
-  resolved "https://registry.yarnpkg.com/@uifabric/styling/-/styling-0.12.0.tgz#c050d9446b31d58c08561034fe95aa94b74d8199"
+"@uifabric/styling@>=0.12.2 <1.0.0":
+  version "0.12.2"
+  resolved "https://registry.yarnpkg.com/@uifabric/styling/-/styling-0.12.2.tgz#325e86d8409bea79c35d25db77c995515e42e5a3"
   dependencies:
     "@microsoft/load-themed-styles" "^1.2.2"
     "@uifabric/utilities" ">=4.6.0 <5.0.0"
@@ -3533,9 +3533,9 @@ moment@^2.18.1:
   version "2.18.1"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.18.1.tgz#c36193dd3ce1c2eed2adb7c802dbbc77a81b1c0f"
 
-monaco-editor@^0.8.3:
-  version "0.8.3"
-  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.8.3.tgz#523bdf2d1524db2c2dfc3cae0a7b6edc48d6dea6"
+monaco-editor@^0.9.0:
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.9.0.tgz#c50c53251c47b7ff12e09f0f83cfd32a44dfe6ec"
 
 mousetrap@^1.6.1:
   version "1.6.1"
@@ -3808,12 +3808,12 @@ obuf@^1.0.0, obuf@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/obuf/-/obuf-1.1.1.tgz#104124b6c602c6796881a042541d36db43a5264e"
 
-office-ui-fabric-react@^4.11.0:
-  version "4.13.2"
-  resolved "https://registry.yarnpkg.com/office-ui-fabric-react/-/office-ui-fabric-react-4.13.2.tgz#cc78f6c24ed6b2fe5c6d9568b51636c3ccf98256"
+office-ui-fabric-react@^4.14.1:
+  version "4.14.1"
+  resolved "https://registry.yarnpkg.com/office-ui-fabric-react/-/office-ui-fabric-react-4.14.1.tgz#bbdf7cc1bb425e0e6dac44227d2819de6ccf4f19"
   dependencies:
     "@microsoft/load-themed-styles" "^1.2.2"
-    "@uifabric/styling" ">=0.12.0 <1.0.0"
+    "@uifabric/styling" ">=0.12.2 <1.0.0"
     "@uifabric/utilities" ">=4.6.0 <5.0.0"
     prop-types "^15.5.10"
     tslib "^1.6.0"

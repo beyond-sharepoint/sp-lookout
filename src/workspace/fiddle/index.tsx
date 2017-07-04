@@ -33,6 +33,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
         this.editorOptions = {
             automaticLayout: true,
             scrollBeyondLastLine: false,
+            jsx: 'react'
         };
 
         this.keyMap = {
@@ -55,13 +56,25 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
 
     private editorWillMount(monaco) {
         monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
-            target: monaco.languages.typescript.ScriptTarget.ES5,
-            module: ts.ModuleKind.AMD,
+            target: monaco.languages.typescript.ScriptTarget.ES2016,
+            module: monaco.languages.typescript.ModuleKind.CommonJS,
             allowNonTsExtensions: true,
-            checkJs: true
+            checkJs: true,
+            jsx: monaco.languages.typescript.JsxEmit.React
         });
 
-        //monaco.languages.typescript.javaScriptDefaults.
+        monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+            target: monaco.languages.typescript.ScriptTarget.ES2016,
+            module: monaco.languages.typescript.ModuleKind.CommonJS,
+            allowNonTsExtensions: true,
+            checkJs: true,
+            jsx: monaco.languages.typescript.JsxEmit.React
+        })
+
+        monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+            noSemanticValidation: false,
+            noSyntaxValidation: false
+        })
     }
 
     public componentDidMount() {
@@ -103,9 +116,10 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
             compilerOptions: {
                 target: ts.ScriptTarget.ES2015,
                 module: ts.ModuleKind.AMD,
-                //importHelpers: true,
+                jsx: ts.JsxEmit.React,
+                importHelpers: true,
             },
-            fileName: 'splookout-fiddle.js'
+            fileName: 'splookout-fiddle.tsx'
         });
 
         let lastBrewResult: any = undefined;
@@ -121,12 +135,9 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
             const spContext = await SPContext.getContext(webFullUrl);
             let fiddleName = `splookout-fiddle-${(new Date()).getTime()}`;
             let requireConfig = {
-                paths: {
-                    'lodash': 'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min',
-                    'sp-pnp-js': 'https://cdnjs.cloudflare.com/ajax/libs/sp-pnp-js/2.0.6/pnp.min',
-                    'moment': 'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min'
-                }
+                paths: fiddleState.importPaths || FiddleState.defaultImportPaths
             };
+
             await spContext.requireConfig(requireConfig);
             await spContext.injectScript({ id: fiddleName, type: 'text/javascript', text: jsCode.outputText.replace("define([", `define('${fiddleName}',[`) });
             const result = await spContext.require(fiddleName, undefined);
@@ -164,6 +175,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
                 className="left-sidebar"
                 primaryPaneSize={this.state.fiddlePaneSize}
                 primaryPaneMinSize={0}
+                secondaryPaneStyle={{ overflow: 'auto' }}
                 onPaneResized={(size) => { this.setState({ fiddlePaneSize: size }); }}
                 onResizerDoubleClick={() => { this.setState({ fiddlePaneSize: '50%' }); }}
             >
@@ -176,6 +188,9 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
                     <div style={{ flex: '1' }}>
                         <MonacoEditor
                             value={fiddleState.code}
+                            language={fiddleState.language}
+                            theme={fiddleState.theme}
+                            filename={fiddleState.filename}
                             onChange={this.updateCode}
                             editorWillMount={this.editorWillMount}
                             options={this.editorOptions}

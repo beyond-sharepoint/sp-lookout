@@ -246,7 +246,6 @@ export default class SPContext {
         return proxy.invoke('Require.Undef', { id }, undefined, timeout);
     }
 
-
     private str2ab(str: string): ArrayBuffer {
         let len = str.length;
         let bytes = new Uint8Array(len);
@@ -255,7 +254,6 @@ export default class SPContext {
         }
         return bytes.buffer;
     }
-
 
     /**
      * Returns a header object of the default headers defined in the settings plus the X-RequestDigest value.

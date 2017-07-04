@@ -46,7 +46,9 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps, {}>
             }
         }
         if (prevProps.language !== this.props.language) {
-            context.monaco.editor.setModelLanguage(this.editor.getModel(), this.props.language);
+            if (this.editor) {
+                this.editor.setModelLanguage(this.editor.getModel(), this.props.language);
+            }
         }
     }
 
@@ -138,7 +140,7 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps, {}>
 
     private initMonaco() {
         const value = this.props.value !== null ? this.props.value : this.props.defaultValue;
-        const { language, theme, options } = this.props;
+        const { language, theme, filename, options } = this.props;
         const containerElement = this.refs.container;
         const context = this.props.context || window;
 
@@ -149,6 +151,7 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps, {}>
                 value,
                 language,
                 theme,
+                //model: context.monaco.editor.createModel(value || '', language || 'typescript', filename || './spfiddle1.tsx'),
                 ...options
             });
             // After initializing monaco editor
@@ -174,7 +177,7 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps, {}>
             height: fixedHeight,
         };
         return (
-            <div ref="container" style={style} className="react-monaco-editor-container"></div>
+            <div ref="container" style={style} className="react-monaco-editor-container"/>
         );
     }
 }
@@ -187,6 +190,7 @@ export interface MonacoEditorProps {
     context?: any;
     language?: string;
     theme?: string;
+    filename?: string;
     options?: Object;
     editorDidMount?: Function;
     editorWillMount?: Function;
