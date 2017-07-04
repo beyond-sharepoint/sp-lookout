@@ -54,6 +54,9 @@ export class FiddleState {
     @observable
     code: string;
 
+    @observable
+    lastResult: any
+    
     constructor() {
         this.code = 'const foo = "Hello, world!";\nexport default foo;';
     }

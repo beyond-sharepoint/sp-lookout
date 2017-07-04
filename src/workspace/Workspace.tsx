@@ -30,7 +30,8 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
         super(props);
 
         //TODO: Can we do this without forcing an update???
-        this.props.workspaceState.loadFiddles()
+        const { workspaceState } = this.props;
+        workspaceState.loadFiddles()
             .then(() => this.forceUpdate());
 
         this.state = {
@@ -147,7 +148,7 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
                     <Fiddle
                         webFullUrl={this.state.webFullUrl}
                         fiddleScriptsPath={this.state.fiddleScriptsPath}
-                        fiddleState={this.props.workspaceState.selectedFiddle}>
+                        fiddleState={workspaceState.selectedFiddle}>
                     </Fiddle>
                 )
             }

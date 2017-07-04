@@ -92,7 +92,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
     }
 
     private async brew(code: string) {
-        const { webFullUrl } = this.props;
+        const { webFullUrl, fiddleState } = this.props;
         const { isBrewing } = this.state;
 
         if (isBrewing) {
@@ -167,7 +167,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
                     />
                     <div style={{ flex: '1' }}>
                         <MonacoEditor
-                            value={this.props.fiddleState.code}
+                            value={fiddleState.code}
                             onChange={this.updateCode}
                             editorWillMount={this.editorWillMount}
                             options={this.editorOptions}
