@@ -7,7 +7,7 @@ const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin
 
 module.exports = {
     name: 'host-web-proxy',
-    entry: ['whatwg-fetch', './src/HostWebProxy.js'],
+    entry: ['whatwg-fetch', 'promise-polyfill', './src/docReady.js', './src/HostWebProxy.ts'],
     module: {
         rules: [
             //Delicious ES2015 code, made simple for simpleton browsers.
@@ -23,6 +23,7 @@ module.exports = {
                     ]
                 }
             },
+            { test: /\.tsx?$/, loader: 'ts-loader' },
             {
                 test: /\.aspx$/,
                 loader: 'raw-loader'

@@ -14,7 +14,7 @@
     <body>
         <script id="hostWebProxyConfig" type="text/javascript">
             // @}-,--`--> Start HostWebProxyConfig
-            var hostWebProxyConfig = {
+            window.hostWebProxyConfig = {
                 "responseOrigin": "*",
                 "trustedOriginAuthorities": [
                     "https://baristalabs.sharepoint.com",

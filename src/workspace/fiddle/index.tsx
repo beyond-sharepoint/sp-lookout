@@ -131,7 +131,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
             await spContext.injectScript({ id: fiddleName, type: 'text/javascript', text: jsCode.outputText.replace("define([", `define('${fiddleName}',[`) });
             const result = await spContext.require(fiddleName, undefined);
             console.dir(result);
-            lastBrewResult = result.requireResult;
+            lastBrewResult = result.resultData;
         } catch (ex) {
             console.dir(ex);
             lastBrewResultIsError = true;
