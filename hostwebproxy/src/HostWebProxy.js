@@ -180,15 +180,9 @@ docReady(() => {
                 }
                 break;
             case "Require":
-                if (request.config) {
-                    requirejs.config(request.config);
-                } else if (request.bustCache) {
-                    requirejs.config({ urlArgs: 'v=' + (new Date()).getTime() });
-                }
-
                 try {
                     let requirePromise = new Promise((resolve, reject) => {
-                        requirejs([request.id], result => resolve(result), err => reject(err));
+                        window.requirejs([request.id], result => resolve(result), err => reject(err));
                     });
 
                     let requireResult = await requirePromise;
@@ -210,8 +204,26 @@ docReady(() => {
                     return postErrorMessage(postMessageId, err);
                 }
                 break;
+            case "Require.Config":
+                if (request.config) {
+                    window.requirejs.config(request.config);
+                } else if (request.bustCache) {
+                    window.requirejs.config({ urlArgs: 'v=' + (new Date()).getTime() });
+                }
+                postMessage({
+                    "$$postMessageId": postMessageId,
+                    postMessageId: postMessageId,
+                    result: "success"
+                });
+                break;
             case "Require.Undef":
-                requirejs.undef(request.id);
+                window.requirejs.undef(request.id);
+                postMessage({
+                    "$$postMessageId": postMessageId,
+                    postMessageId: postMessageId,
+                    result: "success",
+                    requireResult
+                });
                 break;
             case "Eval":
                 try {

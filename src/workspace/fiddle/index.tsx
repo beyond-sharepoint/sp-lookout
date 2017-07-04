@@ -120,8 +120,16 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
         try {
             const spContext = await SPContext.getContext(webFullUrl);
             let fiddleName = `splookout-fiddle-${(new Date()).getTime()}`;
+            let requireConfig = {
+                paths: {
+                    'lodash': 'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min',
+                    'sp-pnp-js': 'https://cdnjs.cloudflare.com/ajax/libs/sp-pnp-js/2.0.6/pnp.min',
+                    'moment': 'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min'
+                }
+            };
+            await spContext.requireConfig(requireConfig);
             await spContext.injectScript({ id: fiddleName, type: 'text/javascript', text: jsCode.outputText.replace("define([", `define('${fiddleName}',[`) });
-            const result = await spContext.require(fiddleName);
+            const result = await spContext.require(fiddleName, undefined);
             console.dir(result);
             lastBrewResult = result.requireResult;
         } catch (ex) {

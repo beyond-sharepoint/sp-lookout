@@ -218,13 +218,18 @@ export default class SPContext {
         return proxy.invoke('Require', { id }, undefined, timeout);
     }
 
-    private str2ab(str: string): ArrayBuffer {
-        let len = str.length;
-        let bytes = new Uint8Array(len);
-        for (let i = 0; i < len; i++) {
-            bytes[i] = str.charCodeAt(i);
+    /**
+     * Pass configuration options to RequireJS instance within the proxy.
+     * @param id 
+     */
+    public async requireConfig(config: any, timeout?: number) {
+        if (!config) {
+            throw Error('Config object must be supplied as the first argument.');
         }
-        return bytes.buffer;
+
+        let proxy = await this.ensureContext();
+
+        return proxy.invoke('Require.Config', { config }, undefined, timeout);
     }
 
     /**
@@ -240,6 +245,17 @@ export default class SPContext {
 
         return proxy.invoke('Require.Undef', { id }, undefined, timeout);
     }
+
+
+    private str2ab(str: string): ArrayBuffer {
+        let len = str.length;
+        let bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = str.charCodeAt(i);
+        }
+        return bytes.buffer;
+    }
+
 
     /**
      * Returns a header object of the default headers defined in the settings plus the X-RequestDigest value.
