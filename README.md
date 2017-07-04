@@ -5,7 +5,7 @@ Interactive workspace to monitor and interact with SharePoint.
 
 1. Clone this repo
 2. Install Dependencies (npm install)
-3. Via SharePoint, Upload HostWebProxy.aspx from /public to https://<YourTenant>/Shared%20Documents/
+3. Via SharePoint, Upload HostWebProxy.aspx from /public to https://[YourTenant]/Shared%20Documents/
 4. Start with npm start
 
 
