@@ -291,8 +291,7 @@ export default class SPContext {
             throw Error('SandFiddleConfig must be specified as the first argument.');
         }
 
-        let proxy = await this.ensureContext();
-
+        const proxy = await this.ensureContext();
         return proxy.invoke('SandFiddle', config, undefined, timeout);
     }
 

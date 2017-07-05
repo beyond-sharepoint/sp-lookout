@@ -39,7 +39,7 @@ export default class SPProxy {
     /**
      * Fire and forget pattern that sends the command to the target without waiting for a response.
      */
-    public invokeDirect(command: string, data: any | undefined, targetOrigin?: string | undefined, transferrablePropertyPath?: string | undefined): void {
+    public invokeDirect(command: string, data?: any, targetOrigin?: string, transferrablePropertyPath?: string): void {
 
         if (!command) {
             throw Error('A command must be specified.');
@@ -71,7 +71,7 @@ export default class SPProxy {
     /**
      * Invokes the specified command on the channel with the specified data, constrained to the specified domain awaiting for max ms specified in timeout 
      */
-    public async invoke(command: string, data?: any | undefined, targetOrigin?: string | undefined, timeout?: number | undefined, transferrablePropertyPath?: string | undefined): Promise<any> {
+    public async invoke(command: string, data?: any, targetOrigin?: string, timeout?: number, transferrablePropertyPath?: string): Promise<any> {
 
         if (!command) {
             throw Error('A command must be specified.');
@@ -83,9 +83,8 @@ export default class SPProxy {
 
         data = data || {};
         targetOrigin = targetOrigin || this._origin || '*';
-        timeout = timeout || this._config.messageResponseTimeout || 0;
-        if (!timeout) {
-            timeout = 0;
+        if (typeof timeout === 'undefined') {
+            timeout = this._config.messageResponseTimeout || 5000;
         }
 
         data['$$command'] = command;
@@ -109,10 +108,14 @@ export default class SPProxy {
             //TODO: Add things like response time.
 
             if (response.result === 'error') {
-                const innerMessage = response.message;
-                let err = new Error(innerMessage.message);
-                err.stack = innerMessage.stack;
-                (<any>err).details = innerMessage;
+                let err = new Error(response.message);
+                err.name = response.name;
+                err.stack = response.stack;
+                for (let key in response) {
+                    if (response.hasOwnProperty(key)) {
+                        err[key] = response[key];
+                    }
+                }
                 reject(err);
             } else {
                 resolve(response);
@@ -120,7 +123,7 @@ export default class SPProxy {
         };
 
         if (timeout > 0) {
-            invokePromise = invokePromise.timeout(timeout, new Error(`invoke() timed out while waiting for a response while executing ${command}`));
+            invokePromise = invokePromise.timeout(timeout, new Error(`invoke() timed out while waiting for a response while executing ${command}. (${timeout}ms)`));
         }
 
         invokePromise = invokePromise.finally(() => {

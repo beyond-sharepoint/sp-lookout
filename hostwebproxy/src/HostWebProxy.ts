@@ -136,10 +136,11 @@ class HostWebProxy {
             $$postMessageId: postMessageId,
             result: "error",
             message: err,
-            type: Object.prototype.toString.call(err)
+            type: Object.prototype.toString.call(err),
+            context: 'proxy'
         }
 
-        if (err instanceof Error) {
+        if (typeof err === "object") {
             errorMessage.name = err.name;
             errorMessage.message = err.message;
             errorMessage.stack = err.stack;
@@ -154,7 +155,6 @@ class HostWebProxy {
                 errorMessage.originalError = JSON.stringify(errorMessage.originalError);
             }
         }
-
         return this.postMessage(errorMessage);
     }
 
@@ -374,11 +374,25 @@ class HostWebProxy {
                 if (eventData.result === "success") {
                     resolveWorker(eventData);
                 } else {
-                    rejectWorker(eventData);
+                    let err = new Error(eventData.message);
+                    err.name = eventData.name;
+                    err.stack = eventData.stack;
+                    (<any>err).originalErrorMessage = eventData;
+                    rejectWorker(err);
                 }
             }
 
-            let result = await this.timeout(workerPromise, request.timeout || 5000, "A timeout occurred while invoking the SandFiddle.");
+            let timeout = 5000;
+            if (typeof request.timeout === 'number') {
+                timeout = request.timeout;
+            }
+
+            let result: any;
+            if (timeout) {
+                result = await this.timeout(workerPromise, timeout, `A timeout occurred while invoking the SandFiddle. (${timeout}ms)`);
+            } else {
+                result = await workerPromise;
+            }
 
             let sandFiddleMessage: CommandResponse = {
                 result: "success",
@@ -430,6 +444,7 @@ interface ErrorResponse extends CommandResponse {
     originalError?: string;
     invalidOrigin?: string;
     url?: string;
+    context?: string;
 }
 
 interface HostWebProxyConfig {

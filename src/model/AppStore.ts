@@ -94,6 +94,12 @@ export class FiddleState {
     @observable
     importPaths: { [id: string]: string };
 
+    @observable
+    brewMode: 'require' | 'sandfiddle';
+
+    @observable
+    brewTimeout: number;
+
     constructor() {
         //Set defaults
         this.filename = 'spfiddle.ts';
@@ -102,6 +108,8 @@ export class FiddleState {
         this.code = 'const foo = "Hello, world!";\nexport default foo;';
         this.importPaths = FiddleState.defaultImportPaths;
         this.editorOptions = new FiddleEditorOptions();
+        this.brewTimeout = 5000;
+        this.brewMode = 'sandfiddle';
     }
 
     static defaultImportPaths = {

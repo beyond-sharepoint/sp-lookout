@@ -52,7 +52,15 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
                 icon: 'Play',
                 ariaLabel: 'Execute current Script',
                 onClick: () => { this.brew(this.props.fiddleState.code) },
-            }
+            },
+            {
+                key: "debug",
+                name: "Debug",
+                onClick: () => { this.brew(this.props.fiddleState.code, this.props.fiddleState.brewMode, 0) },
+                iconProps: {
+                    className: "fa fa-bug"
+                }
+            },
         ]
 
         this.commandBarFarItems = [
@@ -152,12 +160,17 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
         this.reloadEditor();
     }
 
-    private async brew(code: string, brewMode?: 'require' | 'sandfiddle') {
+    private async brew(code: string, brewMode?: 'require' | 'sandfiddle', timeout?: number) {
         const { webFullUrl, fiddleState } = this.props;
         const { isBrewing } = this.state;
 
         if (isBrewing) {
             return;
+        }
+
+        brewMode = brewMode || fiddleState.brewMode || 'sandfiddle';
+        if (typeof timeout === 'undefined') {
+            timeout = fiddleState.brewTimeout || 5000
         }
 
         const jsCode = ts.transpileModule(code, {
@@ -201,8 +214,9 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
                     result = await spContext.sandFiddle({
                         requireConfig: requireConfig,
                         defines: [fiddleDefine],
-                        entryPointId: fiddleName
-                    });
+                        entryPointId: fiddleName,
+                        timeout
+                    }, timeout);
                     break;
             }
 

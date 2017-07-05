@@ -36,7 +36,7 @@ class SandFiddleProcessor {
             }
 
             this._context.postMessage({
-                result: "success",
+                result: 'success',
                 data: requireResult
             });
         } catch (err) {
@@ -50,14 +50,15 @@ class SandFiddleProcessor {
      * @param {*} postMessageId 
      * @param {*} err 
      */
-    private async postMessageError(err: Error): Promise<void> {
+    private async postMessageError(err: any): Promise<void> {
         let errorMessage: any = {
-            result: "error",
+            result: 'error',
             message: err,
-            type: Object.prototype.toString.call(err)
+            type: Object.prototype.toString.call(err),
+            context: 'worker'
         }
 
-        if (err instanceof Error) {
+        if (typeof err === 'object') {
             errorMessage.name = err.name;
             errorMessage.message = err.message;
             errorMessage.stack = err.stack;
@@ -77,11 +78,20 @@ class SandFiddleProcessor {
     }
 }
 
+//Monkeypatch Request to resolve issues when initializing via Request("");
+const __nativeRequest = (<any>self).Request;
+
+(<any>self).Request = (input, init) => {
+    if (!input) {
+        input = (<any>self).location.origin;
+    }
+
+    return new __nativeRequest(input, init);
+}
+
 onmessage = (e) => {
 
     const request = e.data;
-
-    (<any>self).document = {};
 
     const processor = (<any>self).processor = new SandFiddleProcessor(self, request);
     processor.loadRequireJS();
@@ -92,8 +102,8 @@ onmessage = (e) => {
 
 onerror = (ev: any) => {
     let errorMessage: any = {
-        result: "error",
-        message: ev,
+        result: 'error',
+        message: ev
     }
 
     if (ev instanceof ErrorEvent) {
