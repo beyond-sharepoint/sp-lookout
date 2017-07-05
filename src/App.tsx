@@ -2,8 +2,8 @@ import * as React from 'react';
 import './App.css';
 import { observer } from 'mobx-react';
 import { Fabric } from 'office-ui-fabric-react';
-import Workspace from './workspace/Workspace';
-import appStore from './AppStore';
+import Workspace from './components/workspace/Workspace';
+import appStore from './model/AppStore';
 
 @observer
 class App extends React.Component<{}, {}> {

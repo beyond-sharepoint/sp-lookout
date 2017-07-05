@@ -86,6 +86,9 @@ export class FiddleState {
     lastResult: any;
 
     @observable
+    editorOptions: FiddleEditorOptions;
+
+    @observable
     baseUrl: string;
 
     @observable
@@ -93,11 +96,12 @@ export class FiddleState {
 
     constructor() {
         //Set defaults
-        this.filename = 'spfiddle.tsx';
+        this.filename = 'spfiddle.ts';
         this.language = 'typescript';
         this.theme = 'vs';
         this.code = 'const foo = "Hello, world!";\nexport default foo;';
         this.importPaths = FiddleState.defaultImportPaths;
+        this.editorOptions = new FiddleEditorOptions();
     }
 
     static defaultImportPaths = {
@@ -111,6 +115,37 @@ export class FiddleState {
         'Chartjs': 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min'
     };
 }
+
+export class FiddleEditorMinimapOptions {
+    @observable
+    enabled: boolean;
+
+    constructor() {
+        this.enabled = true;
+    }
+}
+
+export class FiddleEditorOptions {
+    @observable
+    automaticLayout: boolean;
+
+    @observable
+    scrollBeyondLastLine: boolean;
+
+    @observable
+    minimap: FiddleEditorMinimapOptions;
+
+    @observable
+    jsx: string;
+
+    static defaultFiddleEditorOptions = {
+        automaticLayout: true,
+        scrollBeyondLastLine: false,
+        minimap: new FiddleEditorMinimapOptions(),
+        jsx: 'react'
+    };
+}
+
 
 let store = (<any>window).store = new AppStore();
 

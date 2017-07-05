@@ -12,11 +12,11 @@ import { INavLinkGroup } from 'office-ui-fabric-react/lib/Nav';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import SplitPane from '../split-pane/SplitPane';
 
-import Dashboard from './dashboard';
-import Aside from './aside';
-import Fiddle from './fiddle';
+import Dashboard from '../dashboard';
+import Aside from '../workspace-aside';
+import Fiddle from '../fiddle';
 
-import { WorkspaceState } from '../AppStore';
+import { WorkspaceState } from '../../model/AppStore';
 
 import './Workspace.css';
 

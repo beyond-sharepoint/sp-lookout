@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { defaultsDeep } from 'lodash';
 
 export default class MonacoEditor extends React.Component<MonacoEditorProps, {}> {
     public static defaultProps: Partial<MonacoEditorProps> = {
@@ -45,9 +46,15 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps, {}>
                 this._preventTriggerChangeEvent = false;
             }
         }
-        if (prevProps.language !== this.props.language) {
+
+        if (prevProps.filename !== this.props.filename || prevProps.language !== this.props.language) {
             if (this.editor) {
-                this.editor.setModelLanguage(this.editor.getModel(), this.props.language);
+                const context = this.props.context || window;
+                const model = this.editor.getModel();
+                model.dispose();
+
+                const newModel = context.monaco.editor.createModel(this.props.value || '', this.props.language || 'typescript', this.props.filename || './spfiddle.ts');
+                this.editor.setModel(newModel);
             }
         }
     }
@@ -147,13 +154,20 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps, {}>
         if (typeof context.monaco !== 'undefined') {
             // Before initializing monaco editor
             this.editorWillMount(context.monaco);
-            this.editor = context.monaco.editor.create(containerElement, {
-                value,
-                language,
-                theme,
-                //model: context.monaco.editor.createModel(value || '', language || 'typescript', filename || './spfiddle1.tsx'),
-                ...options
-            });
+
+            const editorOptions = defaultsDeep(
+                {
+                    value,
+                    language,
+                    theme,
+                    model: context.monaco.editor.createModel(value || '', language || 'typescript', filename || './spfiddle.ts'),
+                },
+                options
+            );
+            console.dir(editorOptions);
+            
+            this.editor = context.monaco.editor.create(containerElement, editorOptions);
+
             // After initializing monaco editor
             this.editorDidMount(this.editor, context.monaco);
         }
@@ -161,6 +175,11 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps, {}>
 
     private destroyMonaco() {
         if (typeof this.editor !== 'undefined') {
+            //Destroy the model associated with the deitor.
+            const model = this.editor.getModel();
+            this.editor.setModel(undefined);
+            model.dispose();
+
             this.editor.dispose();
         }
     }
@@ -177,7 +196,7 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps, {}>
             height: fixedHeight,
         };
         return (
-            <div ref="container" style={style} className="react-monaco-editor-container"/>
+            <div ref="container" style={style} className="react-monaco-editor-container" />
         );
     }
 }
@@ -191,7 +210,7 @@ export interface MonacoEditorProps {
     language?: string;
     theme?: string;
     filename?: string;
-    options?: Object;
+    options?: any;
     editorDidMount?: Function;
     editorWillMount?: Function;
     onChange?: Function;
