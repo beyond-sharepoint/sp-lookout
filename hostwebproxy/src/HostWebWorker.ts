@@ -1,5 +1,5 @@
 class SandFiddleProcessor {
-    private _context: DedicatedWorkerGlobalScope;
+    private _context: any;
     private _request: any;
 
     constructor(context, request) {
@@ -90,7 +90,7 @@ onmessage = (e) => {
     processor.require();
 }
 
-onerror = (ev) => {
+onerror = (ev: any) => {
     let errorMessage: any = {
         result: "error",
         message: ev,
@@ -104,5 +104,5 @@ onerror = (ev) => {
             colno: ev.colno
         }
     }
-    postMessage(errorMessage);
+    (<any>self).postMessage(errorMessage);
 }
