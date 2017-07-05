@@ -1,5 +1,5 @@
 import * as URI from 'urijs';
-import { get, defaultsDeep, merge } from 'lodash';
+import { get, defaultsDeep } from 'lodash';
 import * as Bluebird from 'bluebird';
 import { SPProxyConfig } from './index.d';
 import ResourceLoader from './ResourceLoader';
@@ -30,16 +30,6 @@ export default class SPProxy {
 
         this._messageCounter = 0;
         this._isRemoved = false;
-    }
-
-    private ab2str(buffer: ArrayBuffer): string {
-        let result = '';
-        let bytes = new Uint8Array(buffer);
-        let len = bytes.byteLength;
-        for (let i = 0; i < len; i++) {
-            result += String.fromCharCode(bytes[i]);
-        }
-        return result;
     }
 
     public get origin(): string {
@@ -119,26 +109,18 @@ export default class SPProxy {
             //TODO: Add things like response time.
 
             if (response.result === 'error') {
-                let err = new Error(response.error);
-                merge(err, response);
+                const innerMessage = response.message;
+                let err = new Error(innerMessage.message);
+                err.stack = innerMessage.stack;
+                (<any>err).details = innerMessage;
                 reject(err);
             } else {
-                if (response.data) {
-                    let contentType = response.headers['content-type'];
-                    if (contentType.startsWith('application/json')) {
-                        let str = this.ab2str(response.data);
-                        response.data = JSON.parse(str);
-                    } else if (contentType.startsWith('text')) {
-                        response.data = this.ab2str(response.data);
-                    }
-                }
-
                 resolve(response);
             }
         };
 
         if (timeout > 0) {
-            invokePromise = invokePromise.timeout(timeout, `invoke() timed out while waiting for a response while executing ${command}`);
+            invokePromise = invokePromise.timeout(timeout, new Error(`invoke() timed out while waiting for a response while executing ${command}`));
         }
 
         invokePromise = invokePromise.finally(() => {

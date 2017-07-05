@@ -104,7 +104,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
         this.props.fiddleState.code = code;
     }
 
-    private async brew(code: string) {
+    private async brew(code: string, brewMode?: 'require' | 'sandfiddle') {
         const { webFullUrl, fiddleState } = this.props;
         const { isBrewing } = this.state;
 
@@ -135,14 +135,31 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
             const spContext = await SPContext.getContext(webFullUrl);
             let fiddleName = `splookout-fiddle-${(new Date()).getTime()}`;
             let requireConfig = {
+                baseUrl: fiddleState.baseUrl || undefined,
                 paths: fiddleState.importPaths || FiddleState.defaultImportPaths
             };
 
-            await spContext.requireConfig(requireConfig);
-            await spContext.injectScript({ id: fiddleName, type: 'text/javascript', text: jsCode.outputText.replace("define([", `define('${fiddleName}',[`) });
-            const result = await spContext.require(fiddleName, undefined);
+            const fiddleDefine = jsCode.outputText.replace("define([", `define('${fiddleName}',[`);
+            let result: any;
+
+            switch (brewMode) {
+                case 'require':
+                    await spContext.requireConfig(requireConfig);
+                    await spContext.injectScript({ id: fiddleName, type: 'text/javascript', text: fiddleDefine });
+                    result = await spContext.require(fiddleName, undefined);
+                    break;
+                default:
+                case 'sandfiddle':
+                    result = await spContext.sandFiddle({
+                        requireConfig: requireConfig,
+                        defines: [fiddleDefine],
+                        entryPointId: fiddleName
+                    });
+                    break;
+            }
+
             console.dir(result);
-            lastBrewResult = result.resultData;
+            lastBrewResult = result.data || result.transferrableData;
         } catch (ex) {
             console.dir(ex);
             lastBrewResultIsError = true;

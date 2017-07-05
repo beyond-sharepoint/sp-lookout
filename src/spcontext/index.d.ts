@@ -50,3 +50,10 @@ export interface SPContextInfo {
     WebFullUrl: string;
     expires: Date;
 }
+
+export interface SandFiddleConfig {
+    requireConfig: any;
+    defines: Array<string>;
+    entryPointId: string;
+    timeout?: number;
+}

@@ -4,7 +4,7 @@ class HostWebProxy {
 
     constructor(hostWebProxyConfig: HostWebProxyConfig) {
         this._hostWebProxyConfig = hostWebProxyConfig;
-        
+
         this.errorHandler = this.errorHandler.bind(this);
         this.messageHandler = this.messageHandler.bind(this);
     }
@@ -14,10 +14,14 @@ class HostWebProxy {
     }
 
     public messageHandler(event: MessageEvent): void {
-        let origin = event.origin || (<any>event).originalEvent.origin;
-        let request = event.data;
-        let command = request["$$command"] || request["command"];
-        let postMessageId = request["$$postMessageId"] || request["postMessageId"];
+        const origin = event.origin || (<any>event).originalEvent.origin;
+        const command = event.data.$$command;
+        const postMessageId = event.data.$$postMessageId;
+
+        if (!origin || !command || !postMessageId) {
+            //Something strange occurred, ignore the message.
+            return;
+        }
 
         //Validate the requesting origin.
         if (this._hostWebProxyConfig.trustedOriginAuthorities && this._hostWebProxyConfig.trustedOriginAuthorities.length) {
@@ -30,24 +34,37 @@ class HostWebProxy {
             }
 
             if (!!!trusted) {
-                let message = `The specified origin is not trusted by the HostWebProxy: ${origin}`;
-                this.postMessage({
-                    "$$command": command,
-                    command: command,
-                    "$$postMessageId": postMessageId,
-                    postMessageId: postMessageId,
+                const message = `The specified origin is not trusted by the HostWebProxy: ${origin}`;
+                let response: ErrorResponse = {
+                    $$command: command,
+                    $$postMessageId: postMessageId,
                     result: "error",
                     message: message,
                     invalidOrigin: origin,
                     url: window.location.href
-                } as ErrorCommandResponse);
+                };
+
+                this.postMessage(response);
                 throw Error(message);
             }
         }
 
+        this.processCommand(command, postMessageId, event.data);
+    }
+
+    private processCommand(command: string, postMessageId: string, request: any) {
         switch (command) {
+            case "Eval":
+                this.eval(command, postMessageId, request.code);
+                break;
+            case "Fetch":
+                this.fetch(command, postMessageId, request);
+                break;
             case "InjectScript":
                 this.injectScript(command, postMessageId, request);
+                break;
+            case "Ping":
+                this.postMessage(request);
                 break;
             case "Require":
                 this.require(command, postMessageId, request.id);
@@ -58,14 +75,8 @@ class HostWebProxy {
             case "Require.Undef":
                 this.requireUndef(command, postMessageId, request.id);
                 break;
-            case "Eval":
-                this.eval(command, postMessageId, request.code);
-                break;
-            case "Fetch":
-                this.fetch(command, postMessageId, request);
-                break;
-            case "Ping":
-                this.postMessage(request);
+            case "SandFiddle":
+                this.sandFiddle(command, postMessageId, request);
                 break;
             default:
                 this.postMessage({
@@ -75,37 +86,43 @@ class HostWebProxy {
                     postMessageId: postMessageId,
                     result: "error",
                     message: `Unknown or unsupported command: ${command}`
-                } as ErrorCommandResponse);
+                } as ErrorResponse);
                 break;
         }
     }
 
     /**
+     * Utility method to reject a promise if it does not settle within the specified timeout.
+     * @param promise 
+     * @param timeoutMillis 
+     * @param errorMessage 
+     */
+    private timeout(promise: Promise<any>, timeoutMillis: number, errorMessage?: string): Promise<any> {
+        var timeout;
+
+        return Promise.race([
+            promise,
+            new Promise(function (resolve, reject) {
+                timeout = setTimeout(function () {
+                    reject(new Error(errorMessage || "Timeout Error"));
+                }, timeoutMillis);
+            }),
+        ]).then(function (v) {
+            clearTimeout(timeout);
+            return v;
+        }, function (err) {
+            clearTimeout(timeout);
+            throw err;
+        });
+    };
+
+    /**
     * Utility method to post messages back to the parent.
     */
-    private async postMessage(message: CommandResponse, response?: Response): Promise<void> {
-        let responseOrigin = this._hostWebProxyConfig.responseOrigin || "*";
+    private async postMessage(message: CommandResponse): Promise<void> {
+        const responseOrigin = this._hostWebProxyConfig.responseOrigin || "*";
 
-        //If a response object is specified, get the properties
-        if (message.result !== "error" && response) {
-            //IE/Edge do not support 'keys', 'entries', 'values', nor '..of' so whitelist the properties.
-            for (let propertyKey of ["ok", "redirected", "status", "statusText", "type", "url"]) {
-                message[propertyKey] = response[propertyKey];
-            }
-
-            message.headers = {};
-            if (typeof response.headers.forEach === "function") {
-                (<any>response.headers).forEach((value, key, object) => {
-                    if (message.headers) {
-                        message.headers[key] = value;
-                    }
-                });
-            }
-
-            message.data = await response.arrayBuffer();
-        }
-
-        window.parent.postMessage(message, responseOrigin, message.data ? [message.data] : undefined);
+        window.parent.postMessage(message, responseOrigin, message.transferrableData ? [message.transferrableData] : undefined);
     }
 
     /**
@@ -114,11 +131,9 @@ class HostWebProxy {
      * @param {*} err 
      */
     private async postMessageError(command: string, postMessageId: string, err: any): Promise<void> {
-        let errorMessage: ErrorCommandResponse = {
-            "$$command": command,
-            command: command,
-            "$$postMessageId": postMessageId,
-            postMessageId: postMessageId,
+        let errorMessage: ErrorResponse = {
+            $$command: command,
+            $$postMessageId: postMessageId,
             result: "error",
             message: err,
             type: Object.prototype.toString.call(err)
@@ -143,8 +158,82 @@ class HostWebProxy {
         return this.postMessage(errorMessage);
     }
 
-    private injectScript(command: string, postMessageId: string, request: any) {
+    private async eval(command: string, postMessageId: string, code: string): Promise<void> {
+        try {
+            let evalPromise = new Promise((resolve, reject) => {
+                let evalResult = eval(code);
+                resolve(evalResult);
+            });
 
+            let evalResult = await evalPromise;
+            this.postMessage({
+                $$command: command,
+                $$postMessageId: postMessageId,
+                result: "success",
+                data: evalResult
+            });
+        } catch (err) {
+            this.postMessageError(command, postMessageId, err);
+            throw err;
+        }
+    }
+
+    private async fetch(command: string, postMessageId: string, request: any): Promise<void> {
+        let fetchRequestInit: RequestInit = {
+            cache: request.cache,
+            credentials: request.credentials,
+            method: request.method,
+            mode: "same-origin",
+        };
+
+        //IE/Edge fails when the header object is not explictly
+        //a headers object.
+        if (request.headers) {
+            fetchRequestInit.headers = new Headers();
+            for (let property of Object.keys(request.headers)) {
+                fetchRequestInit.headers.append(property, request.headers[property]);
+            }
+        }
+
+        //IE/Edge fails with a TypeMismatchError when GET 
+        //requests have any body, including null.
+        if (request.method.toUpperCase() !== "GET") {
+            fetchRequestInit.body = request.body;
+            (<any>fetchRequestInit).bodyUsed = true;
+        }
+
+        //Actually perform the fetch
+        try {
+            const response = await fetch(request.url, fetchRequestInit);
+            const headers = {};
+            if (typeof response.headers.forEach === "function") {
+                (<any>response.headers).forEach((value, key, object) => {
+                    headers[key] = value;
+                });
+            }
+
+            let messageResponse: FetchResponse = {
+                $$command: command,
+                $$postMessageId: postMessageId,
+                result: "success",
+                headers: headers,
+                data: undefined,
+                transferrableData: await response.arrayBuffer()
+            }
+
+            //Add additional properties -- IE/Edge do not support 'keys', 'entries', 'values', nor '..of' so whitelist the properties.
+            for (let propertyKey of ["ok", "redirected", "status", "statusText", "type", "url"]) {
+                (<any>messageResponse)[propertyKey] = response[propertyKey];
+            }
+
+            this.postMessage(messageResponse);
+        }
+        catch (err) {
+            this.postMessageError(command, postMessageId, err);
+        }
+    }
+
+    private injectScript(command: string, postMessageId: string, request: any) {
         let script = document.createElement('script');
         for (let key of ['id', 'type', 'src', 'charset', 'async', 'defer', 'text']) {
             if (typeof request[key] !== 'undefined') {
@@ -166,11 +255,9 @@ class HostWebProxy {
             clearScriptElement(script);
             this.postMessage({
                 $$command: command,
-                command: command,
                 $$postMessageId: postMessageId,
-                postMessageId: postMessageId,
                 result: "success",
-                resultData: request.src
+                data: request.src
             });
         };
 
@@ -178,11 +265,9 @@ class HostWebProxy {
             clearScriptElement(script);
             this.postMessage({
                 $$command: command,
-                command: command,
                 $$postMessageId: postMessageId,
-                postMessageId: postMessageId,
                 result: "error",
-                resultData: {
+                data: {
                     src: request.src,
                     message: ev.message,
                     filename: ev.filename,
@@ -214,15 +299,13 @@ class HostWebProxy {
             clearScriptElement(script);
             this.postMessage({
                 $$command: command,
-                command: command,
                 $$postMessageId: postMessageId,
-                postMessageId: postMessageId,
                 result: "success"
             });
         }
     }
 
-    private async require(command: string, postMessageId: string, moduleId: string) {
+    private async require(command: string, postMessageId: string, moduleId: string): Promise<void> {
         try {
             let requirePromise = new Promise((resolve, reject) => {
                 (<any>window).requirejs([moduleId], result => resolve(result), err => reject(err));
@@ -239,14 +322,12 @@ class HostWebProxy {
 
             this.postMessage({
                 $$command: command,
-                command: command,
                 $$postMessageId: postMessageId,
-                postMessageId: postMessageId,
                 result: "success",
-                resultData: requireResult
+                data: requireResult
             });
         } catch (err) {
-            return this.postMessageError(command, postMessageId, err);
+            this.postMessageError(command, postMessageId, err);
         }
     }
 
@@ -258,9 +339,7 @@ class HostWebProxy {
         }
         this.postMessage({
             $$command: command,
-            command: command,
             $$postMessageId: postMessageId,
-            postMessageId: postMessageId,
             result: "success"
         });
     }
@@ -269,99 +348,93 @@ class HostWebProxy {
         (<any>window).requirejs.undef(id);
         this.postMessage({
             $$command: command,
-            command: command,
             $$postMessageId: postMessageId,
-            postMessageId: postMessageId,
             result: "success"
         });
     }
 
-    private async eval(command: string, postMessageId: string, code: string) {
+    private async sandFiddle(command: string, postMessageId: string, request: any): Promise<void> {
+        const HostWebWorker = require("worker-loader?inline&name=HostWebWorker.js!./HostWebWorker.ts");
+        let worker: Worker = new HostWebWorker();
         try {
-            let evalPromise = new Promise((resolve, reject) => {
-                let evalResult = eval(code);
-                resolve(evalResult);
+            const requireScriptElement = document.getElementById('require.js');
+            if (!requireScriptElement) {
+                throw Error('Unable to find Require.js script element. This is highly unusual and it probably means someone edited the HostWebProxy.aspx or a hole has been torn in the fabric of the universe. That or something just went wrong.');
+            }
+            request.requirejs = requireScriptElement.innerText;
+            worker.postMessage(request, request.data ? [request.data] : undefined);
+            let resolveWorker, rejectWorker;
+            let workerPromise: Promise<any> = new Promise((resolve, reject) => {
+                resolveWorker = resolve;
+                rejectWorker = reject;
             });
 
-            let evalResult = await evalPromise;
-            this.postMessage({
-                $$command: command,
-                command: command,
-                $$postMessageId: postMessageId,
-                postMessageId: postMessageId,
+            worker.onmessage = (ev) => {
+                const eventData = ev.data;
+                if (eventData.result === "success") {
+                    resolveWorker(eventData);
+                } else {
+                    rejectWorker(eventData);
+                }
+            }
+
+            let result = await this.timeout(workerPromise, request.timeout || 5000, "A timeout occurred while invoking the SandFiddle.");
+
+            let sandFiddleMessage: CommandResponse = {
                 result: "success",
-                resultData: evalResult
-            });
-        } catch (err) {
-            this.postMessageError(command, postMessageId, err);
-            throw err;
+                $$command: command,
+                $$postMessageId: postMessageId,
+                data: result.data,
+                transferrableData: result.transferrableData
+            }
+
+            this.postMessage(sandFiddleMessage);
         }
-    }
-
-    private async fetch(command: string, postMessageId: string, request: any) {
-        let fetchRequestInit: RequestInit = {
-            cache: request.cache,
-            credentials: request.credentials,
-            method: request.method,
-            mode: "same-origin",
-        };
-
-        //IE/Edge fails when the header object is not explictly
-        //a headers object.
-        if (request.headers) {
-            fetchRequestInit.headers = new Headers();
-            for (let property of Object.keys(request.headers)) {
-                fetchRequestInit.headers.append(property, request.headers[property]);
+        catch (ex) {
+            this.postMessageError(command, postMessageId, ex);
+        }
+        finally {
+            if (worker) {
+                worker.onmessage = (ev) => { };
+                worker.terminate();
             }
         }
-
-        //IE/Edge fails with a TypeMismatchError when GET 
-        //requests have any body, including null.
-        if (request.method.toUpperCase() !== "GET") {
-            fetchRequestInit.body = request.body;
-            (<any>fetchRequestInit).bodyUsed = true;
-        }
-
-        //Actually perform the fetch
-        try {
-            let response = await fetch(request.url, fetchRequestInit);
-            this.postMessage({
-                $$command: command,
-                command: command,
-                $$postMessageId: postMessageId,
-                postMessageId: postMessageId,
-                result: "success"
-            }, response);
-        }
-        catch (err) {
-            this.postMessageError(command, postMessageId, err);
-        }
     }
+}
+
+interface CommandRequest {
+    $$postMessageId: string;
+    $$command: string;
 }
 
 interface CommandResponse {
     result: "success" | "error";
     $$postMessageId: string;
     $$command: string;
-    command: string;
-    postMessageId: string;
-    resultData?: any;
-    headers?: { [key: string]: any }
-    data?: ArrayBuffer;
+    data?: any;
+    transferrableData?: ArrayBuffer;
 }
 
-interface ErrorCommandResponse extends CommandResponse {
+interface FetchResponse extends CommandResponse {
+    headers: { [key: string]: any };
+    data: undefined;
+    transferrableData: ArrayBuffer;
+}
+
+interface ErrorResponse extends CommandResponse {
     result: "error";
     name?: string;
     message?: string;
     type?: string;
     stack?: string;
     originalError?: string;
+    invalidOrigin?: string;
+    url?: string;
 }
 
 interface HostWebProxyConfig {
     responseOrigin: string;
-    trustedOriginAuthorities: Array<any>
+    trustedOriginAuthorities: Array<any>;
 }
 
 //When the document is ready, bind to the 'message' event to recieve messages passed

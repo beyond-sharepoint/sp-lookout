@@ -86,6 +86,9 @@ export class FiddleState {
     lastResult: any;
 
     @observable
+    baseUrl: string;
+
+    @observable
     importPaths: { [id: string]: string };
 
     constructor() {
@@ -106,7 +109,7 @@ export class FiddleState {
         'react-dom': 'https://cdnjs.cloudflare.com/ajax/libs/react/15.6.1/react-dom',
         'react-dom-server': 'https://cdnjs.cloudflare.com/ajax/libs/react/15.6.1/react-dom-server',
         'Chartjs': 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min'
-    }
+    };
 }
 
 let store = (<any>window).store = new AppStore();
@@ -118,7 +121,7 @@ autorun(() => {
         //throttle(store.workspaceState.saveFiddles, 1000);
     });
 
-    console.dir(store.workspaceState.selectedFiddle);
+    //console.dir(store.workspaceState.selectedFiddle);
 });
 
 export default store;

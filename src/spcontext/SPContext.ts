@@ -3,7 +3,7 @@ import * as URI from 'urijs';
 import { get, defaultsDeep, isError, omit } from 'lodash';
 import * as Bluebird from 'bluebird';
 import SPProxy from './SPProxy';
-import { SPContextConfig, SPContextAuthenticationConfig, SPContextInfo } from './index.d';
+import { SPContextConfig, SPContextAuthenticationConfig, SPContextInfo, SandFiddleConfig } from './index.d';
 
 /**
  * Represents a SharePoint Context.
@@ -95,6 +95,18 @@ export default class SPContext {
                     cache: 'no-store'
                 });
 
+            if (!context.transferrableData) {
+                throw Error('A connection to the ContextInfo endpoint did not result in a transferred object.');
+            }
+
+            const contentType = context.headers['content-type'];
+            if (!contentType || !contentType.startsWith('application/json')) {
+                throw Error(`Unexpected content type returned from the ContextInfo endpoint: ${contentType}`);
+            }
+
+            const str = this.ab2str(context.transferrableData);
+            context.data = JSON.parse(str);
+
             let contextInfo = get(context, 'data.d.GetContextWebInformation');
 
             if (!contextInfo) {
@@ -139,7 +151,7 @@ export default class SPContext {
             url = targetUri.normalize().toString();
         }
 
-        let mergedSettings = defaultsDeep(
+        let mergedInit = defaultsDeep(
             {},
             init,
             {
@@ -150,10 +162,22 @@ export default class SPContext {
                 cache: 'no-store'
             }) as any;
 
-        mergedSettings = omit(mergedSettings, ['paramSerializer', 'transformRequest', 'transformResponse']);
+        if (mergedInit.params) {
+            url += (url.indexOf('?') === -1 ? '?' : '&') + Object.keys(mergedInit.params)
+                .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(mergedInit.params[k]))
+                .join('&');
 
-        if (mergedSettings.body) {
-            let bodyType = Object.prototype.toString.call(mergedSettings.body);
+            delete mergedInit.params;
+        }
+
+        mergedInit = omit(mergedInit, ['paramSerializer', 'transformRequest', 'transformResponse']);
+
+        let response: any;
+
+        //If a body is defined, ensure it is an arraybuffer and transfer it.
+        //This allows large message bodies to be used.
+        if (mergedInit.body) {
+            let bodyType = Object.prototype.toString.call(mergedInit.body);
 
             switch (bodyType) {
                 case '[object ArrayBuffer]':
@@ -170,20 +194,32 @@ export default class SPContext {
                         reader.onerror = () => {
                             reject(reader.error);
                         };
-                        reader.readAsArrayBuffer(mergedSettings.body);
+                        reader.readAsArrayBuffer(mergedInit.body);
                     });
 
-                    mergedSettings.body = await convertBlobtoArrayBuffer;
+                    mergedInit.body = await convertBlobtoArrayBuffer;
                     break;
                 default:
-                    mergedSettings.body = this.str2ab(mergedSettings.body);
+                    mergedInit.body = this.str2ab(mergedInit.body);
                     break;
             }
 
-            return proxy.invoke('Fetch', mergedSettings, undefined, undefined, 'body');
+            response = await proxy.invoke('Fetch', mergedInit, undefined, undefined, 'body');
+        } else {
+            response = await proxy.invoke('Fetch', mergedInit);
         }
 
-        return proxy.invoke('Fetch', mergedSettings);
+        if (response.transferrableData) {
+            let contentType = response.headers['content-type'];
+            if (contentType.startsWith('application/json')) {
+                let str = this.ab2str(response.transferrableData);
+                response.data = JSON.parse(str);
+            } else if (contentType.startsWith('text')) {
+                response.data = this.ab2str(response.transferrableData);
+            }
+        }
+
+        return response;
     }
 
     /**
@@ -244,6 +280,30 @@ export default class SPContext {
         let proxy = await this.ensureContext();
 
         return proxy.invoke('Require.Undef', { id }, undefined, timeout);
+    }
+
+    /**
+     * Using an isolated web worker, returns the results of the specified entry point.
+     * @param config 
+     */
+    public async sandFiddle(config: SandFiddleConfig, timeout?: number) {
+        if (!config) {
+            throw Error('SandFiddleConfig must be specified as the first argument.');
+        }
+
+        let proxy = await this.ensureContext();
+
+        return proxy.invoke('SandFiddle', config, undefined, timeout);
+    }
+
+    private ab2str(buffer: ArrayBuffer): string {
+        let result = '';
+        let bytes = new Uint8Array(buffer);
+        let len = bytes.byteLength;
+        for (let i = 0; i < len; i++) {
+            result += String.fromCharCode(bytes[i]);
+        }
+        return result;
     }
 
     private str2ab(str: string): ArrayBuffer {
