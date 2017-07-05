@@ -223,7 +223,6 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
             console.dir(result);
             lastBrewResult = result.data || result.transferrableData;
         } catch (ex) {
-            console.dir(ex);
             lastBrewResultIsError = true;
             lastBrewResult = {
                 name: ex.name,
