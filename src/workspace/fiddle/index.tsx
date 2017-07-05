@@ -5,8 +5,10 @@ import { observer } from 'mobx-react';
 import * as Mousetrap from 'mousetrap';
 import * as ts from 'typescript';
 import * as URI from 'urijs';
+import { autobind } from 'office-ui-fabric-react/lib';
 import { CommandBar } from 'office-ui-fabric-react/lib/CommandBar';
 import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
+import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { ObjectInspector } from 'react-inspector';
 import { SPContext } from '../../spcontext';
 import SplitPane from '../../split-pane/SplitPane';
@@ -27,7 +29,8 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
         super(props);
 
         this.state = {
-            fiddlePaneSize: '50%'
+            fiddlePaneSize: '50%',
+            showFiddleSettingsModal: false
         }
 
         this.editorOptions = {
@@ -51,7 +54,13 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
             }
         ]
 
-        this.commandBarFarItems = [];
+        this.commandBarFarItems = [
+            {
+                icon: 'settings',
+                title: 'Settings',
+                onClick: this.showFiddleSettings,
+            }
+        ];
     }
 
     private editorWillMount(monaco) {
@@ -102,6 +111,12 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
     @action.bound
     private updateCode(code) {
         this.props.fiddleState.code = code;
+    }
+
+    @action.bound
+    private updateTheme(ev) {
+        this.props.fiddleState.theme = ev.target.value;
+        //TODO: Force a redraw of the monaco editor.
     }
 
     private async brew(code: string, brewMode?: 'require' | 'sandfiddle') {
@@ -178,6 +193,20 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
         }
     }
 
+    @autobind
+    private showFiddleSettings() {
+        this.setState({
+            showFiddleSettingsModal: true
+        });
+    }
+
+    @autobind
+    private hideFiddleSettings() {
+        this.setState({
+            showFiddleSettingsModal: false
+        });
+    }
+
     public render() {
         const { fiddleState } = this.props;
         const { isBrewing, lastBrewResult, lastBrewResultIsError } = this.state;
@@ -213,6 +242,19 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
                             options={this.editorOptions}
                         >
                         </MonacoEditor>
+                        <Modal
+                            isOpen={this.state.showFiddleSettingsModal}
+                            onDismiss={this.hideFiddleSettings}
+                            isBlocking={false}
+                            containerClassName="settings-modal-container"
+                        >
+                            <div className="settings-modal-header">
+                                <span>SPFiddle Settings</span>
+                            </div>
+                            <div className="settings-modal-body">
+                                <input type="text" value={fiddleState.theme} onChange={this.updateTheme} />
+                            </div>
+                        </Modal>
                     </div>
                 </div>
                 <div className="fiddle-results">
