@@ -16,4 +16,4 @@ export const DebuggerTransformer = (context: ts.TransformationContext): ts.Trans
         ts.visitNode(sf, visitor);
 
     return transformer;
-}
+};

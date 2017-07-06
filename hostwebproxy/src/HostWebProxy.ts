@@ -7,6 +7,9 @@ class HostWebProxy {
 
         this.errorHandler = this.errorHandler.bind(this);
         this.messageHandler = this.messageHandler.bind(this);
+
+        //Define the requirejs errorhandler.
+        (<any>self).requirejs.onError = this.postMessageError;
     }
 
     public errorHandler(event: ErrorEvent): void {
@@ -308,7 +311,17 @@ class HostWebProxy {
     private async require(command: string, postMessageId: string, moduleId: string): Promise<void> {
         try {
             let requirePromise = new Promise((resolve, reject) => {
-                (<any>window).requirejs([moduleId], result => resolve(result), err => reject(err));
+                try {
+                    (<any>window).requirejs([moduleId], resolve, err => {
+                        if (err instanceof Error) {
+                            reject(err);
+                        } else {
+                            reject(new Error(err));
+                        }
+                    });
+                } catch (ex) {
+                    reject(ex);
+                }
             });
 
             let requireResult = await requirePromise;

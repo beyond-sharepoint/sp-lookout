@@ -14,6 +14,8 @@ class SandFiddleProcessor {
             if (requireConfig) {
                 (<any>self).requirejs.config(requireConfig);
             }
+            //Define the requirejs errorhandler.
+            (<any>self).requirejs.onError = this.postMessageError;
         }
     }
 
@@ -26,7 +28,17 @@ class SandFiddleProcessor {
     public async require(): Promise<void> {
         try {
             let requirePromise = new Promise((resolve, reject) => {
-                (<any>this._context).requirejs([this._request.entryPointId], result => resolve(result), err => reject(err));
+                try {
+                    (<any>this._context).requirejs([this._request.entryPointId], resolve, err => {
+                        if (err instanceof Error) {
+                            reject(err);
+                        } else {
+                            reject(new Error(err));
+                        }
+                    });
+                } catch (ex) {
+                    reject(ex);
+                }
             });
 
             let requireResult = await requirePromise;

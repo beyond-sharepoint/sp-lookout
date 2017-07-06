@@ -12,14 +12,15 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps, {}>
         language: 'javascript',
         theme: 'vs',
         options: {},
-        editorDidMount: () => { },
-        editorWillMount: () => { },
-        onChange: () => { },
+        editorDidMount: () => { return; },
+        editorWillMount: () => { return; },
+        onChange: () => { return; },
         requireConfig: {}
     };
 
     private _currentValue: string | null;
     private _preventTriggerChangeEvent: boolean;
+    private _containerElement: HTMLDivElement | null;
     private editor: monaco.editor.ICodeEditor;
 
     public constructor(props: MonacoEditorProps) {
@@ -70,14 +71,14 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps, {}>
         }
     }
 
-    private editorWillMount(monaco) {
+    private editorWillMount(monaco: any) {
         const { editorWillMount } = this.props;
         if (typeof editorWillMount === 'function') {
             editorWillMount(monaco);
         }
     }
 
-    private editorDidMount(editor: monaco.editor.ICodeEditor, monaco) {
+    private editorDidMount(editor: monaco.editor.ICodeEditor, monaco: any) {
         const { editorDidMount, onChange } = this.props;
 
         if (typeof editorDidMount === 'function') {
@@ -165,7 +166,7 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps, {}>
 
         const value = this.props.value !== null ? this.props.value : this.props.defaultValue;
         const { language, theme, filename, options } = this.props;
-        const containerElement = this.refs.container;
+        const containerElement = this._containerElement;
 
         // Before initializing monaco editor
         this.editorWillMount(context.monaco);
@@ -210,7 +211,7 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps, {}>
             height: fixedHeight,
         };
         return (
-            <div ref="container" style={style} className="react-monaco-editor-container" />
+            <div ref={el => this._containerElement = el} style={style} className="react-monaco-editor-container" />
         );
     }
 }

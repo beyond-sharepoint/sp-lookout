@@ -35,46 +35,46 @@ export class FiddleSettings extends React.Component<FiddleSettingsProps, any> {
                 </div>
                 <div className="fiddle-settings-modal-body">
                     <Pivot>
-                        <PivotItem linkText='Editor Options'>
+                        <PivotItem linkText="Editor Options">
                             <Dropdown
-                                label='Theme:'
-                                id='fiddle-theme'
-                                ariaLabel='Select Fiddle Theme'
+                                label="Theme:"
+                                id="fiddle-theme"
+                                ariaLabel="Select Fiddle Theme"
                                 selectedKey={fiddleState.theme}
                                 onChanged={updateTheme}
                                 options={
                                     [
-                                        { key: 'vs', text: 'Light (Visual Studio)' },
-                                        { key: 'vs-dark', text: 'Dark (Visual Studio)' },
+                                        { key: "vs", text: "Light (Visual Studio)" },
+                                        { key: "vs-dark", text: "Dark (Visual Studio)" },
                                     ]
                                 }
                             />
                             <Dropdown
-                                label='Language:'
-                                id='fiddle-language'
-                                ariaLabel='Select Fiddle Language'
+                                label="Language:"
+                                id="fiddle-language"
+                                ariaLabel="Select Fiddle Language"
                                 selectedKey={fiddleState.language}
                                 onChanged={updateLanguage}
                                 options={
                                     [
-                                        { key: 'typescript', text: 'TypeScript' },
-                                        { key: 'javascript', text: 'JavaScript' },
+                                        { key: "typescript", text: "TypeScript" },
+                                        { key: "javascript", text: "JavaScript" },
                                     ]
                                 }
                             />
                             <Toggle
-                                defaultChecked={get(fiddleState, 'editorOptions.minimap.enabled') as boolean}
+                                defaultChecked={get(fiddleState, "editorOptions.minimap.enabled") as boolean}
                                 onChanged={updateMinimap}
-                                label='Minimap Enabled'
-                                onAriaLabel='Minimap is enabled. Press to disable.'
-                                offAriaLabel='Minimap is disabled. Press to enable.'
-                                onText='On'
-                                offText='Off'
+                                label="Minimap Enabled"
+                                onAriaLabel="Minimap is enabled. Press to disable."
+                                offAriaLabel="Minimap is disabled. Press to enable."
+                                onText="On"
+                                offText="Off"
                             />
                         </PivotItem>
-                        <PivotItem linkText='Import Options'>
+                        <PivotItem linkText="Import Options">
                         </PivotItem>
-                        <PivotItem linkText='TypeScript Options'>
+                        <PivotItem linkText="TypeScript Options">
                         </PivotItem>
                     </Pivot>
                 </div>

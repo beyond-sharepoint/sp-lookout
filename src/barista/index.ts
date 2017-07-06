@@ -1,4 +1,4 @@
-/// <reference path="../../node_modules/@types/requirejs/index.d.ts" />
+/// <reference path='../../node_modules/@types/requirejs/index.d.ts' />
 import * as ts from 'typescript';
 
 import { DebuggerTransformer } from './debuggerTransformer';
@@ -9,7 +9,7 @@ export default class Barista {
 
     constructor(config: BaristaConfig) {
         if (!config) {
-            throw Error("Barista configuration must be specified.");
+            throw Error('Barista configuration must be specified.');
         }
         this._config = config;
     }
@@ -26,7 +26,7 @@ export default class Barista {
         const url = `/_api/web/getfolderbyserverrelativeurl('${URI.encode(webUri.path())}')/files/add(overwrite=true,url='splookout-fiddle.js')`;
 
         return spContext.fetch(url, {
-            method: "POST",
+            method: 'POST',
             body: code
         });
     }
@@ -42,14 +42,14 @@ export default class Barista {
 
         //TODO: determine any dependent modules that have a spl prefix and get them.
 
-        const defines = [transpileResult.outputText];
+        const defines: Array<string> = [transpileResult.outputText];
 
         //Ensure a unique define. Mostly for 'require' mode.
         //TODO: This probably needs to be done for all defines, not just our entry point.
         //However, that will mess things up for all requires. So we might need to do
         //this at a step before.
         let brewName = `${filename}-${(new Date()).getTime()}`;
-        for (let ix in defines) {
+        for (let ix = 0; ix < defines.length; ix++) {
             let define = defines[ix];
             if (define.startsWith(`define('${filename}',[`)) {
                 defines[ix] = define.replace(`define('${filename}',[`, `define('${brewName}',[`);
@@ -64,7 +64,7 @@ export default class Barista {
                         await spContext.requireConfig(requireConfig);
                     }
 
-                    for (let define in defines) {
+                    for (let define of defines) {
                         await spContext.injectScript({ id: brewName, type: 'text/javascript', text: define });
                     }
 
@@ -72,16 +72,18 @@ export default class Barista {
                     break;
                 default:
                 case 'sandfiddle':
-                    result = await spContext.sandFiddle({
-                        requireConfig: requireConfig,
-                        defines: defines,
-                        entryPointId: brewName,
+                    result = await spContext.sandFiddle(
+                        {
+                            requireConfig: requireConfig,
+                            defines: defines,
+                            entryPointId: brewName,
+                            timeout
+                        },
                         timeout
-                    }, timeout);
+                    );
                     break;
             }
-        }
-        catch (ex) {
+        } catch (ex) {
             if (ex instanceof SPContextError) {
                 const { noProxyHandler, invalidOriginHandler, authenticationRequiredHandler } = this._config;
                 switch (ex.$$spcontext) {
@@ -103,10 +105,7 @@ export default class Barista {
                     default:
                         throw ex;
                 }
-            } else {
-                throw ex;
             }
-
             throw ex;
         }
 
@@ -133,7 +132,7 @@ export default class Barista {
             fileName: filename
         });
 
-        output.outputText = output.outputText.replace("define([", `define('${filename}',[`);
+        output.outputText = output.outputText.replace('define([', `define('${filename}',[`);
         return output;
     }
 }
@@ -154,5 +153,5 @@ export interface BrewSettings {
     moduleLocator?: (moduleId: string) => string;
     allowDebuggerStatement?: boolean;
     timeout?: number;
-    requireConfig?: RequireConfig
+    requireConfig?: RequireConfig;
 }

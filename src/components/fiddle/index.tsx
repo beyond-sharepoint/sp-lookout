@@ -14,7 +14,7 @@ import MonacoEditor from '../monaco-editor';
 import { get, set, cloneDeep } from 'lodash';
 import { FiddleSettings } from '../fiddle-settings';
 
-import Barista from '../../barista';
+import Barista, { BrewSettings } from '../../barista';
 import { FiddleState } from '../../model/AppStore';
 import './index.css';
 
@@ -53,11 +53,11 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
                 onClick: () => { this.brew(this.props.fiddleState.code) },
             },
             {
-                key: "debug",
-                name: "Debug",
+                key: 'debug',
+                name: 'Debug',
                 onClick: () => { this.brew(this.props.fiddleState.code, this.props.fiddleState.brewMode, true, 0) },
                 iconProps: {
-                    className: "fa fa-bug",
+                    className: 'fa fa-bug',
                     style: { fontSize: '1.25em', lineHeight: '0.75em', verticalAlign: '-15%' }
                 }
             },
@@ -164,7 +164,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
             timeout = fiddleState.brewTimeout || 5000
         }
 
-        
+
         let lastBrewResult: any = undefined;
         let lastBrewResultIsError = false;
 
@@ -176,10 +176,11 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
 
         try {
 
-            const brewSettings = {
+            const brewSettings: BrewSettings = {
                 filename: fiddleState.filename,
                 input: fiddleState.code,
                 brewMode: fiddleState.brewMode,
+                allowDebuggerStatement: allowDebugger,
                 timeout: timeout,
                 requireConfig: toJS(fiddleState.requireConfig)
             };
@@ -187,7 +188,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
             let result = await barista.brew(brewSettings);
             if (!result) {
                 result = {
-                    data: "An empty result was returned."
+                    data: 'An empty result was returned.'
                 }
             }
             console.dir(result);
@@ -205,7 +206,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
                 lastBrewResult,
                 lastBrewResultIsError
             });
-            console.log("your brew is complete!");
+            console.log('your brew is complete!');
         }
     }
 
@@ -228,20 +229,20 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
         const { isBrewing, lastBrewResult, lastBrewResultIsError, showEditor } = this.state;
         let fiddleResultPaneStyle: any = {};
         if (lastBrewResultIsError) {
-            fiddleResultPaneStyle.backgroundColor = "rgb(255, 214, 214)";
+            fiddleResultPaneStyle.backgroundColor = 'rgb(255, 214, 214)';
         }
 
         return (
             <SplitPane
-                split="vertical"
-                className="left-sidebar"
+                split='vertical'
+                className='left-sidebar'
                 primaryPaneSize={this.state.fiddlePaneSize}
                 primaryPaneMinSize={0}
                 secondaryPaneStyle={{ overflow: 'auto' }}
                 onPaneResized={(size) => { this.setState({ fiddlePaneSize: size }); }}
                 onResizerDoubleClick={() => { this.setState({ fiddlePaneSize: '50%' }); }}
             >
-                <div style={{ display: 'flex', flexDirection: 'column', height: "100%" }}>
+                <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                     <CommandBar
                         isSearchBoxVisible={false}
                         items={this.commandBarItems}
@@ -271,7 +272,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
                         />
                     </div>
                 </div>
-                <div className="fiddle-results">
+                <div className='fiddle-results'>
                     {isBrewing ?
                         <Spinner size={SpinnerSize.large} label='Brewing...' ariaLive='assertive' />
                         : null}
@@ -284,7 +285,6 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
     }
 }
 
-/// <reference path="monaco-editor" />
 export interface FiddleProps {
     barista: Barista;
     fiddleState: FiddleState;
