@@ -7,6 +7,7 @@ import * as ts from 'typescript';
 import * as URI from 'urijs';
 import { autobind } from 'office-ui-fabric-react/lib';
 import { CommandBar } from 'office-ui-fabric-react/lib/CommandBar';
+import { IContextualMenuItem } from 'office-ui-fabric-react';
 import { Dropdown } from 'office-ui-fabric-react/lib/Dropdown';
 import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
 import { Toggle } from 'office-ui-fabric-react/lib/Toggle';
@@ -23,7 +24,7 @@ import './index.css';
 @observer
 export default class Fiddle extends React.Component<FiddleProps, any> {
     private editorOptions;
-    private commandBarItems;
+    private commandBarItems: IContextualMenuItem[];
     private commandBarFarItems;
     private keyMap;
     private _mousetrap: MousetrapInstance;
@@ -44,7 +45,9 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
 
         this.commandBarItems = [
             {
-                name: this.props.fiddleState.filename
+                key: 'name',
+                name: this.props.fiddleState.filename,
+                disabled: true
             },
             {
                 key: 'run',
@@ -193,7 +196,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
 
         let beforeTransformers: any = [];
         if (!allowDebugger) {
-           beforeTransformers.push(debuggerTransformer);
+            beforeTransformers.push(debuggerTransformer);
         }
 
         const jsCode = ts.transpileModule(code, {

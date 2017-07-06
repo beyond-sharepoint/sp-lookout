@@ -1,0 +1,15 @@
+{
+    "files.exclude": {
+        "build": true,
+        "hostwebproxy/build": true,
+        "hostwebproxy/hode_modules": false,
+        "node_modules": false,
+        "**/*.css": true
+    },
+    "search.exclude": {
+        "build": true,
+        "hostwebproxy/build": true,
+        "node_modules": true,
+        "hostwebproxy/hode_modules": false
+    }
+}
