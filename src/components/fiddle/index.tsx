@@ -23,7 +23,6 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
     private editorOptions;
     private commandBarItems: IContextualMenuItem[];
     private commandBarFarItems;
-    private keyMap;
     private _mousetrap: MousetrapInstance;
 
     public constructor(props: FiddleProps) {
@@ -35,38 +34,39 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
             showEditor: true
         }
 
-        this.keyMap = {
-            'brew': 'command+enter'
-        };
-
         this.commandBarItems = [
             {
                 key: 'name',
                 name: this.props.fiddleState.filename,
+                title: this.props.fiddleState.filename,
                 disabled: true
             },
             {
                 key: 'run',
                 name: 'Run',
+                title: 'Execute the current script.',
                 icon: 'Play',
-                ariaLabel: 'Execute current Script',
-                onClick: () => { this.brew(this.props.fiddleState.code) },
+                ariaLabel: 'Execute the current script.',
+                onClick: () => { this.brew(this.props.fiddleState.code, this.props.fiddleState.brewMode) },
             },
             {
                 key: 'debug',
                 name: 'Debug',
-                onClick: () => { this.brew(this.props.fiddleState.code, this.props.fiddleState.brewMode, true, 0) },
+                title: 'Debug the current script. Ensure developer tools are open before running this command.',
                 iconProps: {
                     className: 'fa fa-bug',
                     style: { fontSize: '1.25em', lineHeight: '0.75em', verticalAlign: '-15%' }
-                }
+                },
+                ariaLabel: 'Debug the current script. Ensure developer tools are open before running this command.',
+                onClick: () => { this.debug(this.props.fiddleState.code, this.props.fiddleState.brewMode) },
             },
         ]
 
         this.commandBarFarItems = [
             {
                 icon: 'settings',
-                title: 'Settings',
+                title: 'Customize current fiddle settings.',
+                ariaLabel: 'Customize current fiddle settings.',
                 onClick: this.showFiddleSettings,
             }
         ];
@@ -106,8 +106,13 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
         this._mousetrap = new Mousetrap(
             ReactDOM.findDOMNode(this)
         );
-        this._mousetrap.bind(['ctrl+return'], () => {
-            this.brew(this.props.fiddleState.code);
+
+        this._mousetrap.bind(['ctrl+return', 'ctrl+f5'], () => {
+            this.brew(this.props.fiddleState.code, this.props.fiddleState.brewMode);
+        });
+
+        this._mousetrap.bind(['ctrl+shift+return', 'f5'], () => {
+            this.debug(this.props.fiddleState.code,  this.props.fiddleState.brewMode);
         });
     }
 
@@ -149,6 +154,10 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
             ...this.props.fiddleState.editorOptions.minimap,
             enabled: ev
         };
+    }
+
+    private async debug(code: string, brewMode?: 'require' | 'sandfiddle') {
+        return this.brew(code, brewMode, true, 0);
     }
 
     private async brew(code: string, brewMode?: 'require' | 'sandfiddle', allowDebugger?: boolean, timeout?: number) {
