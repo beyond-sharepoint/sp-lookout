@@ -4,7 +4,7 @@ import * as moment from 'moment';
 import * as URI from 'urijs';
 import { get, defaultsDeep, isError, omit } from 'lodash';
 import * as Bluebird from 'bluebird';
-import SPProxy from './SPProxy';
+import { SPProxy } from './SPProxy';
 import { SPContextConfig, SPContextAuthenticationConfig, SPContextInfo, SandFiddleConfig } from './index.d';
 
 export const SPContextLocalStorageKey = 'sp-lookout-context';
@@ -12,7 +12,7 @@ export const SPContextLocalStorageKey = 'sp-lookout-context';
 /**
  * Represents a SharePoint Context.
  */
-export default class SPContext {
+export class SPContext {
     private static $contexts: { [webFullUrl: string]: SPContext } = {};
     private readonly _webFullUrl: string;
     private readonly _config: SPContextConfig;
@@ -55,17 +55,16 @@ export default class SPContext {
 
         //Ensure that a SharePoint proxy is open. If it times out, redirect to the SharePoint Authentication page.
         try {
-            proxy = await SPProxy.getOrCreateProxy(this._config.proxyAbsoluteUrl);
+            proxy = await SPProxy.getOrCreateProxy(this._config.proxyAbsoluteUrl, this._config.proxyConfig);
         } catch (ex) {
             const currentUri = URI();
-
             //If it's a timeout error, redirect to the login page.
             if (isError(ex) && (<any>ex).$$spproxy && (<any>ex).$$spproxy === 'timeout') {
                 //If we have a splookoutauth query string, we're probably authenticated.
                 //Don't redirect back to the auth page, but throw an error.
                 if (currentUri.hasQuery('splauth')) {
-                    const noProxyError = Error(`Authentication has previously succeeded, but the HostWebProxy did not respond in time. Ensure that the HostWebProxy exists in the specified url.`);
-                    (<any>noProxyError).$$spcontext = 'noproxy';
+                    const noProxyError = new SPContextError(`Authentication has previously succeeded, but the HostWebProxy did not respond in time. Ensure that the HostWebProxy exists in the specified url.`);
+                    noProxyError.$$spcontext = 'noproxy';
                     throw noProxyError;
                 }
 
@@ -85,22 +84,19 @@ export default class SPContext {
                     .normalize()
                     .toString();
 
+                const authenticationFailedError = new SPContextError(`Authentication failed, redirecting to Authentication Url: ${authUri}`);
+                authenticationFailedError.$$spcontext = 'authrequired';
                 window.open(authUri, '_top');
-
-                //Wait for 5 seconds and then throw the exception.
-                await Bluebird.delay(5 * 1000);
-                const authenticationFailedError = Error(`Authentication failed, redirecting to Authentication Url: ${authUri}`);
-                (<any>authenticationFailedError).$$spcontext = 'authentication';
                 throw authenticationFailedError;
             } else if (isError(ex) && ex.message && ex.message.startsWith('The specified origin is not trusted by the HostWebProxy')) {
-                const invalidOriginError = Error(`The HostWebProxy could not trust the current origin. Ensure that the current origin (${(<any>ex).invalidOrigin}) is added to ${URI((<any>ex).url).query('').href()}`);
-                (<any>invalidOriginError).$$spcontext = 'invalidorigin';
+                const invalidOriginError = new SPContextError(`The HostWebProxy could not trust the current origin. Ensure that the current origin (${(<any>ex).invalidOrigin}) is added to ${URI((<any>ex).url).query('').href()}`);
+                invalidOriginError.$$spcontext = 'invalidorigin';
                 throw invalidOriginError;
             }
 
             //Unknown error -- throw a new exception.
-            const unknownError = Error(`An unexpected error occurred while attempting to connect to the HostWebProxy: ${JSON.stringify(ex)}`);
-            (<any>unknownError).$$spcontext = 'unknown';
+            const unknownError = new SPContextError(`An unexpected error occurred while attempting to connect to the HostWebProxy: ${JSON.stringify(ex)}`);
+            unknownError.$$spcontext = 'unknown';
             throw unknownError;
         }
 
@@ -399,4 +395,15 @@ export default class SPContext {
         return result;
     }
 
+}
+
+export class SPContextError extends Error {
+    constructor(m: string) {
+        super(m);
+
+        // Set the prototype explicitly.
+        Object.setPrototypeOf(this, SPContextError.prototype);
+    }
+
+    $$spcontext: 'noproxy' | 'authrequired' | 'invalidorigin' | 'unknown';
 }

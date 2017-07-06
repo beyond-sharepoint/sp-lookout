@@ -2,7 +2,7 @@
 import * as ts from 'typescript';
 
 import { DebuggerTransformer } from './debuggerTransformer';
-import { SPContext, SPContextConfig } from '../spcontext';
+import { SPContext, SPContextConfig, SPContextError } from '../spcontext';
 
 export default class Barista {
     private _config: BaristaConfig;
@@ -57,27 +57,57 @@ export default class Barista {
         }
 
         let result: any;
-        switch (brewMode) {
-            case 'require':
-                if (requireConfig) {
-                    await spContext.requireConfig(requireConfig);
-                }
+        try {
+            switch (brewMode) {
+                case 'require':
+                    if (requireConfig) {
+                        await spContext.requireConfig(requireConfig);
+                    }
 
-                for (let define in defines) {
-                    await spContext.injectScript({ id: brewName, type: 'text/javascript', text: define });
-                }
+                    for (let define in defines) {
+                        await spContext.injectScript({ id: brewName, type: 'text/javascript', text: define });
+                    }
 
-                result = await spContext.require(brewName, undefined);
-                break;
-            default:
-            case 'sandfiddle':
-                result = await spContext.sandFiddle({
-                    requireConfig: requireConfig,
-                    defines: defines,
-                    entryPointId: brewName,
-                    timeout
-                }, timeout);
-                break;
+                    result = await spContext.require(brewName, undefined);
+                    break;
+                default:
+                case 'sandfiddle':
+                    result = await spContext.sandFiddle({
+                        requireConfig: requireConfig,
+                        defines: defines,
+                        entryPointId: brewName,
+                        timeout
+                    }, timeout);
+                    break;
+            }
+        }
+        catch (ex) {
+            if (ex instanceof SPContextError) {
+                const { noProxyHandler, invalidOriginHandler, authenticationRequiredHandler } = this._config;
+                switch (ex.$$spcontext) {
+                    case 'authrequired':
+                        if (authenticationRequiredHandler) {
+                            return authenticationRequiredHandler(this);
+                        }
+                        break;
+                    case 'invalidorigin':
+                        if (invalidOriginHandler) {
+                            return invalidOriginHandler(this);
+                        }
+                        break;
+                    case 'noproxy':
+                        if (noProxyHandler) {
+                            return noProxyHandler(this);
+                        }
+                        break;
+                    default:
+                        throw ex;
+                }
+            } else {
+                throw ex;
+            }
+
+            throw ex;
         }
 
         return result;
@@ -113,6 +143,8 @@ export interface BaristaConfig {
     spContextConfig?: SPContextConfig;
     fiddleScriptsPath?: string;
     noProxyHandler?: (barista: Barista) => any;
+    invalidOriginHandler?: (barista: Barista) => any;
+    authenticationRequiredHandler?: (barista: Barista) => any;
 }
 
 export interface BrewSettings {

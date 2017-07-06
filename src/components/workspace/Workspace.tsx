@@ -4,6 +4,7 @@ import {
     Route,
     Link
 } from 'react-router-dom';
+import * as URI from 'urijs';
 import { observer } from 'mobx-react';
 import * as localforage from 'localforage';
 import { autobind } from 'office-ui-fabric-react/lib';
@@ -45,7 +46,10 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
         };
 
         this._barista = new Barista({
-            webFullUrl: 'https://baristalabs.sharepoint.com'
+            webFullUrl: 'https://baristalabs.sharepoint.com',
+            noProxyHandler: () => { console.log('no proxy!'); return { data: 'Error: Could not communicate with the proxy.'}; },
+            authenticationRequiredHandler: () => { console.log('auth required!'); return { data: 'Error: Authentication is required.'}; },
+            invalidOriginHandler: () => { console.log('invalid origin!'); return { data: 'Error: Proxy reported invalid origin.'}; }
         });
 
         this._appBarItems = [
@@ -156,6 +160,15 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
                 )
             }
         ];
+    }
+
+    public componentDidMount() {
+        const currentUri = URI();
+        if (currentUri.hasQuery('splauth')) {
+            const targetRoute = currentUri.query(true)["splauth"];
+            currentUri.fragment(targetRoute);
+            window.location.href = currentUri.href();
+        }
     }
 
     public render() {

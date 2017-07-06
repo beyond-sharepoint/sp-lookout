@@ -4,7 +4,7 @@ import * as URI from 'urijs';
 /**
  * Represents an object that dynamically loads resources into the current page. For instance, iframe content, javascript and css.
  */
-export default class ResourceLoader {
+export class ResourceLoader {
     private $document: HTMLDocument;
     private $promises: Object;
 

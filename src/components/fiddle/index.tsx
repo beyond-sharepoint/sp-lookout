@@ -175,7 +175,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
         });
 
         try {
-            
+
             const brewSettings = {
                 filename: fiddleState.filename,
                 input: fiddleState.code,
@@ -184,8 +184,12 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
                 requireConfig: toJS(fiddleState.requireConfig)
             };
 
-            const result = await barista.brew(brewSettings);
-
+            let result = await barista.brew(brewSettings);
+            if (!result) {
+                result = {
+                    data: "An empty result was returned."
+                }
+            }
             console.dir(result);
             lastBrewResult = result.data || result.transferrableData;
         } catch (ex) {

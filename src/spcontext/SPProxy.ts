@@ -2,14 +2,14 @@ import * as URI from 'urijs';
 import { get, defaultsDeep } from 'lodash';
 import * as Bluebird from 'bluebird';
 import { SPProxyConfig } from './index.d';
-import ResourceLoader from './ResourceLoader';
+import { ResourceLoader } from './ResourceLoader';
 
 /**
  * Represents a proxy that uses an embedded iFrame to HostWebProxy.aspx and postMessage to bypass cross-origin policy.
  * 
  * A simple protocol is used to invoke commands that are defined in the hostwebproxy.
  */
-export default class SPProxy {
+export class SPProxy {
     private static $resourceLoader = new ResourceLoader();
     private static $proxies: { [origin: string]: SPProxy } = {};
 
