@@ -1,7 +1,7 @@
 /// <reference path="../../../node_modules/monaco-editor/monaco.d.ts" />
 
 import * as React from 'react';
-import { defaultsDeep } from 'lodash';
+import { defaultsDeep, isEqual } from 'lodash';
 
 export default class MonacoEditor extends React.Component<MonacoEditorProps, {}> {
     public static defaultProps: Partial<MonacoEditorProps> = {
@@ -63,6 +63,10 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps, {}>
 
         if (prevProps.theme !== this.props.theme) {
             (window as any).monaco.editor.setTheme(this.props.theme);
+        }
+
+        if (this.props.options && !isEqual(prevProps.options, this.props.options)) {
+            this.editor.updateOptions(this.props.options);
         }
     }
 
@@ -219,9 +223,9 @@ export interface MonacoEditorProps {
     defaultValue?: string;
     context?: any;
     language?: string;
-    theme?: string;
     filename?: string;
-    options?: any;
+    theme?: string;
+    options?: monaco.editor.IEditorOptions;
     editorDidMount?: Function;
     editorWillMount?: Function;
     onChange?: Function;

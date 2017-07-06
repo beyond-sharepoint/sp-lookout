@@ -4,12 +4,14 @@
         "hostwebproxy/build": true,
         "hostwebproxy/hode_modules": false,
         "node_modules": false,
+        "public/vs": true,
         "**/*.css": true
     },
     "search.exclude": {
         "build": true,
         "hostwebproxy/build": true,
         "node_modules": true,
-        "hostwebproxy/hode_modules": false
+        "hostwebproxy/hode_modules": false,
+        "public/vs": true
     }
 }

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { observable, action } from 'mobx';
+import { observable, action, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import * as Mousetrap from 'mousetrap';
 import * as ts from 'typescript';
@@ -8,15 +8,13 @@ import * as URI from 'urijs';
 import { autobind } from 'office-ui-fabric-react/lib';
 import { CommandBar } from 'office-ui-fabric-react/lib/CommandBar';
 import { IContextualMenuItem } from 'office-ui-fabric-react';
-import { Dropdown } from 'office-ui-fabric-react/lib/Dropdown';
 import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
-import { Toggle } from 'office-ui-fabric-react/lib/Toggle';
-import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { ObjectInspector } from 'react-inspector';
 import { SPContext } from '../../spcontext';
 import SplitPane from '../split-pane/SplitPane';
 import MonacoEditor from '../monaco-editor';
 import { get, set, cloneDeep } from 'lodash';
+import { FiddleSettings } from '../fiddle-settings';
 
 import { FiddleState } from '../../model/AppStore';
 import './index.css';
@@ -39,8 +37,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
         }
 
         this.keyMap = {
-            'brew': 'command+enter',
-            'deleteNode': ['del', 'backspace']
+            'brew': 'command+enter'
         };
 
         this.commandBarItems = [
@@ -160,7 +157,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
     private updateMinimap(ev) {
         set(this.props, 'fiddleState.editorOptions.minimap.enabled', ev);
         //this.props.fiddleState.editorOptions = observable(this.props.fiddleState.editorOptions);
-        this.reloadEditor();
+        //this.reloadEditor();
     }
 
     private async brew(code: string, brewMode?: 'require' | 'sandfiddle', allowDebugger?: boolean, timeout?: number) {
@@ -315,57 +312,19 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
                                 filename={fiddleState.filename}
                                 onChange={this.updateCode}
                                 editorWillMount={this.editorWillMount}
-                                options={fiddleState.editorOptions}
+                                options={toJS(fiddleState.editorOptions)}
                             >
                             </MonacoEditor>
                             : null
                         }
-                        <Modal
-                            isOpen={this.state.showFiddleSettingsModal}
+                        <FiddleSettings
+                            showFiddleSettingsModal={this.state.showFiddleSettingsModal}
                             onDismiss={this.hideFiddleSettings}
-                            isBlocking={false}
-                            containerClassName="fiddle-settings-modal-container"
-                        >
-                            <div className="fiddle-settings-modal-header">
-                                <span>SPFiddle Settings</span>
-                            </div>
-                            <div className="fiddle-settings-modal-body">
-                                <Dropdown
-                                    label='Fiddle Theme:'
-                                    id='fiddle-theme'
-                                    ariaLabel='Select Fiddle Theme'
-                                    selectedKey={fiddleState.theme}
-                                    onChanged={this.updateTheme}
-                                    options={
-                                        [
-                                            { key: 'vs', text: 'Light (Visual Studio)' },
-                                            { key: 'vs-dark', text: 'Dark (Visual Studio)' },
-                                        ]
-                                    }
-                                />
-                                <Dropdown
-                                    label='Fiddle Language:'
-                                    id='fiddle-language'
-                                    ariaLabel='Select Fiddle Language'
-                                    selectedKey={fiddleState.language}
-                                    onChanged={this.updateLanguage}
-                                    options={
-                                        [
-                                            { key: 'typescript', text: 'TypeScript' },
-                                            { key: 'javascript', text: 'JavaScript' },
-                                        ]
-                                    }
-                                />
-                                <Toggle
-                                    defaultChecked={get(fiddleState, 'editorOptions.minimap.enabled') as boolean}
-                                    onChanged={this.updateMinimap}
-                                    label='Minimap Enabled'
-                                    onAriaLabel='Minimap is enabled. Press to disable.'
-                                    offAriaLabel='Minimap is disabled. Press to enable.'
-                                    onText='On'
-                                    offText='Off' />
-                            </div>
-                        </Modal>
+                            updateLanguage={this.updateLanguage}
+                            updateTheme={this.updateTheme}
+                            updateMinimap={this.updateMinimap}
+                            fiddleState={fiddleState}
+                        />
                     </div>
                 </div>
                 <div className="fiddle-results">
