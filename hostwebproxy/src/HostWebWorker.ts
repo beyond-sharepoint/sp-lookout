@@ -20,8 +20,14 @@ class SandFiddleProcessor {
     }
 
     public loadDefines() {
-        for (let define of this._request.defines) {
-            (<any>this._context).eval(define);
+        for (let id of Object.keys(this._request.defines)) {
+            const define = this._request.defines[id];
+            try {
+                (<any>this._context).eval(define);
+            } catch (ex) {
+                this.postMessageError(ex);
+                throw ex;
+            }
         }
     }
 

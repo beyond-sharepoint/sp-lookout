@@ -53,7 +53,7 @@ export interface SPContextInfo {
 
 export interface SandFiddleConfig {
     requireConfig: any;
-    defines: Array<string>;
+    defines: {[id: string]: string};
     entryPointId: string;
     timeout?: number;
 }

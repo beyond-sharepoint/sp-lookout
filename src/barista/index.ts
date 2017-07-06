@@ -42,17 +42,19 @@ export default class Barista {
 
         //TODO: determine any dependent modules that have a spl prefix and get them.
 
-        const defines: Array<string> = [transpileResult.outputText];
+        const defines: {[id: string]: string} = {
+            filename: transpileResult.outputText
+        };
 
         //Ensure a unique define. Mostly for 'require' mode.
         //TODO: This probably needs to be done for all defines, not just our entry point.
         //However, that will mess things up for all requires. So we might need to do
         //this at a step before.
         let brewName = `${filename}-${(new Date()).getTime()}`;
-        for (let ix = 0; ix < defines.length; ix++) {
-            let define = defines[ix];
+        for (let id of Object.keys(defines)) {
+            const define = defines[id];
             if (define.startsWith(`define('${filename}',[`)) {
-                defines[ix] = define.replace(`define('${filename}',[`, `define('${brewName}',[`);
+                defines[id] = define.replace(`define('${filename}',[`, `define('${brewName}',[`);
             }
         }
 
@@ -64,11 +66,12 @@ export default class Barista {
                         await spContext.requireConfig(requireConfig);
                     }
 
-                    for (let define of defines) {
-                        await spContext.injectScript({ id: brewName, type: 'text/javascript', text: define });
+                    for (let id of Object.keys(defines)) {
+                        const define = defines[id];
+                        await spContext.injectScript({ id: define, type: 'text/javascript', text: define });
                     }
 
-                    result = await spContext.require(brewName, undefined);
+                    result = await spContext.require(brewName, timeout);
                     break;
                 default:
                 case 'sandfiddle':
