@@ -1,3 +1,6 @@
+/// <reference path="../../node_modules/@types/requirejs/index.d.ts" />
+/// <reference path="../../node_modules/monaco-editor/monaco.d.ts" />
+
 import { autorun, observable, observe, action, runInAction, toJS } from 'mobx';
 
 export class FiddleState {
@@ -20,13 +23,10 @@ export class FiddleState {
     lastResult: any;
 
     @observable
-    editorOptions: FiddleEditorOptions;
+    editorOptions: monaco.editor.IEditorOptions;
 
     @observable
-    baseUrl: string;
-
-    @observable
-    importPaths: { [id: string]: string };
+    requireConfig: RequireConfig;
 
     @observable
     brewMode: 'require' | 'sandfiddle';
@@ -40,13 +40,24 @@ export class FiddleState {
         this.language = 'typescript';
         this.theme = 'vs';
         this.code = 'const foo = "Hello, world!";\nexport default foo;';
-        this.importPaths = FiddleState.defaultImportPaths;
-        this.editorOptions = FiddleEditorOptions.defaultFiddleEditorOptions;
+        this.requireConfig = {
+            paths: FiddleState.defaultPaths
+        };
+        this.editorOptions = FiddleState.defaultFiddleEditorOptions;
         this.brewTimeout = 5000;
         this.brewMode = 'sandfiddle';
     }
 
-    static defaultImportPaths = {
+    static defaultFiddleEditorOptions: monaco.editor.IEditorOptions = {
+        automaticLayout: true,
+        scrollBeyondLastLine: false,
+        folding: true,
+        minimap: {
+            enabled: true
+        }
+    };
+
+    static defaultPaths = {
         'tslib': 'https://unpkg.co/tslib/tslib',
         'lodash': 'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min',
         'sp-pnp-js': 'https://cdnjs.cloudflare.com/ajax/libs/sp-pnp-js/2.0.6/pnp.min',
@@ -55,39 +66,5 @@ export class FiddleState {
         'react-dom': 'https://cdnjs.cloudflare.com/ajax/libs/react/15.6.1/react-dom',
         'react-dom-server': 'https://cdnjs.cloudflare.com/ajax/libs/react/15.6.1/react-dom-server',
         'Chartjs': 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min'
-    };
-}
-
-export class FiddleEditorMinimapOptions {
-    @observable
-    enabled: boolean;
-
-    constructor() {
-        this.enabled = true;
-    }
-}
-
-export class FiddleEditorOptions {
-    @observable
-    automaticLayout: boolean;
-
-    @observable
-    scrollBeyondLastLine: boolean;
-
-    @observable
-    folding: boolean;
-
-    @observable
-    minimap: FiddleEditorMinimapOptions;
-
-    @observable
-    jsx: string;
-
-    static defaultFiddleEditorOptions: FiddleEditorOptions = {
-        automaticLayout: true,
-        scrollBeyondLastLine: false,
-        folding: true,
-        minimap: new FiddleEditorMinimapOptions(),
-        jsx: 'react'
     };
 }

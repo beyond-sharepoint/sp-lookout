@@ -16,6 +16,7 @@
     "@types/react-dom": "^15.5.1",
     "@types/react-grid-layout": "^0.14.2",
     "@types/react-router": "^4.0.12",
+    "@types/requirejs": "^2.1.29",
     "@types/urijs": "^1.15.33",
     "babel-standalone": "^6.25.0",
     "font-awesome": "^4.7.0",

@@ -12,6 +12,7 @@ import { INavLinkGroup } from 'office-ui-fabric-react/lib/Nav';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import SplitPane from '../split-pane/SplitPane';
 
+import Barista from '../../barista';
 import Dashboard from '../dashboard';
 import Aside from '../workspace-aside';
 import Fiddle from '../fiddle';
@@ -20,11 +21,11 @@ import { WorkspaceState } from '../../model/AppStore';
 
 import './Workspace.css';
 
-
 @observer
 export default class Workspace extends React.Component<WorkspaceProps, any> {
     private _appBarItems;
     private _appBarFarItems;
+    private _barista: Barista;
 
     public constructor(props) {
         super(props);
@@ -40,9 +41,12 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
             showSettingsModal: false,
             showShortcutsModal: false,
             sidebarSize: 215,
-            webFullUrl: 'https://baristalabs.sharepoint.com',
-            fiddleScriptsPath: '/Shared Documents'
+            webFullUrl: 'https://baristalabs.sharepoint.com'
         };
+
+        this._barista = new Barista({
+            webFullUrl: 'https://baristalabs.sharepoint.com'
+        });
 
         this._appBarItems = [
             {
@@ -146,8 +150,7 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
                 sidebar: () => <div>shoelaces!</div>,
                 main: () => (
                     <Fiddle
-                        webFullUrl={this.state.webFullUrl}
-                        fiddleScriptsPath={this.state.fiddleScriptsPath}
+                        barista={this._barista}
                         fiddleState={workspaceState.selectedFiddle}>
                     </Fiddle>
                 )

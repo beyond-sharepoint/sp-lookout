@@ -3,19 +3,18 @@ import * as ReactDOM from 'react-dom';
 import { observable, action, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import * as Mousetrap from 'mousetrap';
-import * as ts from 'typescript';
 import * as URI from 'urijs';
 import { autobind } from 'office-ui-fabric-react/lib';
 import { CommandBar } from 'office-ui-fabric-react/lib/CommandBar';
 import { IContextualMenuItem } from 'office-ui-fabric-react';
 import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
 import { ObjectInspector } from 'react-inspector';
-import { SPContext } from '../../spcontext';
 import SplitPane from '../split-pane/SplitPane';
 import MonacoEditor from '../monaco-editor';
 import { get, set, cloneDeep } from 'lodash';
 import { FiddleSettings } from '../fiddle-settings';
 
+import Barista from '../../barista';
 import { FiddleState } from '../../model/AppStore';
 import './index.css';
 
@@ -112,19 +111,6 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
         });
     }
 
-    private async uploadModule(context: SPContext, code: string): Promise<Response> {
-        const { webFullUrl, fiddleScriptsPath } = this.props;
-        const spContext = await SPContext.getContext(webFullUrl);
-
-        const webUri = URI(webFullUrl).path(fiddleScriptsPath);
-        const url = `/_api/web/getfolderbyserverrelativeurl('${URI.encode(webUri.path())}')/files/add(overwrite=true,url='splookout-fiddle.js')`;
-
-        return spContext.fetch(url, {
-            method: "POST",
-            body: code
-        });
-    }
-
     private reloadEditor() {
         this.setState({
             showEditor: false
@@ -154,12 +140,19 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
 
     @action.bound
     private updateMinimap(ev) {
-        set(this.props, 'fiddleState.editorOptions.minimap.enabled', ev);
-        //this.props.fiddleState.editorOptions = observable(this.props.fiddleState.editorOptions);
+        //set(this.props, 'fiddleState.editorOptions.minimap.enabled', ev);
+        if (!this.props.fiddleState.editorOptions) {
+            this.props.fiddleState.editorOptions = {};
+        }
+
+        this.props.fiddleState.editorOptions.minimap = {
+            ...this.props.fiddleState.editorOptions.minimap,
+            enabled: ev
+        };
     }
 
     private async brew(code: string, brewMode?: 'require' | 'sandfiddle', allowDebugger?: boolean, timeout?: number) {
-        const { webFullUrl, fiddleState } = this.props;
+        const { barista, fiddleState } = this.props;
         const { isBrewing } = this.state;
 
         if (isBrewing) {
@@ -171,42 +164,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
             timeout = fiddleState.brewTimeout || 5000
         }
 
-        const debuggerTransformer = (context: ts.TransformationContext): ts.Transformer<ts.SourceFile> => {
-            const visitor: ts.Visitor = (node: ts.Node): ts.Node => {
-                switch (node.kind) {
-                    case ts.SyntaxKind.DebuggerKeyword:
-                    case ts.SyntaxKind.DebuggerStatement:
-                        // drop on the floor;
-                        return null as any;
-                    default:
-                        return ts.visitEachChild(node, visitor, context);
-                }
-            };
-
-            const transformer: ts.Transformer<ts.SourceFile> = (sf: ts.SourceFile) =>
-                ts.visitNode(sf, visitor);
-
-            return transformer;
-        }
-
-        let beforeTransformers: any = [];
-        if (!allowDebugger) {
-            beforeTransformers.push(debuggerTransformer);
-        }
-
-        const jsCode = ts.transpileModule(code, {
-            transformers: {
-                before: beforeTransformers
-            },
-            compilerOptions: {
-                target: ts.ScriptTarget.ES2015,
-                module: ts.ModuleKind.AMD,
-                jsx: ts.JsxEmit.React,
-                importHelpers: true,
-            },
-            fileName: fiddleState.filename
-        });
-
+        
         let lastBrewResult: any = undefined;
         let lastBrewResultIsError = false;
 
@@ -217,32 +175,16 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
         });
 
         try {
-            const spContext = await SPContext.getContext(webFullUrl);
-            let fiddleName = `splookout-fiddle-${(new Date()).getTime()}`;
-            let requireConfig = {
-                baseUrl: fiddleState.baseUrl || undefined,
-                paths: fiddleState.importPaths || FiddleState.defaultImportPaths
+            
+            const brewSettings = {
+                filename: fiddleState.filename,
+                input: fiddleState.code,
+                brewMode: fiddleState.brewMode,
+                timeout: timeout,
+                requireConfig: toJS(fiddleState.requireConfig)
             };
 
-            const fiddleDefine = jsCode.outputText.replace("define([", `define('${fiddleName}',[`);
-            let result: any;
-
-            switch (brewMode) {
-                case 'require':
-                    await spContext.requireConfig(requireConfig);
-                    await spContext.injectScript({ id: fiddleName, type: 'text/javascript', text: fiddleDefine });
-                    result = await spContext.require(fiddleName, undefined);
-                    break;
-                default:
-                case 'sandfiddle':
-                    result = await spContext.sandFiddle({
-                        requireConfig: requireConfig,
-                        defines: [fiddleDefine],
-                        entryPointId: fiddleName,
-                        timeout
-                    }, timeout);
-                    break;
-            }
+            const result = await barista.brew(brewSettings);
 
             console.dir(result);
             lastBrewResult = result.data || result.transferrableData;
@@ -340,7 +282,6 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
 
 /// <reference path="monaco-editor" />
 export interface FiddleProps {
-    webFullUrl: string;
-    fiddleScriptsPath: string;
+    barista: Barista;
     fiddleState: FiddleState;
 }

@@ -71,8 +71,16 @@ export class FiddleConfig {
 
 let store = (<any>window).store = new AppStore();
 
+// observe(store.workspaceState.selectedFiddle, "editorOptions", (change) => {
+//     console.log("mooseballs!!");
+// });
+
 autorun(() => {
+    // let value = (<any>store.workspaceState.selectedFiddle).get();
+    // console.log("moo");
+
     observe(store.workspaceState.selectedFiddle, (change) => {
+        //console.log("meh");
         store.workspaceState.saveFiddles();
         //debounce(store.workspaceState.saveFiddles, 250);
         //throttle(store.workspaceState.saveFiddles, 1000);

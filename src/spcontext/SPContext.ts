@@ -1,9 +1,13 @@
+/// <reference path="../../node_modules/@types/requirejs/index.d.ts" />
+
 import * as moment from 'moment';
 import * as URI from 'urijs';
 import { get, defaultsDeep, isError, omit } from 'lodash';
 import * as Bluebird from 'bluebird';
 import SPProxy from './SPProxy';
 import { SPContextConfig, SPContextAuthenticationConfig, SPContextInfo, SandFiddleConfig } from './index.d';
+
+export const SPContextLocalStorageKey = 'sp-lookout-context';
 
 /**
  * Represents a SharePoint Context.
@@ -53,14 +57,26 @@ export default class SPContext {
         try {
             proxy = await SPProxy.getOrCreateProxy(this._config.proxyAbsoluteUrl);
         } catch (ex) {
+            const currentUri = URI();
+
             //If it's a timeout error, redirect to the login page.
-            if (isError(ex) && ex.message && ex.message.startsWith('invoke() timed out')) {
+            if (isError(ex) && (<any>ex).$$spproxy && (<any>ex).$$spproxy === 'timeout') {
+                //If we have a splookoutauth query string, we're probably authenticated.
+                //Don't redirect back to the auth page, but throw an error.
+                if (currentUri.hasQuery('splauth')) {
+                    const noProxyError = Error(`Authentication has previously succeeded, but the HostWebProxy did not respond in time. Ensure that the HostWebProxy exists in the specified url.`);
+                    (<any>noProxyError).$$spcontext = 'noproxy';
+                    throw noProxyError;
+                }
+
                 let sourceUrl: uri.URI;
                 if (this._config.authenticationConfig.sourceUrl) {
                     sourceUrl = URI(this._config.authenticationConfig.sourceUrl);
                 } else {
-                    sourceUrl = URI();
+                    sourceUrl = currentUri;
                 }
+
+                sourceUrl.addQuery({ splauth: sourceUrl.hash() });
 
                 let authUri = URI(this._webFullUrl)
                     .pathname(this._config.authenticationConfig.authenticationEndpointWebRelativeUrl)
@@ -73,13 +89,19 @@ export default class SPContext {
 
                 //Wait for 5 seconds and then throw the exception.
                 await Bluebird.delay(5 * 1000);
-                throw Error(`Authentication failed, redirecting to Authentication Url: ${authUri}`);
+                const authenticationFailedError = Error(`Authentication failed, redirecting to Authentication Url: ${authUri}`);
+                (<any>authenticationFailedError).$$spcontext = 'authentication';
+                throw authenticationFailedError;
             } else if (isError(ex) && ex.message && ex.message.startsWith('The specified origin is not trusted by the HostWebProxy')) {
-                throw Error(`The HostWebProxy could not trust the current origin. Ensure that the current origin (${(<any>ex).invalidOrigin}) is added to ${URI((<any>ex).url).query('').href()}`);
+                const invalidOriginError = Error(`The HostWebProxy could not trust the current origin. Ensure that the current origin (${(<any>ex).invalidOrigin}) is added to ${URI((<any>ex).url).query('').href()}`);
+                (<any>invalidOriginError).$$spcontext = 'invalidorigin';
+                throw invalidOriginError;
             }
 
             //Unknown error -- throw a new exception.
-            throw Error(`An unexpected error occurred while attempting to connect to the HostWebProxy: ${JSON.stringify(ex)}`);
+            const unknownError = Error(`An unexpected error occurred while attempting to connect to the HostWebProxy: ${JSON.stringify(ex)}`);
+            (<any>unknownError).$$spcontext = 'unknown';
+            throw unknownError;
         }
 
         //If we don't have a context, or it is expired, get a new one.
@@ -258,7 +280,7 @@ export default class SPContext {
      * Pass configuration options to RequireJS instance within the proxy.
      * @param id 
      */
-    public async requireConfig(config: any, timeout?: number) {
+    public async requireConfig(config: RequireConfig, timeout?: number) {
         if (!config) {
             throw Error('Config object must be supplied as the first argument.');
         }

@@ -109,6 +109,7 @@ export default class SPProxy {
 
             if (response.result === 'error') {
                 let err = new Error(response.message);
+                (<any>err).$$spproxy = 'eval';
                 err.name = response.name;
                 err.stack = response.stack;
                 for (let key in response) {
@@ -123,7 +124,9 @@ export default class SPProxy {
         };
 
         if (timeout > 0) {
-            invokePromise = invokePromise.timeout(timeout, new Error(`invoke() timed out while waiting for a response while executing ${command}. (${timeout}ms)`));
+            const invokeTimeoutError = new Error(`invoke() timed out while waiting for a response while executing ${command}. (${timeout}ms)`);
+            (<any>invokeTimeoutError).$$spproxy = 'timeout';
+            invokePromise = invokePromise.timeout(timeout, invokeTimeoutError);
         }
 
         invokePromise = invokePromise.finally(() => {

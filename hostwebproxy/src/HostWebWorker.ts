@@ -7,10 +7,13 @@ class SandFiddleProcessor {
         this._request = request;
     }
 
-    public loadRequireJS() {
+    public loadRequireJS(requireConfig) {
         // You're a wizard, Harry!
         if (this._request.requirejs) {
             (<any>this._context).eval(this._request.requirejs);
+            if (requireConfig) {
+                (<any>self).requirejs.config(requireConfig);
+            }
         }
     }
 
@@ -94,8 +97,7 @@ onmessage = (e) => {
     const request = e.data;
 
     const processor = (<any>self).processor = new SandFiddleProcessor(self, request);
-    processor.loadRequireJS();
-    (<any>self).requirejs.config(request.requireConfig);
+    processor.loadRequireJS(request.requireConfig);
     processor.loadDefines();
     processor.require();
 }
