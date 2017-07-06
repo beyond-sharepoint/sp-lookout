@@ -179,7 +179,6 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps, {}>
             },
             options
         );
-        console.dir(editorOptions);
 
         this.editor = context.monaco.editor.create(containerElement, editorOptions);
 
@@ -189,7 +188,7 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps, {}>
 
     private destroyMonaco() {
         if (typeof this.editor !== 'undefined') {
-            //Destroy the model associated with the deitor.
+            //Destroy the model associated with the editor.
             const model = this.editor.getModel();
             if (model) {
                 model.dispose();

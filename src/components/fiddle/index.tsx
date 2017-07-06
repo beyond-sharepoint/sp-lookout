@@ -150,14 +150,12 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
     @action.bound
     private updateLanguage(ev) {
         this.props.fiddleState.language = ev.key;
-        this.reloadEditor();
     }
 
     @action.bound
     private updateMinimap(ev) {
         set(this.props, 'fiddleState.editorOptions.minimap.enabled', ev);
         //this.props.fiddleState.editorOptions = observable(this.props.fiddleState.editorOptions);
-        //this.reloadEditor();
     }
 
     private async brew(code: string, brewMode?: 'require' | 'sandfiddle', allowDebugger?: boolean, timeout?: number) {
