@@ -1,7 +1,7 @@
 SP Lookout!
 ---
 
-Interactive workspace to monitor and interact with SharePoint.
+Interactive administration tool to monitor and interact with SharePoint.
 
 1. Clone this repo
 2. Install Dependencies (npm install)
