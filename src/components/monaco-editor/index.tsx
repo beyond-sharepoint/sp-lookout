@@ -20,7 +20,7 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps, {}>
 
     private _currentValue: string | null;
     private _preventTriggerChangeEvent: boolean;
-    private editor: monaco.editor.ICommonCodeEditor;
+    private editor: monaco.editor.ICodeEditor;
 
     public constructor(props: MonacoEditorProps) {
         super(props);
@@ -73,7 +73,7 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps, {}>
         }
     }
 
-    private editorDidMount(editor, monaco) {
+    private editorDidMount(editor: monaco.editor.ICodeEditor, monaco) {
         const { editorDidMount, onChange } = this.props;
 
         if (typeof editorDidMount === 'function') {

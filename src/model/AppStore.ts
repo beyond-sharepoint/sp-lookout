@@ -107,7 +107,7 @@ export class FiddleState {
         this.theme = 'vs';
         this.code = 'const foo = "Hello, world!";\nexport default foo;';
         this.importPaths = FiddleState.defaultImportPaths;
-        this.editorOptions = new FiddleEditorOptions();
+        this.editorOptions = FiddleEditorOptions.defaultFiddleEditorOptions;
         this.brewTimeout = 5000;
         this.brewMode = 'sandfiddle';
     }
@@ -141,14 +141,18 @@ export class FiddleEditorOptions {
     scrollBeyondLastLine: boolean;
 
     @observable
+    folding: boolean;
+
+    @observable
     minimap: FiddleEditorMinimapOptions;
 
     @observable
     jsx: string;
 
-    static defaultFiddleEditorOptions = {
+    static defaultFiddleEditorOptions: FiddleEditorOptions = {
         automaticLayout: true,
         scrollBeyondLastLine: false,
+        folding: true,
         minimap: new FiddleEditorMinimapOptions(),
         jsx: 'react'
     };
