@@ -58,7 +58,8 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
                 name: "Debug",
                 onClick: () => { this.brew(this.props.fiddleState.code, this.props.fiddleState.brewMode, true, 0) },
                 iconProps: {
-                    className: "fa fa-bug"
+                    className: "fa fa-bug",
+                    style: { fontSize: '1.25em', lineHeight: '0.75em', verticalAlign: '-15%' }
                 }
             },
         ]
