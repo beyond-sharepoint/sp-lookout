@@ -56,7 +56,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
             {
                 key: "debug",
                 name: "Debug",
-                onClick: () => { this.brew(this.props.fiddleState.code, this.props.fiddleState.brewMode, 0) },
+                onClick: () => { this.brew(this.props.fiddleState.code, this.props.fiddleState.brewMode, true, 0) },
                 iconProps: {
                     className: "fa fa-bug"
                 }
@@ -144,7 +144,6 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
     @action.bound
     private updateTheme(ev) {
         this.props.fiddleState.theme = ev.key;
-        this.reloadEditor();
     }
 
     @action.bound
@@ -160,7 +159,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
         this.reloadEditor();
     }
 
-    private async brew(code: string, brewMode?: 'require' | 'sandfiddle', timeout?: number) {
+    private async brew(code: string, brewMode?: 'require' | 'sandfiddle', allowDebugger?: boolean, timeout?: number) {
         const { webFullUrl, fiddleState } = this.props;
         const { isBrewing } = this.state;
 
@@ -173,14 +172,40 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
             timeout = fiddleState.brewTimeout || 5000
         }
 
+        const debuggerTransformer = (context: ts.TransformationContext): ts.Transformer<ts.SourceFile> => {
+            const visitor: ts.Visitor = (node: ts.Node): ts.Node => {
+                switch (node.kind) {
+                    case ts.SyntaxKind.DebuggerKeyword:
+                    case ts.SyntaxKind.DebuggerStatement:
+                        // drop on the floor;
+                        return null as any;
+                    default:
+                        return ts.visitEachChild(node, visitor, context);
+                }
+            };
+
+            const transformer: ts.Transformer<ts.SourceFile> = (sf: ts.SourceFile) =>
+                ts.visitNode(sf, visitor);
+
+            return transformer;
+        }
+
+        let beforeTransformers: any = [];
+        if (!allowDebugger) {
+           beforeTransformers.push(debuggerTransformer);
+        }
+
         const jsCode = ts.transpileModule(code, {
+            transformers: {
+                before: beforeTransformers
+            },
             compilerOptions: {
                 target: ts.ScriptTarget.ES2015,
                 module: ts.ModuleKind.AMD,
                 jsx: ts.JsxEmit.React,
                 importHelpers: true,
             },
-            fileName: 'splookout-fiddle.tsx'
+            fileName: fiddleState.filename
         });
 
         let lastBrewResult: any = undefined;
