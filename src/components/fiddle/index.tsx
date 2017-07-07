@@ -1,3 +1,5 @@
+/// <reference path="../../../node_modules/monaco-editor/monaco.d.ts" />
+
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { observable, action, toJS } from 'mobx';
@@ -72,8 +74,32 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
         ];
     }
 
+    private async loadTypescriptDefinitions() {
+
+        //Import typedefs to feed the grue
+        //the grue is ancient, it must be done this way.
+        const typeDefs = {
+            'lodash': require('file-loader!@types/lodash/index.d.ts'),
+            'moment': require('file-loader!moment/moment.d.ts'),
+            'sp-pnp-js': require('file-loader!./types/sp-pnp-js.d.html'),
+        }
+
+        for (let name in typeDefs) {
+            const fileResponse = await fetch(typeDefs[name]);
+            const fileContents = await fileResponse.text();
+            monaco.languages.typescript.typescriptDefaults.addExtraLib(
+                fileContents,
+                `node_modules/@types/${name}/index.d.ts`);
+        }
+
+        // // extra libraries
+        // monaco.languages.typescript.typescriptDefaults.addExtraLib(
+        //     `declare module "sp-pnp-js" { export declare function next() : string }`,
+        //     'node_modules/@types/sp-pnp-js/index.d.ts');
+    }
+
     @autobind
-    private editorWillMount(monaco) {
+    private async editorWillMount() {
 
         monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
             target: monaco.languages.typescript.ScriptTarget.ES2016,
@@ -93,13 +119,16 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
             module: monaco.languages.typescript.ModuleKind.CommonJS,
             allowNonTsExtensions: true,
             checkJs: true,
-            jsx: monaco.languages.typescript.JsxEmit.React
+            jsx: monaco.languages.typescript.JsxEmit.React,
+            moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs
         });
 
         monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
             noSemanticValidation: false,
             noSyntaxValidation: false
         });
+
+        this.loadTypescriptDefinitions();
     }
 
     public componentDidMount() {
@@ -112,7 +141,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
         });
 
         this._mousetrap.bind(['ctrl+shift+return', 'f5'], () => {
-            this.debug(this.props.fiddleState.code,  this.props.fiddleState.brewMode);
+            this.debug(this.props.fiddleState.code, this.props.fiddleState.brewMode);
         });
     }
 

@@ -91,6 +91,10 @@
   version "4.14.68"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.68.tgz#754fbab68bd2bbb69547dc8ce7574f7012eed7f6"
 
+"@types/microsoft-ajax@*":
+  version "0.0.32"
+  resolved "https://registry.yarnpkg.com/@types/microsoft-ajax/-/microsoft-ajax-0.0.32.tgz#245579aae29078cc3f0d98c543ad9cf352abf7aa"
+
 "@types/mousetrap@^1.5.34":
   version "1.5.34"
   resolved "https://registry.yarnpkg.com/@types/mousetrap/-/mousetrap-1.5.34.tgz#22b338d9c4bcdfd8f81c30684aefeb04a4727168"
@@ -129,6 +133,12 @@
 "@types/requirejs@^2.1.29":
   version "2.1.29"
   resolved "https://registry.yarnpkg.com/@types/requirejs/-/requirejs-2.1.29.tgz#bc48bc833c079c2c24ba6afbca6d3a03b3f4e2f3"
+
+"@types/sharepoint@^2013.1.7":
+  version "2013.1.9"
+  resolved "https://registry.yarnpkg.com/@types/sharepoint/-/sharepoint-2013.1.9.tgz#8be62a1b6dbfe0bf9dfc8e0fed125199a36fb60d"
+  dependencies:
+    "@types/microsoft-ajax" "*"
 
 "@types/urijs@^1.15.33":
   version "1.15.33"
@@ -5233,6 +5243,12 @@ source-map@~0.2.0:
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.2.0.tgz#dab73fbcfc2ba819b4de03bd6f6eaa48164b3f9d"
   dependencies:
     amdefine ">=0.0.4"
+
+sp-pnp-js@^2.0.6:
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/sp-pnp-js/-/sp-pnp-js-2.0.6.tgz#cd6783931df4813e44199a70f476e7a6240da12a"
+  dependencies:
+    "@types/sharepoint" "^2013.1.7"
 
 spdx-correct@~1.0.0:
   version "1.0.2"

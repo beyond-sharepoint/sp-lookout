@@ -44,8 +44,8 @@ export class FiddleSettings extends React.Component<FiddleSettingsProps, any> {
                                 onChanged={updateTheme}
                                 options={
                                     [
-                                        { key: "vs", text: "Light (Visual Studio)" },
-                                        { key: "vs-dark", text: "Dark (Visual Studio)" },
+                                        { key: 'vs', text: 'Light (Visual Studio)' },
+                                        { key: 'vs-dark', text: 'Dark (Visual Studio)' },
                                     ]
                                 }
                             />
@@ -57,13 +57,13 @@ export class FiddleSettings extends React.Component<FiddleSettingsProps, any> {
                                 onChanged={updateLanguage}
                                 options={
                                     [
-                                        { key: "typescript", text: "TypeScript" },
-                                        { key: "javascript", text: "JavaScript" },
+                                        { key: 'typescript', text: 'TypeScript' },
+                                        { key: 'javascript', text: 'JavaScript' },
                                     ]
                                 }
                             />
                             <Toggle
-                                defaultChecked={get(fiddleState, "editorOptions.minimap.enabled") as boolean}
+                                defaultChecked={get(fiddleState, 'editorOptions.minimap.enabled') as boolean}
                                 onChanged={updateMinimap}
                                 label="Minimap Enabled"
                                 onAriaLabel="Minimap is enabled. Press to disable."
@@ -73,8 +73,10 @@ export class FiddleSettings extends React.Component<FiddleSettingsProps, any> {
                             />
                         </PivotItem>
                         <PivotItem linkText="Import Options">
+                            TODO
                         </PivotItem>
                         <PivotItem linkText="TypeScript Options">
+                            TODO
                         </PivotItem>
                     </Pivot>
                 </div>
@@ -83,12 +85,11 @@ export class FiddleSettings extends React.Component<FiddleSettingsProps, any> {
     }
 }
 
-
 export interface FiddleSettingsProps {
     showFiddleSettingsModal: boolean;
-    onDismiss: (any) => any,
-    fiddleState: FiddleState,
-    updateTheme?: (option: IDropdownOption, index: number | undefined) => void,
-    updateLanguage?: (option: IDropdownOption, index: number | undefined) => void,
-    updateMinimap?: (checked: boolean) => void
+    onDismiss: (ev?: React.MouseEvent<HTMLButtonElement>) => any;
+    fiddleState: FiddleState;
+    updateTheme?: (option: IDropdownOption, index: number | undefined) => void;
+    updateLanguage?: (option: IDropdownOption, index: number | undefined) => void;
+    updateMinimap?: (checked: boolean) => void;
 }
