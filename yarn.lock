@@ -103,9 +103,9 @@
   version "6.0.64"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-6.0.64.tgz#cdc901411f6301e1437dfed23bc68f54442e4dc8"
 
-"@types/node@^8.0.7":
-  version "8.0.7"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.7.tgz#fb0ad04b5b6f6eabe0372a32a8f1fbba5c130cae"
+"@types/node@^8.0.8":
+  version "8.0.8"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.8.tgz#0dc4ca2c6f6fc69baee16c5e928c4a627f517ada"
 
 "@types/react-dom@^15.5.1":
   version "15.5.1"
@@ -126,9 +126,13 @@
     "@types/history" "*"
     "@types/react" "*"
 
-"@types/react@*", "@types/react@^15.0.34":
+"@types/react@*":
   version "15.0.34"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-15.0.34.tgz#c4f7235f3d245216a706887b7d1ffedaf5b1dc06"
+
+"@types/react@^15.0.35":
+  version "15.0.35"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-15.0.35.tgz#4672923cd502d03e1480d03816ebc5a719fb86da"
 
 "@types/requirejs@^2.1.29":
   version "2.1.29"
@@ -154,9 +158,9 @@
   version "3.16.20-alpha"
   resolved "https://registry.yarnpkg.com/@types/z-schema/-/z-schema-3.16.20-alpha.tgz#36f588ccca27d8e86dd6bb595a973aede8803766"
 
-"@uifabric/styling@>=0.12.3 <1.0.0":
-  version "0.12.3"
-  resolved "https://registry.yarnpkg.com/@uifabric/styling/-/styling-0.12.3.tgz#7284eea964d8d1198a985423c3f7a65e21780638"
+"@uifabric/styling@>=0.13.0 <1.0.0":
+  version "0.13.0"
+  resolved "https://registry.yarnpkg.com/@uifabric/styling/-/styling-0.13.0.tgz#a41ff0761b808adde98cbfb95adeeb9865906d9a"
   dependencies:
     "@microsoft/load-themed-styles" "^1.2.2"
     "@uifabric/utilities" ">=4.6.0 <5.0.0"
@@ -3558,9 +3562,9 @@ mobx-react@^4.2.2:
   dependencies:
     hoist-non-react-statics "^1.2.0"
 
-mobx@^3.1.16:
-  version "3.1.17"
-  resolved "https://registry.yarnpkg.com/mobx/-/mobx-3.1.17.tgz#8bfb03952089c53fec120e1ee45d93441f627c9e"
+mobx@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/mobx/-/mobx-3.2.0.tgz#5efb3280bc7f6eb9299a252c9ff9b4403cbd8c5a"
 
 moment@^2.18.1:
   version "2.18.1"
@@ -3841,12 +3845,12 @@ obuf@^1.0.0, obuf@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/obuf/-/obuf-1.1.1.tgz#104124b6c602c6796881a042541d36db43a5264e"
 
-office-ui-fabric-react@^4.14.1:
-  version "4.15.0"
-  resolved "https://registry.yarnpkg.com/office-ui-fabric-react/-/office-ui-fabric-react-4.15.0.tgz#b575ed6ee9bfab37a79257f2ae354d030d293527"
+office-ui-fabric-react@^4.16.0:
+  version "4.16.0"
+  resolved "https://registry.yarnpkg.com/office-ui-fabric-react/-/office-ui-fabric-react-4.16.0.tgz#1727a01ccf25cdbeb20f109dfe242c778ef29013"
   dependencies:
     "@microsoft/load-themed-styles" "^1.2.2"
-    "@uifabric/styling" ">=0.12.3 <1.0.0"
+    "@uifabric/styling" ">=0.13.0 <1.0.0"
     "@uifabric/utilities" ">=4.6.0 <5.0.0"
     prop-types "^15.5.10"
     tslib "^1.6.0"
@@ -6128,7 +6132,7 @@ xdg-basedir@^2.0.0:
   dependencies:
     os-homedir "^1.0.0"
 
-xlsx@^0.10.6:
+xlsx@^0.10.7:
   version "0.10.7"
   resolved "https://registry.yarnpkg.com/xlsx/-/xlsx-0.10.7.tgz#d4c530eed693f7594438d19c2fa43817ef1f753f"
   dependencies:
