@@ -2,10 +2,10 @@ import * as React from 'react';
 import { observer } from 'mobx-react';
 
 /**
- * Represents a component that renders a dynamic SPLookout component defined in the workspace.
+ * Represents a component that renders a dynamic SPLookout component on a Lookout Page
  */
 @observer
-class SPLookoutComponent extends React.Component<{}, {}> {
+export default class SPLookoutPageComponent extends React.Component<{}, {}> {
   public constructor(props: any) {
     super(props);
   }
@@ -16,5 +16,3 @@ class SPLookoutComponent extends React.Component<{}, {}> {
     );
   }
 }
-
-export default SPLookoutComponent;

@@ -14,7 +14,7 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import SplitPane from '../split-pane/SplitPane';
 
 import Barista from '../../barista';
-import Dashboard from '../dashboard';
+import Page from '../sp-lookout-page';
 import Aside from '../workspace-aside';
 import Fiddle from '../fiddle';
 
@@ -153,7 +153,7 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
             {
                 path: '/',
                 exact: true,
-                main: () => <Dashboard></Dashboard>
+                main: () => <Page></Page>
             },
             {
                 path: '/bubblegum',

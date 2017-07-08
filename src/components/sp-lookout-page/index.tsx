@@ -5,8 +5,8 @@ import './index.css';
 
 const Layout = ReactGridLayout.WidthProvider(ReactGridLayout);
 
-export default class Dashboard extends React.Component<DashboardProps, any> {
-    public static defaultProps: Partial<DashboardProps> = {
+export default class SPLookoutPage extends React.Component<SPLookoutPageProps, any> {
+    public static defaultProps: Partial<SPLookoutPageProps> = {
         items: 50,
         columns: 12,
         rowHeight: 30,
@@ -56,7 +56,7 @@ export default class Dashboard extends React.Component<DashboardProps, any> {
     }
 }
 
-export interface DashboardProps {
+export interface SPLookoutPageProps {
     items?: number;
     columns?: number;
     rowHeight?: number
