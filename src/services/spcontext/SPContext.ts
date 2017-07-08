@@ -6,6 +6,7 @@ import { get, defaultsDeep, isError, omit } from 'lodash';
 import * as Bluebird from 'bluebird';
 import { SPProxy } from './SPProxy';
 import { SPContextConfig, SPContextAuthenticationConfig, SPContextInfo, SandFiddleConfig } from './index.d';
+import Utilities from './Utilities';
 
 export const SPContextLocalStorageKey = 'sp-lookout-context';
 
@@ -92,6 +93,8 @@ export class SPContext {
                 const invalidOriginError = new SPContextError(`The HostWebProxy could not trust the current origin. Ensure that the current origin (${(<any>ex).invalidOrigin}) is added to ${URI((<any>ex).url).query('').href()}`);
                 invalidOriginError.$$spcontext = 'invalidorigin';
                 throw invalidOriginError;
+            } else if (isError(ex)) {
+                throw ex;
             }
 
             //Unknown error -- throw a new exception.
@@ -122,7 +125,7 @@ export class SPContext {
                 throw Error(`Unexpected content type returned from the ContextInfo endpoint: ${contentType}`);
             }
 
-            const str = this.ab2str(context.transferrableData);
+            const str = Utilities.ab2str(context.transferrableData);
             context.data = JSON.parse(str);
 
             let contextInfo = get(context, 'data.d.GetContextWebInformation');
@@ -218,7 +221,7 @@ export class SPContext {
                     mergedInit.body = await convertBlobtoArrayBuffer;
                     break;
                 default:
-                    mergedInit.body = this.str2ab(mergedInit.body);
+                    mergedInit.body = Utilities.str2ab(mergedInit.body);
                     break;
             }
 
@@ -230,10 +233,10 @@ export class SPContext {
         if (response.transferrableData) {
             let contentType = response.headers['content-type'];
             if (contentType.startsWith('application/json')) {
-                let str = this.ab2str(response.transferrableData);
+                let str = Utilities.ab2str(response.transferrableData);
                 response.data = JSON.parse(str);
             } else if (contentType.startsWith('text')) {
-                response.data = this.ab2str(response.transferrableData);
+                response.data = Utilities.ab2str(response.transferrableData);
             }
         }
 
@@ -304,32 +307,13 @@ export class SPContext {
      * Using an isolated web worker, returns the results of the specified entry point.
      * @param config 
      */
-    public async sandFiddle(config: SandFiddleConfig, timeout?: number) {
+    public async sandFiddle(config: SandFiddleConfig, timeout?: number, transferrablePath?: string, onProgress?: (progress: any) => void) {
         if (!config) {
             throw Error('SandFiddleConfig must be specified as the first argument.');
         }
 
         const proxy = await this.ensureContext();
-        return proxy.invoke('SandFiddle', config, undefined, timeout);
-    }
-
-    private ab2str(buffer: ArrayBuffer): string {
-        let result = '';
-        let bytes = new Uint8Array(buffer);
-        let len = bytes.byteLength;
-        for (let i = 0; i < len; i++) {
-            result += String.fromCharCode(bytes[i]);
-        }
-        return result;
-    }
-
-    private str2ab(str: string): ArrayBuffer {
-        let len = str.length;
-        let bytes = new Uint8Array(len);
-        for (let i = 0; i < len; i++) {
-            bytes[i] = str.charCodeAt(i);
-        }
-        return bytes.buffer;
+        return proxy.invoke('SandFiddle', config, undefined, timeout, transferrablePath, onProgress);
     }
 
     /**

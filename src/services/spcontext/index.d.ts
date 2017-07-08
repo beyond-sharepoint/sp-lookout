@@ -42,6 +42,13 @@ export interface SPContextAuthenticationConfig {
     query: any;
 }
 
+export type SPProxyResponse = {
+    $$command: string;
+    $$postMessageId: string;
+    $$result: 'success' | 'error' | 'progress';
+    [others: string]: any;
+}
+
 export interface SPContextInfo {
     FormDigestTimeoutSeconds: number;
     FormDigestValue: string;
@@ -53,7 +60,7 @@ export interface SPContextInfo {
 
 export interface SandFiddleConfig {
     requireConfig: any;
-    defines: {[id: string]: string};
+    defines: { [id: string]: string };
     entryPointId: string;
     timeout?: number;
 }

@@ -1,8 +1,9 @@
 import * as URI from 'urijs';
 import { get, defaultsDeep } from 'lodash';
 import * as Bluebird from 'bluebird';
-import { SPProxyConfig } from './index.d';
+import { SPProxyConfig, SPProxyResponse } from './index.d';
 import { ResourceLoader } from './ResourceLoader';
+import Utilities from './Utilities';
 
 /**
  * Represents a proxy that uses an embedded iFrame to HostWebProxy.aspx and postMessage to bypass cross-origin policy.
@@ -24,7 +25,7 @@ export class SPProxy {
     private constructor(proxyOrigin: string, proxyIFrame: HTMLIFrameElement, config: SPProxyConfig) {
         this._window = window;
         this._origin = proxyOrigin;
-        this._messageId = SPProxy.makeId(7);
+        this._messageId = Utilities.makeId(7);
         this._iFrame = proxyIFrame;
         this._config = config;
 
@@ -71,7 +72,7 @@ export class SPProxy {
     /**
      * Invokes the specified command on the channel with the specified data, constrained to the specified domain awaiting for max ms specified in timeout 
      */
-    public async invoke(command: string, data?: any, targetOrigin?: string, timeout?: number, transferrablePropertyPath?: string): Promise<any> {
+    public async invoke(command: string, data?: any, targetOrigin?: string, timeout?: number, transferrablePath?: string, onProgress?: (progress: any) => void): Promise<any> {
 
         if (!command) {
             throw Error('A command must be specified.');
@@ -98,33 +99,43 @@ export class SPProxy {
 
         let messageListener = (ev: MessageEvent) => {
             ev = (<any>ev).originalEvent || ev;
-            if (!ev || !ev.data || !ev.data['$$postMessageId'] || ev.data['$$postMessageId'] !== data['$$postMessageId']) {
+            if (!ev || !ev.data || !ev.data.$$postMessageId || ev.data.$$postMessageId !== data.$$postMessageId) {
                 // This message is not meant for us.
                 return;
             }
 
-            let response = ev.data;
+            let response: SPProxyResponse = ev.data;
             response['$$origin'] = ev.origin;
             //TODO: Add things like response time.
 
-            if (response.result === 'error') {
-                let err = new Error(response.message);
-                (<any>err).$$spproxy = 'eval';
-                err.name = response.name;
-                err.stack = response.stack;
-                for (let key in response) {
-                    if (response.hasOwnProperty(key)) {
-                        err[key] = response[key];
+            switch (response.$$result) {
+                case 'success':
+                    resolve(response);
+                    break;
+                case 'progress':
+                    if (typeof onProgress === 'function') {
+                        onProgress(response);
                     }
-                }
-                reject(err);
-            } else {
-                resolve(response);
+                    break;
+                case 'error':
+                    const err = new Error(response.message);
+                    (<any>err).$$spproxy = 'eval';
+                    err.name = response.name;
+                    err.stack = response.stack;
+                    for (let key in response) {
+                        if (response.hasOwnProperty(key)) {
+                            err[key] = response[key];
+                        }
+                    }
+                    reject(err);
+                    break;
+                default:
+                    reject(Error(`An unknown or unsupported result type was reported by the HostWebProxy: ${response.$$result}`));
             }
         };
 
         if (timeout > 0) {
-            const invokeTimeoutError = new Error(`invoke() timed out while waiting for a response while executing ${command}. (${timeout}ms)`);
+            const invokeTimeoutError = Error(`invoke() timed out while waiting for a response while executing ${command}. (${timeout}ms)`);
             (<any>invokeTimeoutError).$$spproxy = 'timeout';
             invokePromise = invokePromise.timeout(timeout, invokeTimeoutError);
         }
@@ -137,8 +148,8 @@ export class SPProxy {
 
         let transferrableProperty: any = undefined;
 
-        if (transferrablePropertyPath) {
-            transferrableProperty = get(data, transferrablePropertyPath);
+        if (transferrablePath) {
+            transferrableProperty = get(data, transferrablePath);
         }
 
         if (transferrableProperty) {
@@ -195,7 +206,11 @@ export class SPProxy {
         let proxy = new SPProxy(origin, elemIFrame, config);
         this.$proxies[origin] = proxy;
 
-        await proxy.invoke('Ping', {}, origin, config.createProxyTimeout);
+        const pingResponse = await proxy.invoke('Ping', {}, origin, config.createProxyTimeout);
+        const pingResponseBody: string = Utilities.ab2str(pingResponse.transferrableData);
+        if (pingResponseBody != 'Pong') {
+            throw Error(`Did not expect the following response to Ping: ${pingResponseBody}`);
+        }
         return proxy;
     }
 
@@ -221,16 +236,5 @@ export class SPProxy {
 
         proxy._isRemoved = true;
         return delete this.$proxies[proxy._origin];
-    }
-
-    private static makeId(length: number): string {
-        let text = '';
-        let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
-        for (let i = 0; i < length; i++) {
-            text += possible.charAt(Math.floor(Math.random() * possible.length));
-        }
-
-        return text;
     }
 }
