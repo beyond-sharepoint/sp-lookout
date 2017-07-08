@@ -16,8 +16,8 @@ import MonacoEditor from '../monaco-editor';
 import { get, set, cloneDeep } from 'lodash';
 import { FiddleSettings } from '../fiddle-settings';
 
-import Barista, { BrewSettings } from '../../barista';
-import { FiddleState } from '../../model/AppStore';
+import Barista, { BrewSettings } from '../../services/barista';
+import { FiddleState } from '../../models/AppStore';
 import './index.css';
 
 @observer

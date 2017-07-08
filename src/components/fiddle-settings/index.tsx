@@ -8,7 +8,7 @@ import { Pivot, PivotItem } from 'office-ui-fabric-react/lib/Pivot';
 import { Dropdown, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
 import { Toggle } from 'office-ui-fabric-react/lib/Toggle';
 
-import { FiddleState } from '../../model/AppStore';
+import { FiddleState } from '../../models/AppStore';
 import './index.css';
 
 @observer

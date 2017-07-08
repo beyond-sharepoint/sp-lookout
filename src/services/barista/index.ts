@@ -1,4 +1,4 @@
-/// <reference path='../../node_modules/@types/requirejs/index.d.ts' />
+/// <reference path='../../../node_modules/@types/requirejs/index.d.ts' />
 import * as ts from 'typescript';
 
 import { DebuggerTransformer } from './debuggerTransformer';

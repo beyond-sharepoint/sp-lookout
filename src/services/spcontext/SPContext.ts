@@ -1,4 +1,4 @@
-/// <reference path="../../node_modules/@types/requirejs/index.d.ts" />
+/// <reference path="../../../node_modules/@types/requirejs/index.d.ts" />
 
 import * as moment from 'moment';
 import * as URI from 'urijs';

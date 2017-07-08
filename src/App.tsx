@@ -3,7 +3,7 @@ import './App.css';
 import { observer } from 'mobx-react';
 import { Fabric } from 'office-ui-fabric-react';
 import Workspace from './components/workspace/Workspace';
-import appStore from './model/AppStore';
+import appStore from './models/AppStore';
 
 @observer
 class App extends React.Component<{}, {}> {

@@ -13,12 +13,12 @@ import { INavLinkGroup } from 'office-ui-fabric-react/lib/Nav';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import SplitPane from '../split-pane/SplitPane';
 
-import Barista from '../../barista';
+import Barista from '../../services/barista';
 import Page from '../sp-lookout-page';
 import Aside from '../workspace-aside';
 import Fiddle from '../fiddle';
 
-import { WorkspaceState } from '../../model/AppStore';
+import { WorkspaceState } from '../../models/AppStore';
 
 import './Workspace.css';
 
