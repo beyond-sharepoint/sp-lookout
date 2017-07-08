@@ -143,20 +143,6 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
         }
     }
 
-    public componentDidMount() {
-        this._mousetrap = new Mousetrap(
-            ReactDOM.findDOMNode(this)
-        );
-
-        this._mousetrap.bind(['ctrl+return', 'ctrl+f5'], () => {
-            this.brew(this.props.fiddleState.code, this.props.fiddleState.brewMode);
-        });
-
-        this._mousetrap.bind(['ctrl+shift+return', 'f5'], () => {
-            this.debug(this.props.fiddleState.code, this.props.fiddleState.brewMode);
-        });
-    }
-
     private reloadEditor() {
         this.setState({
             showEditor: false
@@ -214,7 +200,6 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
             timeout = fiddleState.brewTimeout || 5000
         }
 
-
         let lastBrewResult: any = undefined;
         let lastBrewResultIsError = false;
 
@@ -246,9 +231,11 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
         } catch (ex) {
             lastBrewResultIsError = true;
             lastBrewResult = {
-                name: ex.name,
-                message: ex.message,
-                stack: ex.stack
+                error: {
+                    name: ex.name,
+                    message: ex.message,
+                    stack: ex.stack
+                }
             };
         } finally {
             this.setState({
@@ -271,6 +258,21 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
     private hideFiddleSettings() {
         this.setState({
             showFiddleSettingsModal: false
+        });
+    }
+
+    public componentDidMount() {
+        const thisElement = ReactDOM.findDOMNode(this);
+        this._mousetrap = new Mousetrap(
+            thisElement
+        );
+
+        this._mousetrap.bind(['ctrl+return', 'ctrl+f5'], () => {
+            this.brew(this.props.fiddleState.code, this.props.fiddleState.brewMode);
+        });
+
+        this._mousetrap.bind(['ctrl+shift+return', 'f5'], () => {
+            this.debug(this.props.fiddleState.code, this.props.fiddleState.brewMode);
         });
     }
 
@@ -323,12 +325,12 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
                         />
                     </div>
                 </div>
-                <div className='fiddle-results'>
+                <div className='fiddle-results' style={{ backgroundColor: fiddleState.theme.endsWith('dark') ? 'black' : null }}>
                     {isBrewing ?
                         <Spinner size={SpinnerSize.large} label='Brewing...' ariaLive='assertive' />
                         : null}
                     {!isBrewing ?
-                        <ObjectInspector data={lastBrewResult} expandLevel={3} />
+                        <ObjectInspector data={lastBrewResult} expandLevel={2} showNonenumerable={false} theme={fiddleState.theme.endsWith('dark') ? 'chromeDark' : 'chromeLight'} />
                         : null}
                 </div>
             </SplitPane>

@@ -208,7 +208,7 @@ export class SPProxy {
 
         const pingResponse = await proxy.invoke('Ping', {}, origin, config.createProxyTimeout);
         const pingResponseBody: string = Utilities.ab2str(pingResponse.transferrableData);
-        if (pingResponseBody != 'Pong') {
+        if (pingResponseBody !== 'Pong') {
             throw Error(`Did not expect the following response to Ping: ${pingResponseBody}`);
         }
         return proxy;

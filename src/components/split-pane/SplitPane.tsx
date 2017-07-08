@@ -18,6 +18,7 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
     private panePrimary: Pane;
     private paneSecondary: Pane;
     private resizer: Resizer;
+    private resizerElement: Element;
 
     constructor() {
         super();
@@ -31,6 +32,7 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
     }
 
     public componentDidMount() {
+        this.resizerElement = ReactDOM.findDOMNode(this.resizer);
         document.addEventListener('mouseup', this.handleMouseUp);
         document.addEventListener('touchend', this.handleMouseUp);
     }
@@ -49,7 +51,7 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
             onResizerDoubleClick
         } = this.props;
 
-        let paneStyle;
+        let paneStyle, paneStyle2;
         switch (split) {
             case 'vertical': {
                 paneStyle = {
@@ -58,6 +60,20 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
                     maxWidth: primaryPaneMaxSize,
                     ...primaryPaneStyle
                 };
+
+                let paneStyle2Width: number | string | undefined = undefined;
+                if (typeof paneStyle.width === 'string' && paneStyle.width.endsWith('%')) {
+                    paneStyle2Width = (100 - parseInt(paneStyle.width.replace('%', ''))) + '%';
+                } else if (typeof paneStyle.width === 'number' && this.paneWrapper) {
+                    const clientRect = this.paneWrapper.getBoundingClientRect();
+                    const resizerRect = this.resizerElement.getBoundingClientRect();
+                    paneStyle2Width = clientRect.width - (paneStyle.width + resizerRect.width);
+                }
+
+                paneStyle2 = {
+                    width: paneStyle2Width,
+                    ...secondaryPaneStyle
+                }
                 break;
             }
             case 'horizontal': {
@@ -115,7 +131,7 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
                         ? <Pane
                             className={secondaryPaneClassName || ''}
                             split={split}
-                            style={secondaryPaneStyle}
+                            style={paneStyle2}
                             ref={node => { if (node !== null) { this.paneSecondary = node; } }}
                         >
                             {children[1]}
