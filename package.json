@@ -48,8 +48,8 @@
     "react-scripts-ts": "2.3.2"
   },
   "scripts": {
-    "postinstall": "cd hostwebproxy && npm install && cd .. && cpr node_modules/monaco-editor/min/vs public/vs -o",
-    "build-proxy": "cd hostwebproxy && npm run build && cd ..",
+    "postinstall": "cd packages/hostwebproxy && npm install && cd ../.. && cpr node_modules/monaco-editor/min/vs public/vs -o",
+    "build-proxy": "cd packages/hostwebproxy && npm run build && cd ../..",
     "build-css": "node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/",
     "watch-css": "npm run build-css && node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/ --watch --recursive",
     "start": "npm-run-all -p watch-css start-js",

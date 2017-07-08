@@ -4,7 +4,7 @@
   "description": "SharePoint Host Web Proxy",
   "private": true,
   "scripts": {
-    "build": "rimraf build && webpack -p --bail --progress --profile --config webpack.config.js && rimraf build/HostWebProxy.js && cpr build/HostWebProxy.aspx ../public/HostWebProxy.aspx -o"
+    "build": "rimraf build && webpack -p --bail --progress --profile --config webpack.config.js && rimraf build/HostWebProxy.js && cpr build/HostWebProxy.aspx ../../public/HostWebProxy.aspx -o"
   },
   "dependencies": {
     "promise-polyfill": "^6.0.2",
