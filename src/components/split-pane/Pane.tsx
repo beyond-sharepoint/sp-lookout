@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { splitType } from './Common';
+import { splitType } from './index.d';
 
 export default class Pane extends React.Component<PaneProps, any> {
     public render() {

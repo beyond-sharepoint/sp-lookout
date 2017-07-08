@@ -47,9 +47,9 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
 
         this._barista = new Barista({
             webFullUrl: 'https://baristalabs.sharepoint.com',
-            noProxyHandler: () => { console.log('no proxy!'); return { data: 'Error: Could not communicate with the proxy.'}; },
-            authenticationRequiredHandler: () => { console.log('auth required!'); return { data: 'Error: Authentication is required.'}; },
-            invalidOriginHandler: () => { console.log('invalid origin!'); return { data: 'Error: Proxy reported invalid origin.'}; }
+            noProxyHandler: () => { console.log('no proxy!'); return { data: 'Error: Could not communicate with the proxy.' }; },
+            authenticationRequiredHandler: () => { console.log('auth required!'); return { data: 'Error: Authentication is required.' }; },
+            invalidOriginHandler: () => { console.log('invalid origin!'); return { data: 'Error: Proxy reported invalid origin.' }; }
         });
 
         this._appBarItems = [
@@ -200,7 +200,13 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
                             primaryPaneMaxSize={400}
                             primaryPaneStyle={{ overflow: 'auto' }}
                             onPaneResized={(size) => { this.setState({ sidebarSize: size }); }}
-                            onResizerDoubleClick={() => { this.setState({ sidebarSize: 215 }); }}
+                            onResizerDoubleClick={(paneStyle) => {
+                                if (paneStyle.width === 215) {
+                                    this.setState({ sidebarSize: 0 });
+                                } else {
+                                    this.setState({ sidebarSize: 215 });
+                                }
+                            }}
                         >
                             <Aside navItems={this.state.asideItems}></Aside>
                             <div style={{ width: '100%', height: '100%', overflow: 'auto' }}>

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { splitType } from './Common';
+import { splitType } from './index.d';
 
 export default class Resizer extends React.Component<ResizerProps, any> {
     public static defaultProps: Partial<ResizerProps> = {

@@ -3,7 +3,7 @@ import * as ReactDOM from 'react-dom';
 import { autobind } from 'office-ui-fabric-react/lib';
 import Pane from './Pane';
 import Resizer from './Resizer';
-import { splitType } from './Common';
+import { splitType } from './index.d';
 import './SplitPane.css';
 
 export default class SplitPane extends React.Component<SplitPaneProps, SplitPaneState> {
@@ -103,7 +103,7 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
                         ? <Resizer
                             split={split}
                             onMouseDown={this.handleMouseDown}
-                            onDoubleClick={(e) => onResizerDoubleClick ? onResizerDoubleClick(e, this) : undefined}
+                            onDoubleClick={(e) => onResizerDoubleClick ? onResizerDoubleClick(paneStyle, e, this) : undefined}
                             ref={node => { if (node !== null) { this.resizer = node; } }}
                             allowResize={allowResize}
                         />
@@ -262,7 +262,7 @@ export interface SplitPaneProps {
     onPaneResized: Function;
     onDragStarted?: Function;
     onDragFinished?: Function;
-    onResizerDoubleClick?: (e: React.MouseEvent<HTMLDivElement>, splitPane: SplitPane) => void;
+    onResizerDoubleClick?: (paneStyle: React.CSSProperties, e: React.MouseEvent<HTMLDivElement>, splitPane: SplitPane) => void;
     children: React.ReactNode[];
 }
 
