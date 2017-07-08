@@ -10,7 +10,8 @@ export default class Dashboard extends React.Component<DashboardProps, any> {
         items: 50,
         columns: 12,
         rowHeight: 30,
-        onLayoutChange: () => { }
+        onLayoutChange: () => { },
+        isLocked: false
     };
 
     public constructor(props) {
@@ -21,13 +22,19 @@ export default class Dashboard extends React.Component<DashboardProps, any> {
         this.state = {
             layout: _.map(new Array(items), function (item, i) {
                 let y = Math.ceil(Math.random() * 4) + 1;
-                return { x: i * 2 % 12, y: Math.floor(i / 6) * y, w: 2, h: y, i: i.toString() };
+                return {
+                    x: i * 2 % 12,
+                    y: Math.floor(i / 6) * y,
+                    w: 2,
+                    h: y,
+                    i: i.toString()
+                };
             })
         }
     }
 
     public render() {
-        const { items, columns, rowHeight, onLayoutChange } = this.props;
+        const { items, columns, rowHeight, onLayoutChange, isLocked } = this.props;
 
         return (
             <Layout
@@ -37,6 +44,8 @@ export default class Dashboard extends React.Component<DashboardProps, any> {
                 rowHeight={rowHeight}
                 verticalCompact={false}
                 onLayoutChange={onLayoutChange}
+                isDraggable={!isLocked}
+                isResizable={!isLocked}
                 {...this.props}
             >
                 {_.map(_.range(items || 50), function (i) {
@@ -51,5 +60,6 @@ export interface DashboardProps {
     items?: number;
     columns?: number;
     rowHeight?: number
+    isLocked?: boolean
     onLayoutChange?: (Layout) => void;
 }
