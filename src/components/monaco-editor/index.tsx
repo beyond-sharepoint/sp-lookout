@@ -195,6 +195,10 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps, {}>
                 model.dispose();
             }
 
+            if (typeof this.props.editorWillDispose === 'function') {
+                this.props.editorWillDispose(this.editor);
+            }
+            
             this.editor.dispose();
         }
     }
@@ -228,6 +232,7 @@ export interface MonacoEditorProps {
     options?: monaco.editor.IEditorOptions;
     editorDidMount?: Function;
     editorWillMount?: Function;
+    editorWillDispose?: Function;
     onChange?: Function;
     requireConfig?: any;
 }

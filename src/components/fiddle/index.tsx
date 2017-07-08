@@ -26,6 +26,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
     private commandBarItems: IContextualMenuItem[];
     private commandBarFarItems;
     private _mousetrap: MousetrapInstance;
+    private _extraLibs: Array<monaco.IDisposable>;
 
     public constructor(props: FiddleProps) {
         super(props);
@@ -84,12 +85,16 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
             'sp-pnp-js': require('file-loader!./types/sp-pnp-js.d.html'),
         }
 
+        this._extraLibs = [];
+
         for (let name in typeDefs) {
             const fileResponse = await fetch(typeDefs[name]);
             const fileContents = await fileResponse.text();
-            monaco.languages.typescript.typescriptDefaults.addExtraLib(
+            const lib = monaco.languages.typescript.typescriptDefaults.addExtraLib(
                 fileContents,
                 `node_modules/@types/${name}/index.d.ts`);
+
+            this._extraLibs.push(lib);
         }
 
         // // extra libraries
@@ -129,6 +134,13 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
         });
 
         this.loadTypescriptDefinitions();
+    }
+
+    @autobind
+    private editorWillDispose(editor) {
+        for (let lib of this._extraLibs) {
+            lib.dispose();
+        }
     }
 
     public componentDidMount() {
@@ -295,6 +307,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
                                 filename={fiddleState.filename}
                                 onChange={this.updateCode}
                                 editorWillMount={this.editorWillMount}
+                                editorWillDispose={this.editorWillDispose}
                                 options={toJS(fiddleState.editorOptions)}
                             >
                             </MonacoEditor>

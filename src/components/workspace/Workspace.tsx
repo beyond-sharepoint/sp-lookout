@@ -86,7 +86,12 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
                             key: 'dashboard',
                             icon: 'PanoIndicator',
                             onClick: this._onClickHandler2
-                        },
+                        }
+                    ]
+                },
+                {
+                    links:
+                    [
                         {
                             name: 'Governance',
                             key: 'governance',
@@ -127,10 +132,15 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
                                 key: 'key1'
                             }],
                             isExpanded: true
-                        },
+                        }
+                    ]
+                },
+                {
+                    links:
+                    [
                         {
                             name: 'SPFiddle',
-                            url: '#/spfiddle',
+                            url: '#/SPFiddle',
                             key: 'fiddle',
                             icon: 'Embed',
                             onClick: this._onClickHandler2
@@ -188,6 +198,7 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
                             primaryPaneSize={this.state.sidebarSize}
                             primaryPaneMinSize={0}
                             primaryPaneMaxSize={400}
+                            primaryPaneStyle={{ overflow: 'auto' }}
                             onPaneResized={(size) => { this.setState({ sidebarSize: size }); }}
                             onResizerDoubleClick={() => { this.setState({ sidebarSize: 215 }); }}
                         >

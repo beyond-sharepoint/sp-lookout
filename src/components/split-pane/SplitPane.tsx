@@ -55,7 +55,8 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
                 paneStyle = {
                     width: primaryPaneSize,
                     minWidth: primaryPaneMinSize,
-                    maxWidth: primaryPaneMaxSize
+                    maxWidth: primaryPaneMaxSize,
+                    ...primaryPaneStyle
                 };
                 break;
             }
@@ -63,7 +64,8 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
                 paneStyle = {
                     height: primaryPaneSize,
                     minHeight: primaryPaneMinSize,
-                    maxHeight: primaryPaneMaxSize
+                    maxHeight: primaryPaneMaxSize,
+                    ...primaryPaneStyle
                 };
                 break;
             }
@@ -76,7 +78,8 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
             onePaneStyle = {
                 width: '100%',
                 maxWidth: '100%',
-                height: '100%'
+                height: '100%',
+                ...primaryPaneStyle
             };
         }
 
