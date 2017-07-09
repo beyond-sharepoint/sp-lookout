@@ -83,6 +83,21 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
                     maxHeight: primaryPaneMaxSize,
                     ...primaryPaneStyle
                 };
+
+                let paneStyle2Height: number | string | undefined = undefined;
+                if (typeof paneStyle.height === 'string' && paneStyle.height.endsWith('%')) {
+                    paneStyle2Height = (100 - parseInt(paneStyle.height.replace('%', ''))) + '%';
+                } else if (typeof paneStyle.height === 'number' && this.paneWrapper) {
+                    const clientRect = this.paneWrapper.getBoundingClientRect();
+                    const resizerRect = this.resizerElement.getBoundingClientRect();
+                    paneStyle2Height = clientRect.height - (paneStyle.height + resizerRect.height);
+                }
+
+                paneStyle2 = {
+                    height: paneStyle2Height,
+                    ...secondaryPaneStyle
+                }
+
                 break;
             }
             default:
