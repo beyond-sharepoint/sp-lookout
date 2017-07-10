@@ -1,9 +1,10 @@
 import * as React from 'react';
-import TreeView from '../treeview';
+import { FolderView } from '../folderview';
 import { Nav, INavLinkGroup } from 'office-ui-fabric-react/lib/Nav';
 import { CommandBar } from 'office-ui-fabric-react/lib/CommandBar';
+import { autobind } from 'office-ui-fabric-react/lib';
 import { IContextualMenuItem } from 'office-ui-fabric-react';
-import treedata from './test-tree.js';
+import rootfolder from './test-tree.js';
 
 import './index.css';
 
@@ -36,20 +37,10 @@ export default class Aside extends React.Component<AsideProps, any> {
         }
     }
 
+    @autobind
     private onClickNode() {
     }
-
-    private renderNode(node: any) {
-        let classes = 'node';
-        //'is-active': node === this.state.active
-        return (
-            <span className={classes} onClick={this.onClickNode}>
-                {node.module}
-                {node.children ? "--" : null}
-            </span>
-        );
-    }
-
+    
     public render() {
         return (
             <div>
@@ -66,7 +57,7 @@ export default class Aside extends React.Component<AsideProps, any> {
                     isSearchBoxVisible={false}
                     items={this._spFiddleItems.near}
                 />
-                <TreeView tree={treedata} isNodeCollapsed={false} changeNodeCollapsed={() => { }} paddingLeft={0} renderNode={this.renderNode}></TreeView>
+                <FolderView folder={rootfolder}></FolderView>
             </div>
         );
     }

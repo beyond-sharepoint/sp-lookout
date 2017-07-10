@@ -1,70 +1,82 @@
 const treedata = {
-    module: 'react-ui-tree',
-    children: [{
-        module: 'dist',
-        collapsed: true,
-        children: [{
-            module: 'node.js',
-            leaf: true
-        }, {
-            module: 'react-ui-tree.css',
-            leaf: true
-        }, {
-            module: 'react-ui-tree.js',
-            leaf: true
-        }, {
-            module: 'tree.js',
-            leaf: true
-        }]
-    }, {
-        module: 'example',
-        children: [{
-            module: 'app.js',
-            leaf: true
-        }, {
-            module: 'app.less',
-            leaf: true
-        }, {
-            module: 'index.html',
-            leaf: true
-        }]
-    }, {
-        module: 'lib',
-        children: [{
-            module: 'node.js',
-            leaf: true
-        }, {
-            module: 'react-ui-tree.js',
-            leaf: true
-        }, {
-            module: 'react-ui-tree.less',
-            leaf: true
-        }, {
-            module: 'tree.js',
-            leaf: true
-        }]
-    }, {
-        module: '.gitiignore',
-        leaf: true
-    }, {
-        module: 'index.js',
-        leaf: true
-    }, {
-        module: 'LICENSE',
-        leaf: true
-    }, {
-        module: 'Makefile',
-        leaf: true
-    }, {
-        module: 'package.json',
-        leaf: true
-    }, {
-        module: 'README.md',
-        leaf: true
-    }, {
-        module: 'webpack.config.js',
-        leaf: true
-    }]
+    name: 'react-ui-tree',
+    collapsed: false,
+    folders: [
+        {
+            name: 'dist',
+            collapsed: true,
+            folders: [],
+            files: [
+                {
+                    name: 'node.js',
+                },
+                {
+                    name: 'react-ui-tree.css',
+                },
+                {
+                    name: 'react-ui-tree.js',
+                },
+                {
+                    name: 'tree.js',
+                }
+            ]
+        },
+        {
+            name: 'example',
+            folders: [],
+            files: [
+                {
+                    name: 'app.js',
+                },
+                {
+                    name: 'app.less',
+                },
+                {
+                    name: 'index.html',
+                }
+            ]
+        },
+        {
+            name: 'lib',
+            folders: [],
+            files: [
+                {
+                    name: 'node.js'
+                },
+                {
+                    name: 'react-ui-tree.js'
+                },
+                {
+                    name: 'react-ui-tree.less'
+                },
+                {
+                    name: 'tree.js'
+                }
+            ]
+        }],
+    files: [
+        {
+            name: '.gitiignore'
+        },
+        {
+            name: 'index.js'
+        },
+        {
+            name: 'LICENSE'
+        },
+        {
+            name: 'Makefile'
+        },
+        {
+            name: 'package.json'
+        },
+        {
+            name: 'README.md'
+        },
+        {
+            name: 'webpack.config.js'
+        }
+    ]
 }
 
 export default treedata;

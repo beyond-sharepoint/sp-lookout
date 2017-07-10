@@ -63,7 +63,7 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
 
                 let paneStyle2Width: number | string | undefined = undefined;
                 if (typeof paneStyle.width === 'string' && paneStyle.width.endsWith('%')) {
-                    paneStyle2Width = (100 - parseInt(paneStyle.width.replace('%', ''))) + '%';
+                    paneStyle2Width = (100 - parseInt(paneStyle.width.replace('%', ''), 10)) + '%';
                 } else if (typeof paneStyle.width === 'number' && this.paneWrapper) {
                     const clientRect = this.paneWrapper.getBoundingClientRect();
                     const resizerRect = this.resizerElement.getBoundingClientRect();
@@ -73,7 +73,7 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
                 paneStyle2 = {
                     width: paneStyle2Width,
                     ...secondaryPaneStyle
-                }
+                };
                 break;
             }
             case 'horizontal': {
@@ -86,7 +86,7 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
 
                 let paneStyle2Height: number | string | undefined = undefined;
                 if (typeof paneStyle.height === 'string' && paneStyle.height.endsWith('%')) {
-                    paneStyle2Height = (100 - parseInt(paneStyle.height.replace('%', ''))) + '%';
+                    paneStyle2Height = (100 - parseInt(paneStyle.height.replace('%', ''), 10)) + '%';
                 } else if (typeof paneStyle.height === 'number' && this.paneWrapper) {
                     const clientRect = this.paneWrapper.getBoundingClientRect();
                     const resizerRect = this.resizerElement.getBoundingClientRect();
@@ -96,8 +96,7 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
                 paneStyle2 = {
                     height: paneStyle2Height,
                     ...secondaryPaneStyle
-                }
-
+                };
                 break;
             }
             default:
