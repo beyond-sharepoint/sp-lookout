@@ -8,8 +8,7 @@ const FileSource = {
             kind: 'file',
             name: props.file.name,
             parentFolder: props.parentFolder,
-            file: props.file,
-            index: props.index
+            file: props.file
         };
     },
 };
@@ -37,8 +36,7 @@ export interface FileState {
 export interface FileProps {
     parentFolder: any;
     file: any;
-    isDragging?: boolean
+    isDragging?: boolean;
     depth: number;
-    index: number;
     onClick?: (file: any) => void;
 }

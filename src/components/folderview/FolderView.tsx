@@ -6,7 +6,7 @@ import { autobind } from 'office-ui-fabric-react/lib';
 import { Folder } from './Folder';
 import { File } from './File';
 
-import './FolderView.css'
+import './FolderView.css';
 
 @DragDropContext(HTML5Backend)
 @observer
@@ -20,13 +20,12 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
                     folder={folder}
                     parentFolder={null}
                     depth={0}
-                    index={0}
                     onCollapseChange={onCollapseChange}
                     onMovedToFolder={onMovedToFolder}
                     onFileClicked={onFileClicked}
                 />
             </div>
-        )
+        );
     }
 }
 

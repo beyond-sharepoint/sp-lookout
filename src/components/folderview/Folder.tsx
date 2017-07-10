@@ -99,7 +99,6 @@ export class Folder extends React.Component<FolderViewProps, FolderViewState> {
                                     parentFolder={folder}
                                     folder={subFolder}
                                     depth={innerDepth}
-                                    index={index}
                                     onCollapseChange={onCollapseChange}
                                     onMovedToFolder={onMovedToFolder}
                                     onFileClicked={onFileClicked}
@@ -110,7 +109,13 @@ export class Folder extends React.Component<FolderViewProps, FolderViewState> {
                     {
                         !folder.collapsed ?
                             folder.files ? folder.files.map((file, index) => (
-                                <File key={index} parentFolder={folder} file={file} depth={0} index={index} onClick={onFileClicked} />
+                                <File
+                                    key={index}
+                                    parentFolder={folder}
+                                    file={file}
+                                    depth={0}
+                                    onClick={onFileClicked}
+                                />
                             )) : null
                             : null
                     }
@@ -139,7 +144,6 @@ export interface FolderViewProps {
     folder: any;
     parentFolder: any | null;
     depth: number;
-    index: number;
     onCollapseChange?: (folder: any, parentFolder: any) => void;
     onMovedToFolder?: (sourceItem: any, targetFolder: any) => void;
     onFileClicked?: (file: any) => void;

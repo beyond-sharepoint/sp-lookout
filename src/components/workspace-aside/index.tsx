@@ -53,11 +53,12 @@ export default class Aside extends React.Component<AsideProps, any> {
             }
         });
         rootFolder.moveItemToFolder = action((sourceItem, targetFolder) => {
+            const parentFolder = sourceItem.parentFolder;
             if (sourceItem.kind === 'file') {
-                sourceItem.parentFolder.files.splice(sourceItem.index, 1);
+                parentFolder.files.splice(parentFolder.files.indexOf(sourceItem.file), 1);
                 targetFolder.files.push(sourceItem.file);
             } else if (sourceItem.kind === 'folder') {
-                sourceItem.parentFolder.folders.splice(sourceItem.index, 1);
+                parentFolder.folders.splice(parentFolder.folders.indexOf(sourceItem.folder), 1);
                 targetFolder.folders.push(sourceItem.folder);
             }
         });
