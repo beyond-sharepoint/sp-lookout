@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { DropTarget, DragSource } from 'react-dnd';
+import { observer } from 'mobx-react';
 import { autobind } from 'office-ui-fabric-react/lib';
 import { File } from './File';
 
@@ -11,6 +12,7 @@ export const FolderItemTypes = {
 const folderSource = {
     beginDrag(props) {
         return {
+            kind: 'folder',
             name: props.folder.name,
             parentFolder: props.parentFolder,
             folder: props.folder,
@@ -21,13 +23,22 @@ const folderSource = {
 const folderTarget = {
     canDrop(props, monitor) {
         const item = monitor.getItem();
+
+        //Disallow dropping a file on it's containing folder.
         if (item.parentFolder === props.folder) {
             return false;
         }
 
-        if (item.parentFolder !== props.folder && !monitor.isOver({shallow: true})) {
+        //Prevent a folder's parent from picking up a drop of a file on it's containing folder.
+        if (item.parentFolder !== props.folder && !monitor.isOver({ shallow: true })) {
             return false;
         }
+
+        //Disallow dropping a folder on itself.
+        if (item.folder === props.folder) {
+            return false;
+        }
+
         return true;
     },
     drop(props, monitor, component) {
@@ -35,10 +46,11 @@ const folderTarget = {
         if (hasDroppedOnChild) {
             return;
         }
-        console.log(monitor.isOver());
-        console.log(monitor.isOver({ shallow: true }));
+
         const item = monitor.getItem();
-        console.log(`${item.name} dropped on ${props.folder.name}`);
+        if (typeof props.onMovedToFolder === 'function') {
+            props.onMovedToFolder(item, props.folder);
+        }
     },
 };
 
@@ -51,42 +63,72 @@ const folderTarget = {
     connectDragSource: connect.dragSource(),
     isDragging: monitor.isDragging(),
 }))
+@observer
 export class Folder extends React.Component<FolderViewProps, FolderViewState> {
+
     public render() {
-        const { depth, folder } = this.props;
+        const { depth, folder, onCollapseChange, onMovedToFolder, onFileClicked } = this.props;
         const { connectDragSource, connectDropTarget } = this.props as any;
         const innerDepth = (depth || 0) + 1;
 
-        if (!connectDropTarget) {
-            return null;
-        }
-        let treeNodeStyle = {
+        const treeNodeStyle = {
             paddingLeft: innerDepth * 10,
             cursor: 'pointer',
             userSelect: 'none'
         }
 
-        let rootNodeStyle = {
+        const rootNodeStyle = {
             backgroundColor: !depth ? '#f4f4f4' : null,
-            color: '#0078d7'
         }
 
+        let collapseClassName = "collapse";
+        if (folder.collapsed === true)
+            collapseClassName += " fa fa-caret-right";
+        else
+            collapseClassName += " fa fa-caret-down";
+
         return connectDragSource(connectDropTarget(
-            <div style={{ flex: 1 }}>
-                <div style={rootNodeStyle}>{folder.name}</div>
+            <div className="folder" style={{ flex: 1 }}>
+                <div style={rootNodeStyle} onClick={this.onCollapseChange}><span className={collapseClassName} style={{ paddingRight: '5px' }} aria-hidden="true"></span>{folder.name}</div>
                 <div style={treeNodeStyle}>
-                    {folder.folders ? folder.folders.map((subFolder, index) => (
-                        <Folder key={index} parentFolder={folder} folder={subFolder} depth={innerDepth} />
-                    )) : null}
                     {
-                        folder.files ? folder.files.map((file, index) => (
-                            <File key={index} parentFolder={folder} file={file} depth={0} />
-                        ))
+                        !folder.collapsed ?
+                            folder.folders ? folder.folders.map((subFolder, index) => (
+                                <Folder
+                                    key={index}
+                                    parentFolder={folder}
+                                    folder={subFolder}
+                                    depth={innerDepth}
+                                    index={index}
+                                    onCollapseChange={onCollapseChange}
+                                    onMovedToFolder={onMovedToFolder}
+                                    onFileClicked={onFileClicked}
+                                />
+                            )) : null
+                            : null
+                    }
+                    {
+                        !folder.collapsed ?
+                            folder.files ? folder.files.map((file, index) => (
+                                <File key={index} parentFolder={folder} file={file} depth={0} index={index} onClick={onFileClicked} />
+                            )) : null
                             : null
                     }
                 </div>
             </div>
         ))
+    }
+
+    @autobind
+    private onCollapseChange() {
+        const { folder, parentFolder, onCollapseChange } = this.props;
+        if (typeof onCollapseChange === 'function') {
+            const wasCollapsedUndefined = typeof folder.collapsed === 'undefined';
+            onCollapseChange(folder, parentFolder);
+            if (wasCollapsedUndefined) {
+                this.forceUpdate();
+            }
+        }
     }
 }
 
@@ -95,7 +137,10 @@ export interface FolderViewState {
 
 export interface FolderViewProps {
     folder: any;
-    parentFolder?: any;
-    depth?: number;
-    onChange?: Function;
+    parentFolder: any | null;
+    depth: number;
+    index: number;
+    onCollapseChange?: (folder: any, parentFolder: any) => void;
+    onMovedToFolder?: (sourceItem: any, targetFolder: any) => void;
+    onFileClicked?: (file: any) => void;
 }

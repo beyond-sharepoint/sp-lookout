@@ -3,11 +3,13 @@ import { autobind } from 'office-ui-fabric-react/lib';
 import { DragSource } from 'react-dnd';
 
 const FileSource = {
-    beginDrag(props) {
+    beginDrag(props: FileProps) {
         return {
+            kind: 'file',
             name: props.file.name,
             parentFolder: props.parentFolder,
-            file: props.file
+            file: props.file,
+            index: props.index
         };
     },
 };
@@ -18,11 +20,11 @@ const FileSource = {
 }))
 export class File extends React.Component<FileProps, FileState> {
     public render() {
-        const { file, isDragging } = this.props;
+        const { file, isDragging, onClick } = this.props;
         const { connectDragSource } = this.props as any;
 
         return connectDragSource(
-            <div>
+            <div className="file" onClick={onClick}>
                 {file.name}
             </div>
         )
@@ -37,4 +39,6 @@ export interface FileProps {
     file: any;
     isDragging?: boolean
     depth: number;
+    index: number;
+    onClick?: (file: any) => void;
 }
