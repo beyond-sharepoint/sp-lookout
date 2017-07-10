@@ -1,5 +1,5 @@
 const treedata = {
-    name: 'react-ui-tree',
+    name: 'SPFiddle',
     collapsed: false,
     folders: [
         {

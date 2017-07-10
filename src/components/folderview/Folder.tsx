@@ -9,27 +9,36 @@ export const FolderItemTypes = {
 };
 
 const folderSource = {
-  beginDrag(props) {
-    return {
-      folder: props.folder,
-    };
-  },
+    beginDrag(props) {
+        return {
+            name: props.folder.name,
+            parentFolder: props.parentFolder,
+            folder: props.folder,
+        };
+    },
 };
 
 const folderTarget = {
+    canDrop(props, monitor) {
+        const item = monitor.getItem();
+        if (item.parentFolder === props.folder) {
+            return false;
+        }
+
+        if (item.parentFolder !== props.folder && !monitor.isOver({shallow: true})) {
+            return false;
+        }
+        return true;
+    },
     drop(props, monitor, component) {
         const hasDroppedOnChild = monitor.didDrop();
         if (hasDroppedOnChild) {
             return;
         }
-        const item =  monitor.getItem()
-        let source;
-        if (item.file) {
-            source = item.file.name;
-        } else {
-            source = item.folder.name;
-        }
-        console.log(`${source} dropped on ${props.folder.name}`);
+        console.log(monitor.isOver());
+        console.log(monitor.isOver({ shallow: true }));
+        const item = monitor.getItem();
+        console.log(`${item.name} dropped on ${props.folder.name}`);
     },
 };
 
@@ -39,8 +48,8 @@ const folderTarget = {
     isOverCurrent: monitor.isOver({ shallow: true }),
 }))
 @DragSource(FolderItemTypes.Folder, folderSource, (connect, monitor) => ({
-  connectDragSource: connect.dragSource(),
-  isDragging: monitor.isDragging(),
+    connectDragSource: connect.dragSource(),
+    isDragging: monitor.isDragging(),
 }))
 export class Folder extends React.Component<FolderViewProps, FolderViewState> {
     public render() {
@@ -67,11 +76,11 @@ export class Folder extends React.Component<FolderViewProps, FolderViewState> {
                 <div style={rootNodeStyle}>{folder.name}</div>
                 <div style={treeNodeStyle}>
                     {folder.folders ? folder.folders.map((subFolder, index) => (
-                        <Folder key={index} folder={subFolder} depth={innerDepth} />
+                        <Folder key={index} parentFolder={folder} folder={subFolder} depth={innerDepth} />
                     )) : null}
                     {
                         folder.files ? folder.files.map((file, index) => (
-                            <File key={index} file={file} depth={0} />
+                            <File key={index} parentFolder={folder} file={file} depth={0} />
                         ))
                             : null
                     }
@@ -86,6 +95,7 @@ export interface FolderViewState {
 
 export interface FolderViewProps {
     folder: any;
+    parentFolder?: any;
     depth?: number;
     onChange?: Function;
 }

@@ -5,7 +5,9 @@ import { DragSource } from 'react-dnd';
 const FileSource = {
     beginDrag(props) {
         return {
-            "file": props.file
+            name: props.file.name,
+            parentFolder: props.parentFolder,
+            file: props.file
         };
     },
 };
@@ -31,6 +33,7 @@ export interface FileState {
 }
 
 export interface FileProps {
+    parentFolder: any;
     file: any;
     isDragging?: boolean
     depth: number;
