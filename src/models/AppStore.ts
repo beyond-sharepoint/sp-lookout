@@ -26,7 +26,7 @@ export class AppStore {
 
     extendObjectWithDefaults(obj: {}, defaults: any) {
         let newProps = {};
-        for(let prop of Object.keys(defaults)) {
+        for (let prop of Object.keys(defaults)) {
             if (!obj.hasOwnProperty(prop)) {
                 newProps[prop] = defaults[prop];
             }
@@ -41,7 +41,7 @@ export class AppStore {
         }
 
         let result: Array<FiddleFolder> = [];
-        for(let f of folder.folders) {
+        for (let f of folder.folders) {
             result.push(f);
             result = result.concat(this.getFlattenedFolders(f));
         }
@@ -54,9 +54,12 @@ export class AppStore {
         }
 
         let result: Array<FiddleSettings> = [];
+        for (let currentFolderFile of folder.files) {
+            result.push(currentFolderFile);
+        }
         const flattenedFolders = this.getFlattenedFolders(folder);
-        for(let innerFolder of flattenedFolders) {
-            for(let file of innerFolder.files) {
+        for (let innerFolder of flattenedFolders) {
+            for (let file of innerFolder.files) {
                 result.push(file);
             }
         }
@@ -66,7 +69,7 @@ export class AppStore {
 
     getFiddleSettings(id: string): FiddleSettings | undefined {
         const filesFlat = this.getFlattenedFiles(this._workspaceSettings.fiddleRootFolder);
-        return find(filesFlat, { 'id': id});
+        return find(filesFlat, { 'id': id });
     }
 
     @action
