@@ -103,9 +103,9 @@
   version "6.0.64"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-6.0.64.tgz#cdc901411f6301e1437dfed23bc68f54442e4dc8"
 
-"@types/node@^8.0.9":
-  version "8.0.9"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.9.tgz#19f44c3b6cb8a70d261d366f73650e3e3891ab2d"
+"@types/node@^8.0.10":
+  version "8.0.10"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.10.tgz#12efec9183b072d5f951cf86395a4c780f868a17"
 
 "@types/react-dom@^15.5.1":
   version "15.5.1"
@@ -119,9 +119,9 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-router@^4.0.13":
-  version "4.0.13"
-  resolved "https://registry.yarnpkg.com/@types/react-router/-/react-router-4.0.13.tgz#60f11e4d224ada222d488244a0cca30079abf8bb"
+"@types/react-router@^4.0.14":
+  version "4.0.14"
+  resolved "https://registry.yarnpkg.com/@types/react-router/-/react-router-4.0.14.tgz#dd650f40bbb20ad1fec26471707665908efa9e9f"
   dependencies:
     "@types/history" "*"
     "@types/react" "*"
@@ -130,15 +130,15 @@
   version "15.0.34"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-15.0.34.tgz#c4f7235f3d245216a706887b7d1ffedaf5b1dc06"
 
-"@types/react@^15.0.35":
-  version "15.0.35"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-15.0.35.tgz#4672923cd502d03e1480d03816ebc5a719fb86da"
+"@types/react@^15.0.37":
+  version "15.0.37"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-15.0.37.tgz#e6391cdd4ffce7050b8a290b23611a61f2411da5"
 
 "@types/requirejs@^2.1.29":
   version "2.1.29"
   resolved "https://registry.yarnpkg.com/@types/requirejs/-/requirejs-2.1.29.tgz#bc48bc833c079c2c24ba6afbca6d3a03b3f4e2f3"
 
-"@types/sharepoint@^2013.1.7":
+"@types/sharepoint@^2013.1.9":
   version "2013.1.9"
   resolved "https://registry.yarnpkg.com/@types/sharepoint/-/sharepoint-2013.1.9.tgz#8be62a1b6dbfe0bf9dfc8e0fed125199a36fb60d"
   dependencies:
@@ -158,19 +158,19 @@
   version "3.16.20-alpha"
   resolved "https://registry.yarnpkg.com/@types/z-schema/-/z-schema-3.16.20-alpha.tgz#36f588ccca27d8e86dd6bb595a973aede8803766"
 
-"@uifabric/styling@>=0.13.0 <1.0.0":
-  version "0.13.0"
-  resolved "https://registry.yarnpkg.com/@uifabric/styling/-/styling-0.13.0.tgz#a41ff0761b808adde98cbfb95adeeb9865906d9a"
+"@uifabric/styling@>=0.13.4 <1.0.0":
+  version "0.13.5"
+  resolved "https://registry.yarnpkg.com/@uifabric/styling/-/styling-0.13.5.tgz#7925c0f072dd1cc41c76292cd902b912c006761d"
   dependencies:
     "@microsoft/load-themed-styles" "^1.2.2"
-    "@uifabric/utilities" ">=4.6.0 <5.0.0"
+    "@uifabric/utilities" ">=4.7.1 <5.0.0"
     glamor "^2.20.24"
     rtl-css-js "^1.1.1"
     tslib "^1.6.0"
 
-"@uifabric/utilities@>=4.6.0 <5.0.0":
-  version "4.7.0"
-  resolved "https://registry.yarnpkg.com/@uifabric/utilities/-/utilities-4.7.0.tgz#d5d195b4eea9a42c9e6591216c96045a13fdfbc2"
+"@uifabric/utilities@>=4.7.1 <5.0.0":
+  version "4.7.1"
+  resolved "https://registry.yarnpkg.com/@uifabric/utilities/-/utilities-4.7.1.tgz#ad5ad686d1575e529dc82bfea8f89ca43f75b5a9"
   dependencies:
     prop-types "^15.5.10"
     tslib "^1.6.0"
@@ -3585,9 +3585,9 @@ mobx-react@^4.2.2:
   dependencies:
     hoist-non-react-statics "^1.2.0"
 
-mobx@^3.2.0:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/mobx/-/mobx-3.2.0.tgz#5efb3280bc7f6eb9299a252c9ff9b4403cbd8c5a"
+mobx@^3.2.1:
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/mobx/-/mobx-3.2.1.tgz#6aeade0120cc3f78baa57195031630a0ae8f13cf"
 
 moment@^2.18.1:
   version "2.18.1"
@@ -3868,13 +3868,13 @@ obuf@^1.0.0, obuf@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/obuf/-/obuf-1.1.1.tgz#104124b6c602c6796881a042541d36db43a5264e"
 
-office-ui-fabric-react@^4.16.0:
-  version "4.16.0"
-  resolved "https://registry.yarnpkg.com/office-ui-fabric-react/-/office-ui-fabric-react-4.16.0.tgz#1727a01ccf25cdbeb20f109dfe242c778ef29013"
+office-ui-fabric-react@^4.17.1:
+  version "4.17.1"
+  resolved "https://registry.yarnpkg.com/office-ui-fabric-react/-/office-ui-fabric-react-4.17.1.tgz#73707939c2ee5f7565840e7667b5938dccdf2047"
   dependencies:
     "@microsoft/load-themed-styles" "^1.2.2"
-    "@uifabric/styling" ">=0.13.0 <1.0.0"
-    "@uifabric/utilities" ">=4.6.0 <5.0.0"
+    "@uifabric/styling" ">=0.13.4 <1.0.0"
+    "@uifabric/utilities" ">=4.7.1 <5.0.0"
     prop-types "^15.5.10"
     tslib "^1.6.0"
 
@@ -5297,11 +5297,11 @@ source-map@~0.2.0:
   dependencies:
     amdefine ">=0.0.4"
 
-sp-pnp-js@^2.0.6:
-  version "2.0.6"
-  resolved "https://registry.yarnpkg.com/sp-pnp-js/-/sp-pnp-js-2.0.6.tgz#cd6783931df4813e44199a70f476e7a6240da12a"
+sp-pnp-js@^2.0.7:
+  version "2.0.7"
+  resolved "https://registry.yarnpkg.com/sp-pnp-js/-/sp-pnp-js-2.0.7.tgz#a1478deac0ec64f3cc25dee43c38f3af3e1b42d6"
   dependencies:
-    "@types/sharepoint" "^2013.1.7"
+    "@types/sharepoint" "^2013.1.9"
 
 spdx-correct@~1.0.0:
   version "1.0.2"
@@ -6185,9 +6185,9 @@ xdg-basedir@^2.0.0:
   dependencies:
     os-homedir "^1.0.0"
 
-xlsx@^0.10.7:
-  version "0.10.7"
-  resolved "https://registry.yarnpkg.com/xlsx/-/xlsx-0.10.7.tgz#d4c530eed693f7594438d19c2fa43817ef1f753f"
+xlsx@^0.10.8:
+  version "0.10.8"
+  resolved "https://registry.yarnpkg.com/xlsx/-/xlsx-0.10.8.tgz#0a6b66bc0c5d1738665ea28f0246f3bbf6411502"
   dependencies:
     adler-32 "~1.0.0"
     cfb "~0.11.1"
