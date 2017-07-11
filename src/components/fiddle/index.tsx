@@ -17,8 +17,7 @@ import { get, set, cloneDeep } from 'lodash';
 import { FiddleSettingsModal } from '../fiddle-settings-modal';
 
 import Barista, { BrewSettings } from '../../services/barista';
-import { AppStore } from '../../models/AppStore';
-import { FiddleSettings, defaultFiddleSettings } from '../../models/FiddleSettings';
+import { FiddleStore, FiddleSettings, defaultFiddleSettings, Util } from '../../models';
 import './index.css';
 
 @observer
@@ -160,7 +159,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
     }
 
     private async brew(allowDebugger?: boolean, timeout?: number) {
-        const { barista, appStore, currentFiddle } = this.props;
+        const { barista, fiddleStore, currentFiddle } = this.props;
         const { isBrewing } = this.state;
 
         if (isBrewing) {
@@ -230,12 +229,12 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
     @action.bound
     private updateCode(code: string) {
         this.props.currentFiddle.code = code;
-        this.props.appStore.saveFiddle(this.props.currentFiddle);
+        FiddleStore.saveToLocalStorage(this.props.fiddleStore);
     }
 
     @autobind
     private showFiddleSettings() {
-        this.props.appStore.extendObjectWithDefaults(this.props.currentFiddle, defaultFiddleSettings);
+        Util.extendObjectWithDefaults(this.props.currentFiddle, defaultFiddleSettings);
         this.setState({
             showFiddleSettingsModal: true
         });
@@ -264,7 +263,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
     }
 
     public render() {
-        const { appStore, currentFiddle } = this.props;
+        const { fiddleStore, currentFiddle } = this.props;
 
         const { isBrewing, lastBrewResult, lastBrewResultIsError, showEditor } = this.state;
         let fiddleResultPaneStyle: any = {};
@@ -307,7 +306,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
                         <FiddleSettingsModal
                             showFiddleSettingsModal={this.state.showFiddleSettingsModal}
                             onDismiss={this.hideFiddleSettings}
-                            appStore={appStore}
+                            fiddleStore={fiddleStore}
                             currentFiddle={currentFiddle}
                         />
                     </div>
@@ -326,7 +325,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
 }
 
 export interface FiddleProps {
-    appStore: AppStore;
+    fiddleStore: FiddleStore;
     barista: Barista;
     currentFiddle: FiddleSettings;
 }

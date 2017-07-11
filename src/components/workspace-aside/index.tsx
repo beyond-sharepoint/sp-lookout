@@ -6,8 +6,7 @@ import { IContextualMenuItem } from 'office-ui-fabric-react';
 import SplitPane from '../split-pane/SplitPane';
 import { FolderView } from '../folderview';
 
-import { WorkspaceSettings } from '../../models/WorkspaceSettings';
-import { FiddleSettings } from '../../models/FiddleSettings';
+import { SettingsStore, FiddleStore, FiddleSettings } from '../../models';
 
 import './index.css';
 
@@ -18,22 +17,22 @@ export default class Aside extends React.Component<AsideProps, any> {
 
     @autobind
     private onPaneResized(newSize: number | string) {
-        this.props.workspaceSettings.visualSettings.asidePrimaryPaneHeight = newSize;
+        this.props.settingsStore.visualSettings.asidePrimaryPaneHeight = newSize;
     }
 
     public render() {
         return (
             <SplitPane
                 split="horizontal"
-                primaryPaneSize={this.props.workspaceSettings.visualSettings.asidePrimaryPaneHeight}
+                primaryPaneSize={this.props.settingsStore.visualSettings.asidePrimaryPaneHeight}
                 primaryPaneMinSize={250}
                 secondaryPaneStyle={{ overflow: 'auto' }}
                 onPaneResized={this.onPaneResized}
                 onResizerDoubleClick={(paneStyle, e, splitPane) => {
-                    if (paneStyle.height === "80%") {
+                    if (paneStyle.height === "60%") {
                         this.onPaneResized(splitPane.calculateMaxSize());
                     } else {
-                        this.onPaneResized('80%');
+                        this.onPaneResized('60%');
                     }
                 }}
             >
@@ -46,7 +45,7 @@ export default class Aside extends React.Component<AsideProps, any> {
                 //onRenderLink={this.renderNavLink} 
                 />
                 <FolderView
-                    folder={this.props.workspaceSettings.fiddleRootFolder}
+                    folder={this.props.fiddleStore.fiddleRootFolder}
                     onFileClicked={this.props.onFiddleSelected}
                 />
             </SplitPane>
@@ -56,6 +55,7 @@ export default class Aside extends React.Component<AsideProps, any> {
 
 export interface AsideProps {
     navItems: INavLinkGroup[];
-    workspaceSettings: WorkspaceSettings;
+    settingsStore: SettingsStore;
+    fiddleStore: FiddleStore;
     onFiddleSelected: (settings: FiddleSettings) => void;
 }

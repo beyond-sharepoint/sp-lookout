@@ -19,8 +19,7 @@ import Page from '../sp-lookout-page';
 import Aside from '../workspace-aside';
 import Fiddle from '../fiddle';
 
-import { AppStore } from '../../models/AppStore';
-import { FiddleSettings } from '../../models/FiddleSettings';
+import { SettingsStore, FiddleStore, FiddleSettings } from '../../models';
 
 import './Workspace.css';
 
@@ -33,7 +32,7 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
     public constructor(props: WorkspaceProps) {
         super(props);
 
-        const { appStore } = this.props;
+        const { settingsStore } = this.props;
 
         this.state = {
             dockIsVisible: false,
@@ -145,11 +144,11 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
             {
                 path: '/spfiddle/:fiddleId',
                 main: (stateProps) => {
-                    let currentFiddle = this.props.appStore.getFiddleSettings(stateProps.match.params.fiddleId);
+                    let currentFiddle = this.props.fiddleStore.getFiddleSettings(stateProps.match.params.fiddleId);
                     if (currentFiddle) {
                         return (
                             <Fiddle
-                                appStore={this.props.appStore}
+                                fiddleStore={this.props.fiddleStore}
                                 barista={this._barista}
                                 currentFiddle={currentFiddle}
                             />
@@ -200,7 +199,8 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
                         >
                             <Aside
                                 navItems={this.state.asideItems}
-                                workspaceSettings={this.props.appStore.workspaceSettings}
+                                settingsStore={this.props.settingsStore}
+                                fiddleStore={this.props.fiddleStore}
                                 onFiddleSelected={this.onFiddleSelected}
                             />
                             <div style={{ width: '100%', height: '100%', overflow: 'auto' }}>
@@ -283,5 +283,6 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
 }
 
 export interface WorkspaceProps {
-    appStore: AppStore;
+    settingsStore: SettingsStore;
+    fiddleStore: FiddleStore;
 }

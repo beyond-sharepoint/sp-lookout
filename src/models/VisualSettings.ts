@@ -3,5 +3,5 @@ export interface VisualSettings {
 }
 
 export const defaultVisualSettings = {
-    asidePrimaryPaneHeight: '80%'
+    asidePrimaryPaneHeight: '60%'
 };
