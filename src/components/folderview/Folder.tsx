@@ -10,6 +10,14 @@ export const FolderItemTypes = {
 };
 
 const folderSource = {
+    canDrag(props: FolderViewProps) {
+        //Prevent the root folder from dragging.
+        if (!props.parentFolder) {
+            return false;
+        }
+        
+        return true;
+    },
     beginDrag(props: FolderViewProps) {
         return {
             kind: 'folder',
@@ -23,6 +31,11 @@ const folderSource = {
 const folderTarget = {
     canDrop(props: FolderViewProps, monitor: any) {
         const item = monitor.getItem();
+
+        //Disallow the root folder from being dropped.
+        if (!item.parentFolder) {
+            return false;
+        }
 
         //Disallow dropping a file on it's containing folder.
         if (item.parentFolder === props.folder) {
