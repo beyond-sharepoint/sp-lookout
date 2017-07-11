@@ -168,9 +168,28 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
         }
     }
 
+    public calculateMaxSize(): number {
+        const { primaryPaneMaxSize, split } = this.props;
+        const resizer = ReactDOM.findDOMNode(this.resizer);
+        const resizerBoundingClientRect = resizer.getBoundingClientRect();
+        const resizerSize = split === 'vertical' ? resizerBoundingClientRect.width : resizerBoundingClientRect.height;
+
+        let calculatedMaxSize: number;
+        if (!primaryPaneMaxSize) {
+            const paneWrapper = ReactDOM.findDOMNode(this.paneWrapper);
+            const paneWrapperBoundingClientRect = paneWrapper.getBoundingClientRect();
+            const paneWrapperSize = split === 'vertical' ? paneWrapperBoundingClientRect.width : paneWrapperBoundingClientRect.height;
+            calculatedMaxSize = paneWrapperSize - resizerSize;
+        } else {
+            calculatedMaxSize = primaryPaneMaxSize - resizerSize;
+        }
+
+        return calculatedMaxSize;
+    }
+
     @autobind
     private handleMouseDown(e: any) {
-        const { allowResize, primaryPaneMaxSize, onDragStarted, split } = this.props;
+        const { allowResize, onDragStarted, split } = this.props;
         if (e.button === 2 || allowResize === false) {
             return;
         }
@@ -191,19 +210,7 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
         const boundingClientRect = pane.getBoundingClientRect();
         const dragStartPaneSize = split === 'vertical' ? boundingClientRect.width : boundingClientRect.height;
 
-        const resizer = ReactDOM.findDOMNode(this.resizer);
-        const resizerBoundingClientRect = resizer.getBoundingClientRect();
-        const resizerSize = split === 'vertical' ? resizerBoundingClientRect.width : resizerBoundingClientRect.height;
-
-        let calculatedMaxSize: number;
-        if (!primaryPaneMaxSize) {
-            const paneWrapper = ReactDOM.findDOMNode(this.paneWrapper);
-            const paneWrapperBoundingClientRect = paneWrapper.getBoundingClientRect();
-            const paneWrapperSize = split === 'vertical' ? paneWrapperBoundingClientRect.width : paneWrapperBoundingClientRect.height;
-            calculatedMaxSize = paneWrapperSize - resizerSize;
-        } else {
-            calculatedMaxSize = primaryPaneMaxSize - resizerSize;
-        }
+        const calculatedMaxSize = this.calculateMaxSize();
 
         if (typeof onDragStarted === 'function') {
             onDragStarted();

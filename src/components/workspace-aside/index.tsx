@@ -29,6 +29,13 @@ export default class Aside extends React.Component<AsideProps, any> {
                 primaryPaneMinSize={250}
                 secondaryPaneStyle={{ overflow: 'auto' }}
                 onPaneResized={this.onPaneResized}
+                onResizerDoubleClick={(paneStyle, e, splitPane) => {
+                    if (paneStyle.height === "80%") {
+                        this.onPaneResized(splitPane.calculateMaxSize());
+                    } else {
+                        this.onPaneResized('80%');
+                    }
+                }}
             >
                 <Nav
                     className="aside"
