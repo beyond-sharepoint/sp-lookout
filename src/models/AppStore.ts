@@ -1,92 +1,88 @@
-import { autorun, observable, observe, action, runInAction, toJS } from 'mobx';
-import { debounce, throttle } from 'lodash';
+import { autorun, observable, extendObservable, observe, action, runInAction, toJS } from 'mobx';
+import { debounce, throttle, defaultsDeep, find } from 'lodash';
 import * as localforage from 'localforage';
 
-import { FiddleState } from './FiddleState';
+import { WorkspaceSettings, defaultWorkspaceSettings } from './WorkspaceSettings';
+import { FiddleFolder, defaultFiddleRootFolder } from './FiddleFolder';
+import { FiddleSettings, defaultFiddleSettings } from './FiddleSettings';
 
-export * from './FiddleState';
 export const FiddlesLocalStorageKey = 'sp-lookout-fiddles';
 
 export class AppStore {
-    constructor() {
-        this.workspaceState = new WorkspaceState();
+    @observable
+    private _workspaceSettings: WorkspaceSettings;
+
+    constructor(workspaceSettings?: WorkspaceSettings) {
+        if (!workspaceSettings) {
+            this._workspaceSettings = observable(defaultWorkspaceSettings);
+        } else {
+            this._workspaceSettings = observable(defaultsDeep(workspaceSettings, defaultWorkspaceSettings) as WorkspaceSettings);
+        }
     }
 
-    @observable
-    public workspaceState: WorkspaceState;
-}
-
-export class WorkspaceState {
-    @observable
-    public components: Array<SPLookoutComponentState> = [];
-
-    @observable
-    public selectedFiddle: FiddleState;
-
-    @observable
-    public fiddles: Array<FiddleState> = [];
-
-    constructor() {
-        const initialFiddleState = new FiddleState();
-        this.fiddles = [initialFiddleState];
-        this.selectFiddle(this.fiddles[0]);
+    public get workspaceSettings() {
+        return this._workspaceSettings;
     }
 
-    @action
-    async loadFiddles() {
-        const fiddles = await localforage.getItem(FiddlesLocalStorageKey) as Array<FiddleState>;
-        runInAction(() => {
-            this.fiddles = fiddles;
-            if (!this.fiddles || this.fiddles.length === 0) {
-                const initialFiddleState = new FiddleState();
-                this.fiddles = [initialFiddleState];
+    extendObjectWithDefaults(obj: {}, defaults: any) {
+        let newProps = {};
+        for(let prop of Object.keys(defaults)) {
+            if (!obj.hasOwnProperty(prop)) {
+                newProps[prop] = defaults[prop];
             }
-            this.selectFiddle(this.fiddles[0]);
-        });
+        }
+
+        extendObservable(obj, newProps);
+    }
+
+    getFlattenedFolders(folder: FiddleFolder): Array<FiddleFolder> {
+        if (!folder) {
+            return [];
+        }
+
+        let result: Array<FiddleFolder> = [];
+        for(let f of folder.folders) {
+            result.push(f);
+            result = result.concat(this.getFlattenedFolders(f));
+        }
+        return result;
+    }
+
+    getFlattenedFiles(folder: FiddleFolder): Array<FiddleSettings> {
+        if (!folder) {
+            return [];
+        }
+
+        let result: Array<FiddleSettings> = [];
+        const flattenedFolders = this.getFlattenedFolders(folder);
+        for(let innerFolder of flattenedFolders) {
+            for(let file of innerFolder.files) {
+                result.push(file);
+            }
+        }
+
+        return result;
+    }
+
+    getFiddleSettings(id: string): FiddleSettings | undefined {
+        const filesFlat = this.getFlattenedFiles(this._workspaceSettings.fiddleRootFolder);
+        return find(filesFlat, { 'id': id});
     }
 
     @action
     saveFiddles() {
-        localforage.setItem(FiddlesLocalStorageKey, toJS(this.fiddles));
+        localforage.setItem(FiddlesLocalStorageKey, toJS(this._workspaceSettings.fiddleRootFolder));
     }
 
     @action
-    selectFiddle(fiddle: FiddleState): void {
-        this.selectedFiddle = fiddle;
+    saveFiddle(fiddle: FiddleSettings) {
+        //TODO: Optimize this.
+        localforage.setItem(FiddlesLocalStorageKey, toJS(this._workspaceSettings.fiddleRootFolder));
+    }
+
+    static async load(): Promise<AppStore> {
+        let workspaceSettings: Partial<WorkspaceSettings> = {};
+        workspaceSettings.fiddleRootFolder = await localforage.getItem(FiddlesLocalStorageKey) as FiddleFolder;
+        return new AppStore(workspaceSettings as WorkspaceSettings);
     }
 }
-
-export class SPLookoutComponentState {
-    @observable
-    fiddleId: string;
-}
-
-export class FiddleConfig {
-    @observable
-    languageDefinitions: Array<string>;
-
-    @observable
-    proxyRequireJSConfig: any;
-}
-
-let store = (<any>window).store = new AppStore();
-
-// observe(store.workspaceState.selectedFiddle, "editorOptions", (change) => {
-//     console.log("mooseballs!!");
-// });
-
-autorun(() => {
-    // let value = (<any>store.workspaceState.selectedFiddle).get();
-    // console.log("moo");
-
-    observe(store.workspaceState.selectedFiddle, (change) => {
-        //console.log("meh");
-        store.workspaceState.saveFiddles();
-        //debounce(store.workspaceState.saveFiddles, 250);
-        //throttle(store.workspaceState.saveFiddles, 1000);
-    });
-
-    //console.dir(store.workspaceState.selectedFiddle);
-});
-
-export default store;

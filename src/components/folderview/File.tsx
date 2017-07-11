@@ -23,10 +23,18 @@ export class File extends React.Component<FileProps, FileState> {
         const { connectDragSource } = this.props as any;
 
         return connectDragSource(
-            <div className="file" onClick={onClick}>
+            <div className="file" onClick={this.onClick}>
                 {file.name}
             </div>
-        )
+        );
+    }
+
+    @autobind
+    private onClick() {
+        const { file, onClick } = this.props;
+        if (typeof onClick === 'function') {
+            onClick(file);
+        }
     }
 }
 

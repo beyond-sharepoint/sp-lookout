@@ -10,11 +10,10 @@ export default class SPLookoutPage extends React.Component<SPLookoutPageProps, a
         items: 50,
         columns: 12,
         rowHeight: 30,
-        onLayoutChange: () => { },
         isLocked: false
     };
 
-    public constructor(props) {
+    public constructor(props: SPLookoutPageProps) {
         super(props);
 
         const { items } = props;
@@ -30,7 +29,7 @@ export default class SPLookoutPage extends React.Component<SPLookoutPageProps, a
                     i: i.toString()
                 };
             })
-        }
+        };
     }
 
     public render() {
@@ -52,14 +51,14 @@ export default class SPLookoutPage extends React.Component<SPLookoutPageProps, a
                     return (<div key={i}><span className="text">{i}</span></div>);
                 })}
             </Layout>
-        )
+        );
     }
 }
 
 export interface SPLookoutPageProps {
     items?: number;
     columns?: number;
-    rowHeight?: number
-    isLocked?: boolean
-    onLayoutChange?: (Layout) => void;
+    rowHeight?: number;
+    isLocked?: boolean;
+    onLayoutChange?: (Layout: any) => void;
 }

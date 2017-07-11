@@ -10,7 +10,7 @@ export const FolderItemTypes = {
 };
 
 const folderSource = {
-    beginDrag(props) {
+    beginDrag(props: FolderViewProps) {
         return {
             kind: 'folder',
             name: props.folder.name,
@@ -21,7 +21,7 @@ const folderSource = {
 };
 
 const folderTarget = {
-    canDrop(props, monitor) {
+    canDrop(props: FolderViewProps, monitor: any) {
         const item = monitor.getItem();
 
         //Disallow dropping a file on it's containing folder.
@@ -41,7 +41,7 @@ const folderTarget = {
 
         return true;
     },
-    drop(props, monitor, component) {
+    drop(props: FolderViewProps, monitor: any, component: any) {
         const hasDroppedOnChild = monitor.didDrop();
         if (hasDroppedOnChild) {
             return;
@@ -71,25 +71,33 @@ export class Folder extends React.Component<FolderViewProps, FolderViewState> {
         const { connectDragSource, connectDropTarget } = this.props as any;
         const innerDepth = (depth || 0) + 1;
 
+        if (!folder) {
+            return null;
+        }
+
         const treeNodeStyle = {
             paddingLeft: innerDepth * 10,
             cursor: 'pointer',
             userSelect: 'none'
-        }
+        };
 
         const rootNodeStyle = {
             backgroundColor: !depth ? '#f4f4f4' : null,
-        }
+        };
 
-        let collapseClassName = "collapse";
-        if (folder.collapsed === true)
-            collapseClassName += " fa fa-caret-right";
-        else
-            collapseClassName += " fa fa-caret-down";
+        let collapseClassName = 'collapse';
+        if (folder.collapsed === true) {
+            collapseClassName += ' fa fa-caret-right';
+        } else {
+            collapseClassName += ' fa fa-caret-down';
+        }
 
         return connectDragSource(connectDropTarget(
             <div className="folder" style={{ flex: 1 }}>
-                <div style={rootNodeStyle} onClick={this.onCollapseChange}><span className={collapseClassName} style={{ paddingRight: '5px' }} aria-hidden="true"></span>{folder.name}</div>
+                <div style={rootNodeStyle} onClick={this.onCollapseChange}>
+                    <span className={collapseClassName} style={{ paddingRight: '5px', width: '0.5em' }} aria-hidden="true"/>
+                    {folder.iconClassName ? (<span className={folder.iconClassName} style={{ paddingRight: '3px' }}/>) : null}
+                    {folder.name}</div>
                 <div style={treeNodeStyle}>
                     {
                         !folder.collapsed ?
@@ -121,7 +129,7 @@ export class Folder extends React.Component<FolderViewProps, FolderViewState> {
                     }
                 </div>
             </div>
-        ))
+        ));
     }
 
     @autobind

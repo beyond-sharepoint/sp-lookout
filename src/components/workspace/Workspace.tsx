@@ -5,6 +5,7 @@ import {
     Link
 } from 'react-router-dom';
 import * as URI from 'urijs';
+import { action, extendObservable, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import * as localforage from 'localforage';
 import { autobind } from 'office-ui-fabric-react/lib';
@@ -18,7 +19,8 @@ import Page from '../sp-lookout-page';
 import Aside from '../workspace-aside';
 import Fiddle from '../fiddle';
 
-import { WorkspaceState } from '../../models/AppStore';
+import { AppStore } from '../../models/AppStore';
+import { FiddleSettings } from '../../models/FiddleSettings';
 
 import './Workspace.css';
 
@@ -28,13 +30,10 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
     private _appBarFarItems;
     private _barista: Barista;
 
-    public constructor(props) {
+    public constructor(props: WorkspaceProps) {
         super(props);
 
-        //TODO: Can we do this without forcing an update???
-        const { workspaceState } = this.props;
-        workspaceState.loadFiddles()
-            .then(() => this.forceUpdate());
+        const { appStore } = this.props;
 
         this.state = {
             dockIsVisible: false,
@@ -134,18 +133,6 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
                             isExpanded: true
                         }
                     ]
-                },
-                {
-                    links:
-                    [
-                        {
-                            name: 'SPFiddle',
-                            url: '#/SPFiddle',
-                            key: 'fiddle',
-                            icon: 'Embed',
-                            onClick: this._onClickHandler2
-                        }
-                    ]
                 }
             ] as INavLinkGroup[];
 
@@ -153,21 +140,24 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
             {
                 path: '/',
                 exact: true,
-                main: () => <Page></Page>
+                main: () => <Page />
             },
             {
-                path: '/bubblegum',
-                main: () => <h2>Bubblegum</h2>
-            },
-            {
-                path: '/spfiddle',
-                sidebar: () => <div>shoelaces!</div>,
-                main: () => (
-                    <Fiddle
-                        barista={this._barista}
-                        fiddleState={workspaceState.selectedFiddle}>
-                    </Fiddle>
-                )
+                path: '/spfiddle/:fiddleId',
+                main: (stateProps) => {
+                    let currentFiddle = this.props.appStore.getFiddleSettings(stateProps.match.params.fiddleId);
+                    if (currentFiddle) {
+                        return (
+                            <Fiddle
+                                appStore={this.props.appStore}
+                                barista={this._barista}
+                                currentFiddle={currentFiddle}
+                            />
+                        );
+                    }
+
+                    return null;
+                }
             }
         ];
     }
@@ -175,7 +165,7 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
     public componentDidMount() {
         const currentUri = URI();
         if (currentUri.hasQuery('splauth')) {
-            const targetRoute = currentUri.query(true)["splauth"];
+            const targetRoute = currentUri.query(true)['splauth'];
             currentUri.fragment(targetRoute);
             window.location.href = currentUri.href();
         }
@@ -197,7 +187,7 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
                             className="left-sidebar"
                             primaryPaneSize={this.state.sidebarSize}
                             primaryPaneMinSize={0}
-                            primaryPaneMaxSize={400}
+                            primaryPaneMaxSize={700}
                             primaryPaneStyle={{ overflow: 'auto' }}
                             onPaneResized={(size) => { this.setState({ sidebarSize: size }); }}
                             onResizerDoubleClick={(paneStyle) => {
@@ -208,7 +198,11 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
                                 }
                             }}
                         >
-                            <Aside navItems={this.state.asideItems}></Aside>
+                            <Aside
+                                navItems={this.state.asideItems}
+                                workspaceSettings={this.props.appStore.workspaceSettings}
+                                onFiddleSelected={this.onFiddleSelected}
+                            />
                             <div style={{ width: '100%', height: '100%', overflow: 'auto' }}>
                                 {this.state.routes.map((route, index) => (
                                     <Route
@@ -248,6 +242,17 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
         return false;
     }
 
+    @action.bound
+    private onFiddleSelected(fiddleSettings: FiddleSettings) {
+        // const { workspaceSettings } = this.props;
+        // workspaceSettings.currentFiddle = fiddleSettings;
+
+        // console.dir(toJS(fiddleSettings));
+        // this.forceUpdate();
+
+        location.hash = '/SPFiddle/' + fiddleSettings.id;
+    }
+
     @autobind
     private showSettings() {
         this.setState({
@@ -277,7 +282,6 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
     }
 }
 
-
 export interface WorkspaceProps {
-    workspaceState: WorkspaceState
+    appStore: AppStore;
 }

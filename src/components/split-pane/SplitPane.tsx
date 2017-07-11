@@ -251,7 +251,11 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
             newPaneSize = calculatedMaxSize;
         }
 
-        onPaneResized(newPaneSize);
+        if (typeof onPaneResized === 'function') {
+            onPaneResized(newPaneSize);
+        } else {
+            throw Error('Expected onPaneResized to be a function, instead found ' + typeof onPaneResized);
+        }
     }
 
     @autobind
@@ -289,7 +293,7 @@ export interface SplitPaneProps {
     secondaryPaneClassName?: string;
     primaryPaneStyle?: React.CSSProperties;
     secondaryPaneStyle?: React.CSSProperties;
-    onPaneResized: Function;
+    onPaneResized: (newSize: number) => void;
     onDragStarted?: Function;
     onDragFinished?: Function;
     onResizerDoubleClick?: (paneStyle: React.CSSProperties, e: React.MouseEvent<HTMLDivElement>, splitPane: SplitPane) => void;

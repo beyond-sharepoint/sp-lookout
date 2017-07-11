@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
+import { action, extendObservable } from 'mobx';
 import { observer } from 'mobx-react';
 import { autobind } from 'office-ui-fabric-react/lib';
 import { Folder } from './Folder';
@@ -12,20 +13,43 @@ import './FolderView.css';
 @observer
 export class FolderView extends React.Component<FolderViewProps, FolderViewState> {
     public render() {
-        const { folder, onCollapseChange, onMovedToFolder, onFileClicked } = this.props;
+        const { folder, onFileClicked } = this.props;
 
         return (
             <div className="folder-view ms-fontColor-themePrimary" style={{ display: 'flex' }}>
-                <Folder 
+                <Folder
                     folder={folder}
                     parentFolder={null}
                     depth={0}
-                    onCollapseChange={onCollapseChange}
-                    onMovedToFolder={onMovedToFolder}
+                    onCollapseChange={this.onCollapseChange}
+                    onMovedToFolder={this.onMovedToFolder}
                     onFileClicked={onFileClicked}
                 />
             </div>
         );
+    }
+
+    @action.bound
+    private onCollapseChange(folder: any, parentFolder: any) {
+        if (typeof folder.collapsed === 'undefined') {
+            extendObservable(folder, {
+                collapsed: true
+            });
+        } else {
+            folder.collapsed = !folder.collapsed;
+        }
+    }
+
+    @action.bound
+    private onMovedToFolder(sourceItem: any, targetFolder: any) {
+        const parentFolder = sourceItem.parentFolder;
+        if (sourceItem.kind === 'file') {
+            parentFolder.files.splice(parentFolder.files.indexOf(sourceItem.file), 1);
+            targetFolder.files.push(sourceItem.file);
+        } else if (sourceItem.kind === 'folder') {
+            parentFolder.folders.splice(parentFolder.folders.indexOf(sourceItem.folder), 1);
+            targetFolder.folders.push(sourceItem.folder);
+        }
     }
 }
 
@@ -34,7 +58,5 @@ export interface FolderViewState {
 
 export interface FolderViewProps {
     folder: any;
-    onCollapseChange?: (folder: any, parentFolder: any) => void;
-    onMovedToFolder?: (sourceItem: any, targetFolder: any) => void;
     onFileClicked?: (file: any) => void;
 }

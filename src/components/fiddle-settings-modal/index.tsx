@@ -1,26 +1,25 @@
 import * as React from 'react';
-import { observable, action } from 'mobx';
+import { observable, action, extendObservable } from 'mobx';
 import { observer } from 'mobx-react';
-import { get } from 'lodash';
+import { get, set } from 'lodash';
 
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { Pivot, PivotItem } from 'office-ui-fabric-react/lib/Pivot';
 import { Dropdown, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
 import { Toggle } from 'office-ui-fabric-react/lib/Toggle';
 
-import { FiddleState } from '../../models/AppStore';
+import { AppStore } from '../../models/AppStore';
+import { FiddleSettings, defaultFiddleSettings } from '../../models/FiddleSettings';
 import './index.css';
 
 @observer
-export class FiddleSettings extends React.Component<FiddleSettingsProps, any> {
+export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, any> {
     public render() {
         const {
             showFiddleSettingsModal,
             onDismiss,
-            updateTheme,
-            updateLanguage,
-            updateMinimap,
-            fiddleState
+            appStore,
+            currentFiddle
         } = this.props;
 
         return (
@@ -40,8 +39,8 @@ export class FiddleSettings extends React.Component<FiddleSettingsProps, any> {
                                 label="Theme:"
                                 id="fiddle-theme"
                                 ariaLabel="Select Fiddle Theme"
-                                selectedKey={fiddleState.theme}
-                                onChanged={updateTheme}
+                                selectedKey={currentFiddle.theme || defaultFiddleSettings.theme}
+                                onChanged={this.updateTheme}
                                 options={
                                     [
                                         { key: 'vs', text: 'Light (Visual Studio)' },
@@ -53,8 +52,8 @@ export class FiddleSettings extends React.Component<FiddleSettingsProps, any> {
                                 label="Language:"
                                 id="fiddle-language"
                                 ariaLabel="Select Fiddle Language"
-                                selectedKey={fiddleState.language}
-                                onChanged={updateLanguage}
+                                selectedKey={currentFiddle.language || defaultFiddleSettings.language}
+                                onChanged={this.updateLanguage}
                                 options={
                                     [
                                         { key: 'typescript', text: 'TypeScript' },
@@ -63,8 +62,8 @@ export class FiddleSettings extends React.Component<FiddleSettingsProps, any> {
                                 }
                             />
                             <Toggle
-                                defaultChecked={get(fiddleState, 'editorOptions.minimap.enabled') as boolean}
-                                onChanged={updateMinimap}
+                                defaultChecked={get(currentFiddle, 'editorOptions.minimap.enabled') as boolean}
+                                onChanged={this.updateMinimap}
                                 label="Minimap Enabled"
                                 onAriaLabel="Minimap is enabled. Press to disable."
                                 offAriaLabel="Minimap is disabled. Press to enable."
@@ -83,13 +82,26 @@ export class FiddleSettings extends React.Component<FiddleSettingsProps, any> {
             </Modal>
         );
     }
+
+    @action.bound
+    private updateTheme(ev: any) {
+        this.props.currentFiddle.theme = ev.key;
+    }
+
+    @action.bound
+    private updateLanguage(ev: any) {
+        this.props.currentFiddle.language = ev.key;
+    }
+
+    @action.bound
+    private updateMinimap(ev: any) {
+        set(this.props, 'currentFiddle.editorOptions.minimap.enabled', ev);
+    }
 }
 
 export interface FiddleSettingsProps {
     showFiddleSettingsModal: boolean;
     onDismiss: (ev?: React.MouseEvent<HTMLButtonElement>) => any;
-    fiddleState: FiddleState;
-    updateTheme?: (option: IDropdownOption, index: number | undefined) => void;
-    updateLanguage?: (option: IDropdownOption, index: number | undefined) => void;
-    updateMinimap?: (checked: boolean) => void;
+    appStore: AppStore;
+    currentFiddle: FiddleSettings;
 }

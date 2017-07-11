@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { observable, action, toJS } from 'mobx';
+import { observable, action, extendObservable, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import * as Mousetrap from 'mousetrap';
 import * as URI from 'urijs';
@@ -14,10 +14,11 @@ import { ObjectInspector } from 'react-inspector';
 import SplitPane from '../split-pane/SplitPane';
 import MonacoEditor from '../monaco-editor';
 import { get, set, cloneDeep } from 'lodash';
-import { FiddleSettings } from '../fiddle-settings';
+import { FiddleSettingsModal } from '../fiddle-settings-modal';
 
 import Barista, { BrewSettings } from '../../services/barista';
-import { FiddleState } from '../../models/AppStore';
+import { AppStore } from '../../models/AppStore';
+import { FiddleSettings, defaultFiddleSettings } from '../../models/FiddleSettings';
 import './index.css';
 
 @observer
@@ -35,13 +36,13 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
             fiddlePaneSize: '50%',
             showFiddleSettingsModal: false,
             showEditor: true
-        }
+        };
 
         this.commandBarItems = [
             {
                 key: 'name',
-                name: this.props.fiddleState.filename,
-                title: this.props.fiddleState.filename,
+                name: this.props.currentFiddle.name,
+                title: this.props.currentFiddle.name,
                 disabled: true
             },
             {
@@ -50,7 +51,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
                 title: 'Execute the current script.',
                 icon: 'Play',
                 ariaLabel: 'Execute the current script.',
-                onClick: () => { this.brew(this.props.fiddleState.code, this.props.fiddleState.brewMode) },
+                onClick: () => { this.brew(); }
             },
             {
                 key: 'debug',
@@ -61,9 +62,9 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
                     style: { fontSize: '1.25em', lineHeight: '0.75em', verticalAlign: '-15%' }
                 },
                 ariaLabel: 'Debug the current script. Ensure developer tools are open before running this command.',
-                onClick: () => { this.debug(this.props.fiddleState.code, this.props.fiddleState.brewMode) },
+                onClick: () => { this.debug(); },
             },
-        ]
+        ];
 
         this.commandBarFarItems = [
             {
@@ -83,11 +84,11 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
             'lodash': require('file-loader!@types/lodash/index.d.ts'),
             'moment': require('file-loader!moment/moment.d.ts'),
             'sp-pnp-js': require('file-loader!./types/sp-pnp-js.d.html'),
-        }
+        };
 
         this._extraLibs = [];
 
-        for (let name in typeDefs) {
+        for (let name of Object.keys(typeDefs)) {
             const fileResponse = await fetch(typeDefs[name]);
             const fileContents = await fileResponse.text();
             const lib = monaco.languages.typescript.typescriptDefaults.addExtraLib(
@@ -137,7 +138,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
     }
 
     @autobind
-    private editorWillDispose(editor) {
+    private editorWillDispose(editor: monaco.editor.ICodeEditor) {
         for (let lib of this._extraLibs) {
             lib.dispose();
         }
@@ -148,56 +149,31 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
             showEditor: false
         });
 
-        setTimeout(() => {
-            this.setState({
-                showEditor: true
-            });
-        }, 1000);
+        setTimeout(
+            () => {
+                this.setState({
+                    showEditor: true
+                });
+            },
+            1000
+        );
     }
 
-    @action.bound
-    private updateCode(code) {
-        this.props.fiddleState.code = code;
-    }
-
-    @action.bound
-    private updateTheme(ev) {
-        this.props.fiddleState.theme = ev.key;
-    }
-
-    @action.bound
-    private updateLanguage(ev) {
-        this.props.fiddleState.language = ev.key;
-    }
-
-    @action.bound
-    private updateMinimap(ev) {
-        //set(this.props, 'fiddleState.editorOptions.minimap.enabled', ev);
-        if (!this.props.fiddleState.editorOptions) {
-            this.props.fiddleState.editorOptions = {};
-        }
-
-        this.props.fiddleState.editorOptions.minimap = {
-            ...this.props.fiddleState.editorOptions.minimap,
-            enabled: ev
-        };
-    }
-
-    private async debug(code: string, brewMode?: 'require' | 'sandfiddle') {
-        return this.brew(code, brewMode, true, 0);
-    }
-
-    private async brew(code: string, brewMode?: 'require' | 'sandfiddle', allowDebugger?: boolean, timeout?: number) {
-        const { barista, fiddleState } = this.props;
+    private async brew(allowDebugger?: boolean, timeout?: number) {
+        const { barista, appStore, currentFiddle } = this.props;
         const { isBrewing } = this.state;
 
         if (isBrewing) {
             return;
         }
 
-        brewMode = brewMode || fiddleState.brewMode || 'sandfiddle';
+        if (!currentFiddle || !currentFiddle.code) {
+            return;
+        }
+
+        let brewMode = currentFiddle.brewMode || 'sandfiddle';
         if (typeof timeout === 'undefined') {
-            timeout = fiddleState.brewTimeout || 5000
+            timeout = currentFiddle.brewTimeout || 5000;
         }
 
         let lastBrewResult: any = undefined;
@@ -212,19 +188,19 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
         try {
 
             const brewSettings: BrewSettings = {
-                filename: fiddleState.filename,
-                input: fiddleState.code,
-                brewMode: fiddleState.brewMode,
+                filename: currentFiddle.name,
+                input: currentFiddle.code,
+                brewMode: currentFiddle.brewMode,
                 allowDebuggerStatement: allowDebugger,
                 timeout: timeout,
-                requireConfig: toJS(fiddleState.requireConfig)
+                requireConfig: toJS(currentFiddle.requireConfig)
             };
 
             let result = await barista.brew(brewSettings);
             if (!result) {
                 result = {
                     data: 'An empty result was returned.'
-                }
+                };
             }
             console.dir(result);
             lastBrewResult = result.data || result.transferrableData;
@@ -247,8 +223,19 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
         }
     }
 
+    private async debug() {
+        return this.brew(true, 0);
+    }
+
+    @action.bound
+    private updateCode(code: string) {
+        this.props.currentFiddle.code = code;
+        this.props.appStore.saveFiddle(this.props.currentFiddle);
+    }
+
     @autobind
     private showFiddleSettings() {
+        this.props.appStore.extendObjectWithDefaults(this.props.currentFiddle, defaultFiddleSettings);
         this.setState({
             showFiddleSettingsModal: true
         });
@@ -268,26 +255,29 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
         );
 
         this._mousetrap.bind(['ctrl+return', 'ctrl+f5'], () => {
-            this.brew(this.props.fiddleState.code, this.props.fiddleState.brewMode);
+            this.brew();
         });
 
         this._mousetrap.bind(['ctrl+shift+return', 'f5'], () => {
-            this.debug(this.props.fiddleState.code, this.props.fiddleState.brewMode);
+            this.debug();
         });
     }
 
     public render() {
-        const { fiddleState } = this.props;
+        const { appStore, currentFiddle } = this.props;
+
         const { isBrewing, lastBrewResult, lastBrewResultIsError, showEditor } = this.state;
         let fiddleResultPaneStyle: any = {};
         if (lastBrewResultIsError) {
             fiddleResultPaneStyle.backgroundColor = 'rgb(255, 214, 214)';
         }
 
+        const theme = currentFiddle.theme || 'vs';
+
         return (
             <SplitPane
-                split='vertical'
-                className='left-sidebar'
+                split="vertical"
+                className="left-sidebar"
                 primaryPaneSize={this.state.fiddlePaneSize}
                 primaryPaneMinSize={0}
                 secondaryPaneStyle={{ overflow: 'auto' }}
@@ -303,42 +293,40 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
                     <div style={{ flex: '1' }}>
                         {showEditor ?
                             <MonacoEditor
-                                value={fiddleState.code}
-                                language={fiddleState.language}
-                                theme={fiddleState.theme}
-                                filename={fiddleState.filename}
+                                value={currentFiddle.code}
+                                language={currentFiddle.language}
+                                theme={currentFiddle.theme}
+                                filename={currentFiddle.name}
                                 onChange={this.updateCode}
                                 editorWillMount={this.editorWillMount}
                                 editorWillDispose={this.editorWillDispose}
-                                options={toJS(fiddleState.editorOptions)}
-                            >
-                            </MonacoEditor>
+                                options={toJS(currentFiddle.editorOptions)}
+                            />
                             : null
                         }
-                        <FiddleSettings
+                        <FiddleSettingsModal
                             showFiddleSettingsModal={this.state.showFiddleSettingsModal}
                             onDismiss={this.hideFiddleSettings}
-                            updateLanguage={this.updateLanguage}
-                            updateTheme={this.updateTheme}
-                            updateMinimap={this.updateMinimap}
-                            fiddleState={fiddleState}
+                            appStore={appStore}
+                            currentFiddle={currentFiddle}
                         />
                     </div>
                 </div>
-                <div className='fiddle-results' style={{ backgroundColor: fiddleState.theme.endsWith('dark') ? 'black' : null }}>
+                <div className="fiddle-results" style={{ backgroundColor: theme.endsWith('dark') ? 'black' : null }}>
                     {isBrewing ?
-                        <Spinner size={SpinnerSize.large} label='Brewing...' ariaLive='assertive' />
+                        <Spinner size={SpinnerSize.large} label="Brewing..." ariaLive="assertive" />
                         : null}
                     {!isBrewing ?
-                        <ObjectInspector data={lastBrewResult} expandLevel={2} showNonenumerable={false} theme={fiddleState.theme.endsWith('dark') ? 'chromeDark' : 'chromeLight'} />
+                        <ObjectInspector data={lastBrewResult} expandLevel={2} showNonenumerable={false} theme={theme.endsWith('dark') ? 'chromeDark' : 'chromeLight'} />
                         : null}
                 </div>
             </SplitPane>
-        )
+        );
     }
 }
 
 export interface FiddleProps {
+    appStore: AppStore;
     barista: Barista;
-    fiddleState: FiddleState;
+    currentFiddle: FiddleSettings;
 }
