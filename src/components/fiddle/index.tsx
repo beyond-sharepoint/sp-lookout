@@ -13,7 +13,7 @@ import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
 import { ObjectInspector } from 'react-inspector';
 import SplitPane from '../split-pane/SplitPane';
 import MonacoEditor from '../monaco-editor';
-import { get, set, cloneDeep } from 'lodash';
+import { get, set, cloneDeep, defaultsDeep } from 'lodash';
 import { FiddleSettingsModal } from '../fiddle-settings-modal';
 
 import Barista, { BrewSettings } from '../../services/barista';
@@ -170,11 +170,6 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
             return;
         }
 
-        let brewMode = currentFiddle.brewMode || 'sandfiddle';
-        if (typeof timeout === 'undefined') {
-            timeout = currentFiddle.brewTimeout || 5000;
-        }
-
         let lastBrewResult: any = undefined;
         let lastBrewResultIsError = false;
 
@@ -186,14 +181,14 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
 
         try {
 
-            const brewSettings: BrewSettings = {
+            const brewSettings: BrewSettings = defaultsDeep({
                 filename: currentFiddle.name,
                 input: currentFiddle.code,
                 brewMode: currentFiddle.brewMode,
                 allowDebuggerStatement: allowDebugger,
                 timeout: timeout,
                 requireConfig: toJS(currentFiddle.requireConfig)
-            };
+            }, defaultBrewSettings) as BrewSettings;
 
             let result = await barista.brew(brewSettings);
             if (!result) {
@@ -328,4 +323,10 @@ export interface FiddleProps {
     fiddleStore: FiddleStore;
     barista: Barista;
     currentFiddle: FiddleSettings;
+}
+
+export const defaultBrewSettings: Partial<BrewSettings> = { 
+    brewMode: 'sandfiddle',
+    timeout: 5000,
+    requireConfig: defaultFiddleSettings.requireConfig
 }
