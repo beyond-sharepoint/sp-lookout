@@ -20,6 +20,15 @@ export default class Aside extends React.Component<AsideProps, any> {
     public render() {
         const { settingsStore, fiddleStore, onFiddleSelected, selectedPageKey, selectedFiddleId } = this.props;
 
+        const starredDivStyle: React.CSSProperties = {
+            display: 'none'
+        };
+
+        if (fiddleStore.starred.length > 0) {
+            starredDivStyle.display = null;
+            starredDivStyle.paddingBottom = '5px';
+        }
+
         return (
             <SplitPane
                 split="horizontal"
@@ -44,18 +53,24 @@ export default class Aside extends React.Component<AsideProps, any> {
                 //onRenderLink={this.renderNavLink} 
                 />
                 <div>
-                { fiddleStore.starred.map((file, index) => {
-                    return (
-                        <div style={{cursor: 'pointer' }}><span style={{color: 'yellow', paddingLeft: '5px', paddingRight: '5px'}}><i className="fa fa-star" aria-hidden="true"></i></span>{file.name}</div>
-                    );
-                })
-                }
-                <FolderView
-                    folder={fiddleStore.fiddleRootFolder as IFolder}
-                    onFileClicked={onFiddleSelected}
-                    selectedFileId={selectedFiddleId}
-                    onChange={this.onFiddleChange}
-                />
+                    <div style={starredDivStyle}>
+                        {fiddleStore.starred.map((fiddleSettings, index) => {
+                            return (
+                                <div style={{ cursor: 'pointer' }} onClick={() => onFiddleSelected(fiddleSettings)}>
+                                    <span style={{ color: 'orange', paddingLeft: '5px', paddingRight: '5px' }}>
+                                        <i className="fa fa-star" aria-hidden="true"></i>
+                                    </span>{fiddleSettings.name}
+                                </div>
+                            );
+                        })
+                        }
+                    </div>
+                    <FolderView
+                        folder={fiddleStore.fiddleRootFolder as IFolder}
+                        onFileClicked={onFiddleSelected}
+                        selectedFileId={selectedFiddleId}
+                        onChange={this.onFiddleChange}
+                    />
                 </div>
             </SplitPane>
         );
