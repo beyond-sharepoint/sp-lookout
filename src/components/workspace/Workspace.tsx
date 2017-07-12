@@ -172,9 +172,11 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
         }
 
         const selectedFiddlePath = matchPath(location.hash.replace('#', ''), { path: '/spfiddle/:fiddleId' });
-        this.setState({
-            selectedFiddleId: selectedFiddlePath.params.fiddleId
-        });
+        if (selectedFiddlePath) {
+            this.setState({
+                selectedFiddleId: selectedFiddlePath.params.fiddleId
+            });
+        }
     }
 
     public render() {
