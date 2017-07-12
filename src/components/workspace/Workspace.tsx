@@ -81,10 +81,10 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
                     [
                         {
                             name: 'Dashboard',
-                            url: '#/',
                             key: 'dashboard',
+                            url: '#/',
                             icon: 'PanoIndicator',
-                            onClick: this._onClickHandler2
+                            onClick: this.onPageSelected
                         }
                     ]
                 },
@@ -95,7 +95,7 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
                             name: 'Governance',
                             key: 'governance',
                             icon: 'BarChart4',
-                            onClick: this._onClickHandler2,
+                            onClick: this.onPageSelected,
                             links: [{
                                 name: 'Structure',
                                 url: '#/charts/structure',
@@ -123,12 +123,12 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
                             name: 'Actions',
                             key: 'actions',
                             icon: 'SetAction',
-                            onClick: this._onClickHandler2,
+                            onClick: this.onPageSelected,
                             links: [{
                                 name: 'JSLink',
                                 icon: 'Link',
-                                onClick: this._onClickHandler2,
-                                key: 'key1'
+                                onClick: this.onPageSelected,
+                                key: 'jslink'
                             }],
                             isExpanded: true
                         }
@@ -211,6 +211,7 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
                                 settingsStore={this.props.settingsStore}
                                 fiddleStore={this.props.fiddleStore}
                                 onFiddleSelected={this.onFiddleSelected}
+                                selectedPageKey={this.state.selectedPageKey}
                                 selectedFiddleId={this.state.selectedFiddleId}
                             />
                             {this.state.routes.map((route, index) => (
@@ -251,9 +252,18 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
     }
 
     @action.bound
+    private onPageSelected(ev, nav) {
+        this.setState({
+            selectedPageKey: nav.key,
+            selectedFiddleId: null
+        });
+    }
+
+    @action.bound
     private onFiddleSelected(fiddleSettings: FiddleSettings) {
         location.hash = '/SPFiddle/' + fiddleSettings.id;
         this.setState({
+            selectedPageKey: null,
             selectedFiddleId: fiddleSettings.id
         });
     }

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { matchPath } from 'react-router-dom';
 import { observer } from 'mobx-react';
-import { Nav, INavLinkGroup } from 'office-ui-fabric-react/lib/Nav';
+import { Nav, INavLinkGroup, INavLink } from 'office-ui-fabric-react/lib/Nav';
 import { autobind } from 'office-ui-fabric-react/lib';
 import { IContextualMenuItem } from 'office-ui-fabric-react';
 import SplitPane from '../split-pane/SplitPane';
@@ -22,7 +22,7 @@ export default class Aside extends React.Component<AsideProps, any> {
     }
 
     public render() {
-        const { settingsStore, fiddleStore, onFiddleSelected, selectedFiddleId } = this.props;
+        const { settingsStore, fiddleStore, onFiddleSelected, selectedPageKey, selectedFiddleId } = this.props;
 
         return (
             <SplitPane
@@ -44,7 +44,7 @@ export default class Aside extends React.Component<AsideProps, any> {
                     groups={this.props.navItems}
                     expandedStateText={'expanded'}
                     collapsedStateText={'collapsed'}
-                    selectedKey={'dashboard'}
+                    selectedKey={selectedPageKey}
                 //onRenderLink={this.renderNavLink} 
                 />
                 <FolderView
@@ -62,5 +62,6 @@ export interface AsideProps {
     settingsStore: SettingsStore;
     fiddleStore: FiddleStore;
     onFiddleSelected: (settings: FiddleSettings) => void;
+    selectedPageKey?: string;
     selectedFiddleId?: string;
 }
