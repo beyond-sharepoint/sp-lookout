@@ -38,6 +38,7 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, an
                             <TextField
                                 label='Description'
                                 multiline={true}
+                                value={currentFiddle.description}
                                 onChanged={this.updateDescription}
                             />
                         </PivotItem>
