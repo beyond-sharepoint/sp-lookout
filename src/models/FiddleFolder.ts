@@ -41,6 +41,11 @@ import * as pnp from 'sp-pnp-js';
 let web = new pnp.Web(location.origin);
 
 export default web.get();"`
+                },
+                {
+                    id: 'example-012',
+                    name: '12-customComponents-ts',
+                    code: `import * from 'react-dom-server`
                 }
             ]
         },
