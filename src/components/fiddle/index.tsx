@@ -17,7 +17,7 @@ import { get, set, cloneDeep, defaultsDeep } from 'lodash';
 import { FiddleSettingsModal } from '../fiddle-settings-modal';
 
 import Barista, { BrewSettings } from '../../services/barista';
-import { FiddleStore, FiddleSettings, defaultFiddleSettings, Util } from '../../models';
+import { FiddlesStore, FiddleSettings, defaultFiddleSettings, Util } from '../../models';
 import './index.css';
 
 @observer
@@ -159,7 +159,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
     }
 
     private async brew(allowDebugger?: boolean, timeout?: number) {
-        const { barista, fiddleStore, currentFiddle } = this.props;
+        const { barista, fiddlesStore, currentFiddle } = this.props;
         const { isBrewing } = this.state;
 
         if (isBrewing) {
@@ -227,7 +227,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
     @action.bound
     private updateCode(code: string) {
         this.props.currentFiddle.code = code;
-        FiddleStore.saveToLocalStorage(this.props.fiddleStore);
+        FiddlesStore.saveToLocalStorage(this.props.fiddlesStore);
     }
 
     @autobind
@@ -260,7 +260,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
     }
 
     public render() {
-        const { fiddleStore, currentFiddle } = this.props;
+        const { fiddlesStore, currentFiddle } = this.props;
 
         const { isBrewing, lastBrewResult, lastBrewResultIsError, showEditor } = this.state;
         let fiddleResultPaneStyle: any = {};
@@ -309,7 +309,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
                         <FiddleSettingsModal
                             showFiddleSettingsModal={this.state.showFiddleSettingsModal}
                             onDismiss={this.hideFiddleSettings}
-                            fiddleStore={fiddleStore}
+                            fiddlesStore={fiddlesStore}
                             currentFiddle={currentFiddle}
                         />
                     </div>
@@ -328,7 +328,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
 }
 
 export interface FiddleProps {
-    fiddleStore: FiddleStore;
+    fiddlesStore: FiddlesStore;
     barista: Barista;
     currentFiddle: FiddleSettings;
 }

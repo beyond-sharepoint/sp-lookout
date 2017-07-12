@@ -6,7 +6,7 @@ import { defaultsDeep, find, filter } from 'lodash';
 
 export const FiddlesLocalStorageKey = 'sp-lookout-fiddles';
 
-export class FiddleStore {
+export class FiddlesStore {
     @observable
     private _fiddleRootFolder: FiddleFolder & IObservableObject;
 
@@ -24,23 +24,23 @@ export class FiddleStore {
 
     @computed
     public get starred(): Array<FiddleSettings> {
-        const files = FiddleStore.getFlattenedFiles(this._fiddleRootFolder);
+        const files = FiddlesStore.getFlattenedFiles(this._fiddleRootFolder);
         return filter(files, { starred: true });
     }
 
     public getFiddleSettings(id: string): FiddleSettings | undefined {
-        const filesFlat = FiddleStore.getFlattenedFiles(this._fiddleRootFolder);
+        const filesFlat = FiddlesStore.getFlattenedFiles(this._fiddleRootFolder);
         return find(filesFlat, { 'id': id });
     }
 
-    static async loadFromLocalStorage(): Promise<FiddleStore> {
+    static async loadFromLocalStorage(): Promise<FiddlesStore> {
         const fiddleRootFolder = await localforage.getItem(FiddlesLocalStorageKey) as FiddleFolder;
-        return new FiddleStore(fiddleRootFolder);
+        return new FiddlesStore(fiddleRootFolder);
     }
 
     @action
-    static async saveToLocalStorage(fiddleStore: FiddleStore): Promise<FiddleFolder> {
-         return localforage.setItem(FiddlesLocalStorageKey, toJS(fiddleStore._fiddleRootFolder));
+    static async saveToLocalStorage(fiddlesStore: FiddlesStore): Promise<FiddleFolder> {
+         return localforage.setItem(FiddlesLocalStorageKey, toJS(fiddlesStore._fiddleRootFolder));
     }
 
     public static getFlattenedFolders(folder: FiddleFolder): Array<FiddleFolder> {

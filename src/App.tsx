@@ -3,7 +3,7 @@ import './App.css';
 import { observer } from 'mobx-react';
 import { Fabric } from 'office-ui-fabric-react';
 import Workspace from './components/workspace/Workspace';
-import { SettingsStore, FiddleStore } from './models';
+import { SettingsStore, PagesStore, FiddlesStore } from './models';
 
 @observer
 export default class App extends React.Component<any, AppStoreState> {
@@ -14,23 +14,24 @@ export default class App extends React.Component<any, AppStoreState> {
       isLoading: true
     };
 
-    Promise.all([SettingsStore.loadFromLocalStorage(), FiddleStore.loadFromLocalStorage()])
+    Promise.all([SettingsStore.loadFromLocalStorage(), PagesStore.loadFromLocalStorage(), FiddlesStore.loadFromLocalStorage()])
       .then(results => {
-          this.setState({
-            isLoading: false,
-            settingsStore: results[0],
-            fiddleStore: results[1]
-          });
+        this.setState({
+          isLoading: false,
+          settingsStore: results[0],
+          pagesStore: results[1],
+          fiddlesStore: results[2]
+        });
       });
   }
 
   render() {
-    const { isLoading, settingsStore, fiddleStore } = this.state;
+    const { isLoading, settingsStore, pagesStore, fiddlesStore } = this.state;
     return (
       <Fabric>
-        {isLoading || !settingsStore || !fiddleStore
+        {isLoading || !settingsStore || !pagesStore || !fiddlesStore
           ? <div>loading...</div>
-          : <Workspace settingsStore={settingsStore} fiddleStore={fiddleStore} />
+          : <Workspace settingsStore={settingsStore} pagesStore={pagesStore} fiddlesStore={fiddlesStore} />
         }
       </Fabric>
     );
@@ -40,5 +41,6 @@ export default class App extends React.Component<any, AppStoreState> {
 export interface AppStoreState {
   isLoading: boolean;
   settingsStore?: SettingsStore;
-  fiddleStore?: FiddleStore;
+  pagesStore?: PagesStore;
+  fiddlesStore?: FiddlesStore;
 }

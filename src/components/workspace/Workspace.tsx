@@ -16,11 +16,11 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import SplitPane from '../split-pane/SplitPane';
 
 import Barista from '../../services/barista';
-import Page from '../sp-lookout-page';
+import Page from '../page';
 import Aside from '../workspace-aside';
 import Fiddle from '../fiddle';
 
-import { SettingsStore, FiddleStore, FiddleSettings, defaultFiddleSettings, Util } from '../../models';
+import { SettingsStore, PagesStore, FiddlesStore, FiddleSettings, defaultFiddleSettings, Util } from '../../models';
 
 import './Workspace.css';
 
@@ -128,7 +128,7 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
                                 name: 'JSLink',
                                 icon: 'Link',
                                 onClick: this.onPageSelected,
-                                key: 'jslink'
+                                key: 'jslink',
                             }],
                             isExpanded: true
                         }
@@ -140,17 +140,45 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
             {
                 path: '/',
                 exact: true,
-                main: () => <Page />
+                main: () => {
+                    const currentPage = this.props.pagesStore.getPageSettings("dashboard");
+                    if (!currentPage) {
+                        return <span>Dashboard not found...</span>;
+                    }
+
+                    return (
+                        <Page
+                            pagesStore={this.props.pagesStore}
+                            currentPage={currentPage}
+                        />
+                    );
+                }
+            },
+            {
+                path: '/pages/:pageId',
+                main: (stateProps) => {
+                    const currentPage = this.props.pagesStore.getPageSettings(stateProps.match.params.pageId);
+                    if (currentPage) {
+                        return (
+                            <Page
+                                pagesStore={this.props.pagesStore}
+                                currentPage={currentPage}
+                            />
+                        )
+                    }
+
+                    return null;
+                }
             },
             {
                 path: '/spfiddle/:fiddleId',
                 main: (stateProps) => {
-                    let currentFiddle = this.props.fiddleStore.getFiddleSettings(stateProps.match.params.fiddleId);
+                    const currentFiddle = this.props.fiddlesStore.getFiddleSettings(stateProps.match.params.fiddleId);
                     if (currentFiddle) {
                         Util.extendObjectWithDefaults(currentFiddle, defaultFiddleSettings);
                         return (
                             <Fiddle
-                                fiddleStore={this.props.fiddleStore}
+                                fiddlesStore={this.props.fiddlesStore}
                                 barista={this._barista}
                                 currentFiddle={currentFiddle}
                             />
@@ -169,6 +197,13 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
             const targetRoute = currentUri.query(true)['splauth'];
             currentUri.fragment(targetRoute);
             window.location.href = currentUri.href();
+        }
+
+        const selectedPagePath = matchPath(location.hash.replace('#', ''), { path: '/pages/:pageId' });
+        if (selectedPagePath) {
+            this.setState({
+                selectedPageId: selectedPagePath.params.pageId
+            });
         }
 
         const selectedFiddlePath = matchPath(location.hash.replace('#', ''), { path: '/spfiddle/:fiddleId' });
@@ -197,6 +232,7 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
                             primaryPaneMinSize={0}
                             primaryPaneMaxSize={700}
                             primaryPaneStyle={{ overflow: 'auto' }}
+                            secondaryPaneStyle={{ overflow: 'auto'}}
                             onPaneResized={(size) => { this.setState({ sidebarSize: size }); }}
                             onResizerDoubleClick={(paneStyle) => {
                                 if (paneStyle.width === 215) {
@@ -209,9 +245,10 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
                             <Aside
                                 navItems={this.state.asideItems}
                                 settingsStore={this.props.settingsStore}
-                                fiddleStore={this.props.fiddleStore}
+                                pagesStore={this.props.pagesStore}
+                                fiddlesStore={this.props.fiddlesStore}
                                 onFiddleSelected={this.onFiddleSelected}
-                                selectedPageKey={this.state.selectedPageKey}
+                                selectedPageId={this.state.selectedPageId}
                                 selectedFiddleId={this.state.selectedFiddleId}
                             />
                             {this.state.routes.map((route, index) => (
@@ -258,7 +295,7 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
             selectedFiddleId: null
         });
     }
-
+    
     @action.bound
     private onFiddleSelected(fiddleSettings: FiddleSettings) {
         location.hash = '/SPFiddle/' + fiddleSettings.id;
@@ -299,5 +336,6 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
 
 export interface WorkspaceProps {
     settingsStore: SettingsStore;
-    fiddleStore: FiddleStore;
+    pagesStore: PagesStore;
+    fiddlesStore: FiddlesStore;
 }

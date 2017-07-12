@@ -9,7 +9,7 @@ import { Pivot, PivotItem } from 'office-ui-fabric-react/lib/Pivot';
 import { Dropdown, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
 import { Toggle } from 'office-ui-fabric-react/lib/Toggle';
 
-import { FiddleStore, FiddleSettings, defaultFiddleSettings } from '../../models';
+import { FiddlesStore, FiddleSettings, defaultFiddleSettings } from '../../models';
 import './index.css';
 
 @observer
@@ -18,7 +18,7 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, an
         const {
             showFiddleSettingsModal,
             onDismiss,
-            fiddleStore,
+            fiddlesStore,
             currentFiddle
         } = this.props;
 
@@ -97,6 +97,6 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, an
 export interface FiddleSettingsProps {
     showFiddleSettingsModal: boolean;
     onDismiss: (ev?: React.MouseEvent<HTMLButtonElement>) => any;
-    fiddleStore: FiddleStore;
+    fiddlesStore: FiddlesStore;
     currentFiddle: FiddleSettings;
 }

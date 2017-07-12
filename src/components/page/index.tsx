@@ -1,25 +1,27 @@
 import * as React from 'react';
 import * as ReactGridLayout from 'react-grid-layout';
+import { action, extendObservable, toJS } from 'mobx';
+import { observer } from 'mobx-react';
 import * as _ from 'lodash';
+
+import { PagesStore, PageSettings } from '../../models';
 import './index.css';
 
 const Layout = ReactGridLayout.WidthProvider(ReactGridLayout);
 
-export default class SPLookoutPage extends React.Component<SPLookoutPageProps, any> {
-    public static defaultProps: Partial<SPLookoutPageProps> = {
-        items: 50,
+@observer
+export default class Page extends React.Component<PageProps, any> {
+    public static defaultProps: Partial<PageProps> = {
         columns: 12,
         rowHeight: 30,
         isLocked: false
     };
 
-    public constructor(props: SPLookoutPageProps) {
+    public constructor(props: PageProps) {
         super(props);
 
-        const { items } = props;
-
         this.state = {
-            layout: _.map(new Array(items), function (item, i) {
+            layout: _.map(new Array(50), function (item, i) {
                 let y = Math.ceil(Math.random() * 4) + 1;
                 return {
                     x: i * 2 % 12,
@@ -33,32 +35,40 @@ export default class SPLookoutPage extends React.Component<SPLookoutPageProps, a
     }
 
     public render() {
-        const { items, columns, rowHeight, onLayoutChange, isLocked } = this.props;
-
+        const { columns, rowHeight, isLocked, currentPage } = this.props;
+        const layout = toJS(currentPage.webParts);
+        console.dir(layout);
         return (
             <Layout
                 className="dashboard"
-                layout={this.state.layout}
+                layout={layout}
                 cols={columns}
                 rowHeight={rowHeight}
                 verticalCompact={false}
-                onLayoutChange={onLayoutChange}
+                onLayoutChange={this.onLayoutChange}
                 isDraggable={!isLocked}
                 isResizable={!isLocked}
+                style={{ height: '100%' }}
                 {...this.props}
             >
-                {_.map(_.range(items || 50), function (i) {
-                    return (<div key={i}><span className="text">{i}</span></div>);
+                {_.map(layout, function (webPart, ix) {
+                    return (<div key={ix}><span className="text">{webPart.text}</span></div>);
                 })}
             </Layout>
         );
     }
+
+    @action.bound
+    private onLayoutChange(layout: any) {
+        this.props.currentPage.webParts = layout;
+        PagesStore.saveToLocalStorage(this.props.pagesStore);
+    }
 }
 
-export interface SPLookoutPageProps {
-    items?: number;
+export interface PageProps {
+    pagesStore: PagesStore;
+    currentPage: PageSettings;
     columns?: number;
     rowHeight?: number;
     isLocked?: boolean;
-    onLayoutChange?: (Layout: any) => void;
 }

@@ -8,7 +8,7 @@ import { IContextualMenuItem } from 'office-ui-fabric-react';
 import SplitPane from '../split-pane/SplitPane';
 import { FolderView, IFolder } from '../folder-view';
 
-import { SettingsStore, FiddleStore, FiddleSettings, FiddleFolder } from '../../models';
+import { SettingsStore, PagesStore, FiddlesStore, FiddleSettings, FiddleFolder } from '../../models';
 
 import './index.css';
 
@@ -18,13 +18,29 @@ export default class Aside extends React.Component<AsideProps, any> {
     private _spFiddleItems: { near: Array<IContextualMenuItem>, far: Array<IContextualMenuItem> };
 
     public render() {
-        const { settingsStore, fiddleStore, onFiddleSelected, selectedPageKey, selectedFiddleId } = this.props;
+        const { settingsStore, pagesStore, fiddlesStore, onFiddleSelected, selectedPageId, selectedFiddleId } = this.props;
+        
+        let navLinks: Array<INavLink> = [];
+        for(let page of pagesStore.pages) {
+            navLinks.push({
+                key: page.id,
+                name: page.name,
+                icon: page.iconClassName,
+                url: "#/pages/" + page.id,
+                onClick: () => {}
+            });
+        }
+        const navGroups: Array<INavLinkGroup> = [
+            {
+                links: navLinks
+            }
+        ];
 
         const starredDivStyle: React.CSSProperties = {
             display: 'none'
         };
 
-        if (fiddleStore.starred.length > 0) {
+        if (fiddlesStore.starred.length > 0) {
             starredDivStyle.display = null;
             starredDivStyle.paddingBottom = '5px';
         }
@@ -46,15 +62,15 @@ export default class Aside extends React.Component<AsideProps, any> {
             >
                 <Nav
                     className="aside"
-                    groups={this.props.navItems}
+                    groups={navGroups}
                     expandedStateText={'expanded'}
                     collapsedStateText={'collapsed'}
-                    selectedKey={selectedPageKey}
+                    selectedKey={selectedPageId}
                 //onRenderLink={this.renderNavLink} 
                 />
                 <div>
                     <div style={starredDivStyle}>
-                        {fiddleStore.starred.map((fiddleSettings, index) => {
+                        {fiddlesStore.starred.map((fiddleSettings, index) => {
                             return (
                                 <div style={{ cursor: 'pointer' }} onClick={() => onFiddleSelected(fiddleSettings)}>
                                     <span style={{ color: 'orange', paddingLeft: '5px', paddingRight: '5px' }}>
@@ -66,7 +82,7 @@ export default class Aside extends React.Component<AsideProps, any> {
                         }
                     </div>
                     <FolderView
-                        folder={fiddleStore.fiddleRootFolder as IFolder}
+                        folder={fiddlesStore.fiddleRootFolder as IFolder}
                         onFileClicked={onFiddleSelected}
                         selectedFileId={selectedFiddleId}
                         onChange={this.onFiddleChange}
@@ -83,15 +99,16 @@ export default class Aside extends React.Component<AsideProps, any> {
 
     @autobind
     private onFiddleChange() {
-        FiddleStore.saveToLocalStorage(this.props.fiddleStore);
+        FiddlesStore.saveToLocalStorage(this.props.fiddlesStore);
     }
 }
 
 export interface AsideProps {
     navItems: INavLinkGroup[];
     settingsStore: SettingsStore;
-    fiddleStore: FiddleStore;
+    pagesStore: PagesStore;
+    fiddlesStore: FiddlesStore;
     onFiddleSelected: (settings: FiddleSettings) => void;
-    selectedPageKey?: string;
+    selectedPageId?: string;
     selectedFiddleId?: string;
 }

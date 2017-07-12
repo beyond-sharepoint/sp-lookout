@@ -3,19 +3,16 @@ import { autobind } from 'office-ui-fabric-react/lib';
 import { omit } from 'lodash';
 
 export default class HoverWatcher extends React.Component<HoverWatcherProps, HoverWatcherState> {
-    private _timerIds: Array<any>;
-
-    public static defaultProps = {
+    public static defaultProps: Partial<HoverWatcherProps> = {
         hoverDelayInMs: 0,
         hoverOffDelayInMs: 0,
-        onHoverChanged: null,
         onMouseEnter: ({ setIsHovering }) => setIsHovering(),
         onMouseLeave: ({ unsetIsHovering }) => unsetIsHovering(),
-        onMouseOver: null,
-        onMouseOut: null,
         shouldDecorateChildren: true
     };
 
+    private _timerIds: Array<any>;
+    
     constructor(props) {
         super(props);
 
@@ -149,7 +146,7 @@ export default class HoverWatcher extends React.Component<HoverWatcherProps, Hov
                 'shouldDecorateChildren'
             ])
         };
-        
+
         return (
             <div { ...{
                 className,
