@@ -19,7 +19,7 @@ import Page from '../sp-lookout-page';
 import Aside from '../workspace-aside';
 import Fiddle from '../fiddle';
 
-import { SettingsStore, FiddleStore, FiddleSettings } from '../../models';
+import { SettingsStore, FiddleStore, FiddleSettings, defaultFiddleSettings, Util } from '../../models';
 
 import './Workspace.css';
 
@@ -146,6 +146,7 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
                 main: (stateProps) => {
                     let currentFiddle = this.props.fiddleStore.getFiddleSettings(stateProps.match.params.fiddleId);
                     if (currentFiddle) {
+                        Util.extendObjectWithDefaults(currentFiddle, defaultFiddleSettings);
                         return (
                             <Fiddle
                                 fiddleStore={this.props.fiddleStore}

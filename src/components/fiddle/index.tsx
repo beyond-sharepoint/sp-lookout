@@ -229,7 +229,6 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
 
     @autobind
     private showFiddleSettings() {
-        Util.extendObjectWithDefaults(this.props.currentFiddle, defaultFiddleSettings);
         this.setState({
             showFiddleSettingsModal: true
         });
