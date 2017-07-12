@@ -10,32 +10,10 @@ import './index.css';
 const Layout = ReactGridLayout.WidthProvider(ReactGridLayout);
 
 @observer
-export default class Page extends React.Component<PageProps, any> {
-    public static defaultProps: Partial<PageProps> = {
-        columns: 12,
-        rowHeight: 30,
-        isLocked: false
-    };
-
-    public constructor(props: PageProps) {
-        super(props);
-
-        this.state = {
-            layout: _.map(new Array(50), function (item, i) {
-                let y = Math.ceil(Math.random() * 4) + 1;
-                return {
-                    x: i * 2 % 12,
-                    y: Math.floor(i / 6) * y,
-                    w: 2,
-                    h: y,
-                    i: i.toString()
-                };
-            })
-        };
-    }
-
+export default class Page extends React.Component<PageProps, {}> {
     public render() {
-        const { columns, rowHeight, isLocked, currentPage } = this.props;
+        const { currentPage } = this.props;
+        const { columns, rowHeight, locked } = currentPage;
         const layout = toJS(currentPage.webParts);
         console.dir(layout);
         return (
@@ -46,8 +24,8 @@ export default class Page extends React.Component<PageProps, any> {
                 rowHeight={rowHeight}
                 verticalCompact={false}
                 onLayoutChange={this.onLayoutChange}
-                isDraggable={!isLocked}
-                isResizable={!isLocked}
+                isDraggable={!locked}
+                isResizable={!locked}
                 style={{ height: '100%' }}
                 {...this.props}
             >
@@ -68,7 +46,4 @@ export default class Page extends React.Component<PageProps, any> {
 export interface PageProps {
     pagesStore: PagesStore;
     currentPage: PageSettings;
-    columns?: number;
-    rowHeight?: number;
-    isLocked?: boolean;
 }

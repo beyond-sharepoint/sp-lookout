@@ -31,19 +31,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
     public constructor(props: FiddleProps) {
         super(props);
 
-        this.state = {
-            fiddlePaneSize: '50%',
-            showFiddleSettingsModal: false,
-            showEditor: true
-        };
-
         this.commandBarItems = [
-            {
-                key: 'name',
-                name: this.props.currentFiddle.name,
-                title: this.props.currentFiddle.name,
-                disabled: true
-            },
             {
                 key: 'run',
                 name: 'Run',
@@ -73,6 +61,14 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
                 onClick: this.showFiddleSettings,
             }
         ];
+
+
+        this.state = {
+            fiddlePaneSize: '50%',
+            showFiddleSettingsModal: false,
+            showEditor: true,
+        };
+
     }
 
     private async loadTypescriptDefinitions() {

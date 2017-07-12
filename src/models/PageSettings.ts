@@ -10,6 +10,8 @@ export interface PageSettings {
     id: string;
     name: string;
     iconClassName?: string;
+    columns: number,
+    rowHeight: number,
     locked: boolean;
     webParts: Array<WebPartSettings>;
 }
@@ -19,6 +21,8 @@ export const defaultPages: Array<PageSettings> = [
         id: 'dashboard',
         name: 'Dashboard',
         iconClassName: 'PanoIndicator',
+        columns: 12,
+        rowHeight: 30,
         locked: false,
         webParts: [
             {
