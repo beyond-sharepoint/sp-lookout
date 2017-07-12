@@ -31,7 +31,7 @@ export class File extends React.Component<FileProps, FileState> {
         }
 
         return connectDragSource(
-            <div className="file" style={style} onClick={this.onClick}>
+            <div className="file" style={style} onClick={this.onClick} title={file.description || file.name}>
                 {file.name}
             </div>
         );

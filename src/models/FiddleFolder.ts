@@ -19,16 +19,28 @@ export const defaultFiddleRootFolder: FiddleFolder = {
             files: [
                 {
                     id: 'example-001',
-                    name: 'getRootWebFolders.js',
-                    code: 'foo, bar'
+                    name: '01-helloWorld.ts',
+                    code: `export default 'hello, world!';`
                 },
                 {
                     id: 'example-002',
-                    name: 'app.less',
+                    name: '02-importLodash.ts',
+                    code: `import * as _ from 'lodash';
+export default _.kebabCase('Hello, World!');`
                 },
                 {
                     id: 'example-003',
-                    name: 'index.html',
+                    name: '03-getRootWeb-fetch.ts',
+                },
+                {
+                    id: 'example-003',
+                    name: '03-getRootWeb-sp-pnp.ts',
+                    code: `"import * as _ from 'lodash';
+import * as pnp from 'sp-pnp-js';
+
+let web = new pnp.Web(location.origin);
+
+export default web.get();"`
                 }
             ]
         },
