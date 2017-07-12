@@ -2,12 +2,8 @@ import * as React from 'react';
 import { DropTarget, DragSource } from 'react-dnd';
 import { observer } from 'mobx-react';
 import { autobind } from 'office-ui-fabric-react/lib';
+import { IFolder, IFile, FolderViewTypes } from './index';
 import { File } from './File';
-
-export const FolderItemTypes = {
-    File: 'file',
-    Folder: 'folder'
-};
 
 const folderSource = {
     canDrag(props: FolderViewProps) {
@@ -20,7 +16,7 @@ const folderSource = {
     },
     beginDrag(props: FolderViewProps) {
         return {
-            kind: 'folder',
+            kind: FolderViewTypes.Folder,
             name: props.folder.name,
             parentFolder: props.parentFolder,
             folder: props.folder,
@@ -67,12 +63,12 @@ const folderTarget = {
     },
 };
 
-@DropTarget([FolderItemTypes.File, FolderItemTypes.Folder], folderTarget, (connect, monitor) => ({
+@DropTarget([FolderViewTypes.File, FolderViewTypes.Folder], folderTarget, (connect, monitor) => ({
     connectDropTarget: connect.dropTarget(),
     isOver: monitor.isOver(),
     isOverCurrent: monitor.isOver({ shallow: true }),
 }))
-@DragSource(FolderItemTypes.Folder, folderSource, (connect, monitor) => ({
+@DragSource(FolderViewTypes.Folder, folderSource, (connect, monitor) => ({
     connectDragSource: connect.dragSource(),
     isDragging: monitor.isDragging(),
 }))
@@ -138,7 +134,7 @@ export class Folder extends React.Component<FolderViewProps, FolderViewState> {
                                         file={file}
                                         depth={innerDepth + 1}
                                         onClick={onFileClicked}
-                                        isSelected={file.id && file.id === selectedFileId}
+                                        isSelected={!!file.id && file.id === selectedFileId}
                                     />
                                 );
                             })
@@ -166,11 +162,11 @@ export interface FolderViewState {
 }
 
 export interface FolderViewProps {
-    folder: any;
-    parentFolder: any | null;
+    folder: IFolder;
+    parentFolder: IFolder | null;
     depth: number;
-    onCollapseChange?: (folder: any, parentFolder: any) => void;
-    onMovedToFolder?: (sourceItem: any, targetFolder: any) => void;
-    onFileClicked?: (file: any) => void;
+    onCollapseChange?: (folder: IFolder, parentFolder: IFolder | null) => void;
+    onMovedToFolder?: (sourceItem: IFolder | IFile, targetFolder: IFolder) => void;
+    onFileClicked?: (file: IFile) => void;
     selectedFileId?: string;
 }

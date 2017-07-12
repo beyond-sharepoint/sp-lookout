@@ -5,9 +5,9 @@ import { Nav, INavLinkGroup, INavLink } from 'office-ui-fabric-react/lib/Nav';
 import { autobind } from 'office-ui-fabric-react/lib';
 import { IContextualMenuItem } from 'office-ui-fabric-react';
 import SplitPane from '../split-pane/SplitPane';
-import { FolderView } from '../folderview';
+import { FolderView, IFolder } from '../folder-view';
 
-import { SettingsStore, FiddleStore, FiddleSettings } from '../../models';
+import { SettingsStore, FiddleStore, FiddleSettings, FiddleFolder } from '../../models';
 
 import './index.css';
 
@@ -23,7 +23,7 @@ export default class Aside extends React.Component<AsideProps, any> {
 
     public render() {
         const { settingsStore, fiddleStore, onFiddleSelected, selectedPageKey, selectedFiddleId } = this.props;
-
+        
         return (
             <SplitPane
                 split="horizontal"
@@ -48,7 +48,7 @@ export default class Aside extends React.Component<AsideProps, any> {
                 //onRenderLink={this.renderNavLink} 
                 />
                 <FolderView
-                    folder={fiddleStore.fiddleRootFolder}
+                    folder={fiddleStore.fiddleRootFolder as IFolder}
                     onFileClicked={onFiddleSelected}
                     selectedFileId={selectedFiddleId}
                 />

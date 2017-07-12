@@ -4,6 +4,7 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import { action, extendObservable } from 'mobx';
 import { observer } from 'mobx-react';
 import { autobind } from 'office-ui-fabric-react/lib';
+import { IFolder, IFile } from './index';
 import { Folder } from './Folder';
 import { File } from './File';
 
@@ -31,7 +32,7 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
     }
 
     @action.bound
-    private onCollapseChange(folder: any, parentFolder: any) {
+    private onCollapseChange(folder: IFolder, parentFolder: IFolder) {
         if (typeof folder.collapsed === 'undefined') {
             extendObservable(folder, {
                 collapsed: true
@@ -42,7 +43,7 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
     }
 
     @action.bound
-    private onMovedToFolder(sourceItem: any, targetFolder: any) {
+    private onMovedToFolder(sourceItem: any, targetFolder: IFolder) {
         const parentFolder = sourceItem.parentFolder;
         if (sourceItem.kind === 'file') {
             parentFolder.files.splice(parentFolder.files.indexOf(sourceItem.file), 1);
@@ -58,7 +59,7 @@ export interface FolderViewState {
 }
 
 export interface FolderViewProps {
-    folder: any;
-    onFileClicked?: (file: any) => void;
+    folder: IFolder;
+    onFileClicked?: (file: IFile) => void;
     selectedFileId?: string;
 }

@@ -4,6 +4,7 @@ import { observer } from 'mobx-react';
 import { get, set } from 'lodash';
 
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
+import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import { Pivot, PivotItem } from 'office-ui-fabric-react/lib/Pivot';
 import { Dropdown, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
 import { Toggle } from 'office-ui-fabric-react/lib/Toggle';
@@ -33,6 +34,13 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, an
                 </div>
                 <div className="fiddle-settings-modal-body">
                     <Pivot>
+                        <PivotItem linkText="Script Options">
+                            <TextField
+                                label='Description'
+                                multiline={true}
+                                onChanged={this.updateDescription}
+                            />
+                        </PivotItem>
                         <PivotItem linkText="Editor Options">
                             <Dropdown
                                 label="Theme:"
@@ -44,19 +52,6 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, an
                                     [
                                         { key: 'vs', text: 'Light (Visual Studio)' },
                                         { key: 'vs-dark', text: 'Dark (Visual Studio)' },
-                                    ]
-                                }
-                            />
-                            <Dropdown
-                                label="Language:"
-                                id="fiddle-language"
-                                ariaLabel="Select Fiddle Language"
-                                selectedKey={currentFiddle.language || defaultFiddleSettings.language}
-                                onChanged={this.updateLanguage}
-                                options={
-                                    [
-                                        { key: 'typescript', text: 'TypeScript' },
-                                        { key: 'javascript', text: 'JavaScript' },
                                     ]
                                 }
                             />
@@ -83,13 +78,13 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, an
     }
 
     @action.bound
-    private updateTheme(ev: any) {
-        this.props.currentFiddle.theme = ev.key;
+    private updateDescription(newValue: any) {
+        this.props.currentFiddle.description = newValue;
     }
 
     @action.bound
-    private updateLanguage(ev: any) {
-        this.props.currentFiddle.language = ev.key;
+    private updateTheme(ev: any) {
+        this.props.currentFiddle.theme = ev.key;
     }
 
     @action.bound

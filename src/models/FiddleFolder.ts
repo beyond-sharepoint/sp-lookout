@@ -3,6 +3,8 @@ import { FiddleSettings } from './FiddleSettings';
 export interface FiddleFolder {
     name: string;
     collapsed?: boolean;
+    locked?: boolean;
+    starred?: boolean;
     iconClassName?: string;
     files: Array<FiddleSettings>;
     folders: Array<FiddleFolder>;
@@ -33,19 +35,19 @@ export default _.kebabCase('Hello, World!');`
                     name: '03-getRootWeb-fetch.ts',
                 },
                 {
-                    id: 'example-003',
-                    name: '03-getRootWeb-sp-pnp.ts',
-                    code: `"import * as _ from 'lodash';
+                    id: 'example-004',
+                    name: '04-getRootWeb-sp-pnp.ts',
+                    code: `import * as _ from 'lodash';
 import * as pnp from 'sp-pnp-js';
 
 let web = new pnp.Web(location.origin);
 
-export default web.get();"`
+export default web.get();`
                 },
                 {
                     id: 'example-012',
                     name: '12-customComponents-ts',
-                    code: `import * from 'react-dom-server`
+                    code: `import * as ReactDOMServer from 'react-dom-server'`
                 }
             ]
         },

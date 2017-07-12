@@ -4,7 +4,9 @@
 export interface FiddleSettings {
     id: string;
     name: string;
-    language?: string;
+    description?: string;
+    locked?: boolean;
+    starred?: boolean;
     code?: string;
     theme?: string;
     lastResult?: any;
@@ -35,7 +37,6 @@ export const defaultPaths = {
 };
 
 export const defaultFiddleSettings: Partial<FiddleSettings> = {
-    language: 'typescript',
     theme: 'vs',
     code: 'const foo = "Hello, world!";\nexport default foo;',
     requireConfig: {

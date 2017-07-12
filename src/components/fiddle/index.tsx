@@ -290,8 +290,8 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
                         {showEditor ?
                             <MonacoEditor
                                 value={currentFiddle.code}
-                                language={currentFiddle.language}
                                 theme={currentFiddle.theme}
+                                language="typescript"
                                 filename={currentFiddle.name}
                                 onChange={this.updateCode}
                                 editorWillMount={this.editorWillMount}

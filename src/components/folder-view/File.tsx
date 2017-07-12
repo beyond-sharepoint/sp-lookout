@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { autobind } from 'office-ui-fabric-react/lib';
 import { DragSource } from 'react-dnd';
+import { IFolder, IFile, FolderViewTypes } from './index';
 
 const FileSource = {
     beginDrag(props: FileProps) {
         return {
-            kind: 'file',
+            kind: FolderViewTypes.File,
             name: props.file.name,
             parentFolder: props.parentFolder,
             file: props.file
@@ -21,7 +22,7 @@ export class File extends React.Component<FileProps, FileState> {
     public render() {
         const { file, isDragging, depth, onClick, isSelected } = this.props;
         const { connectDragSource } = this.props as any;
-        const style: any = {
+        const style: React.CSSProperties = {
             paddingLeft: depth * 10
         };
 
@@ -50,10 +51,10 @@ export interface FileState {
 }
 
 export interface FileProps {
-    parentFolder: any;
-    file: any;
+    parentFolder: IFolder | null;
+    file: IFile;
     isDragging?: boolean;
     depth: number;
-    onClick?: (file: any) => void;
+    onClick?: (file: IFile) => void;
     isSelected: boolean;
 }
