@@ -15,7 +15,7 @@ const folderSource = {
         if (!props.parentFolder) {
             return false;
         }
-        
+
         return true;
     },
     beginDrag(props: FolderViewProps) {
@@ -80,7 +80,7 @@ const folderTarget = {
 export class Folder extends React.Component<FolderViewProps, FolderViewState> {
 
     public render() {
-        const { depth, folder, onCollapseChange, onMovedToFolder, onFileClicked } = this.props;
+        const { depth, folder, onCollapseChange, onMovedToFolder, onFileClicked, selectedFileId } = this.props;
         const { connectDragSource, connectDropTarget } = this.props as any;
         const innerDepth = (depth || 0) + 1;
 
@@ -89,12 +89,12 @@ export class Folder extends React.Component<FolderViewProps, FolderViewState> {
         }
 
         const treeNodeStyle = {
-            paddingLeft: innerDepth * 10,
             cursor: 'pointer',
             userSelect: 'none'
         };
 
         const rootNodeStyle = {
+            paddingLeft: innerDepth * 10,
             backgroundColor: !depth ? '#f4f4f4' : null,
         };
 
@@ -108,8 +108,8 @@ export class Folder extends React.Component<FolderViewProps, FolderViewState> {
         return connectDragSource(connectDropTarget(
             <div className="folder" style={{ flex: 1 }}>
                 <div style={rootNodeStyle} onClick={this.onCollapseChange}>
-                    <span className={collapseClassName} style={{ paddingRight: '5px', width: '0.5em' }} aria-hidden="true"/>
-                    {folder.iconClassName ? (<span className={folder.iconClassName} style={{ paddingRight: '3px' }}/>) : null}
+                    <span className={collapseClassName} style={{ paddingRight: '5px', width: '0.5em' }} aria-hidden="true" />
+                    {folder.iconClassName ? (<span className={folder.iconClassName} style={{ paddingRight: '3px' }} />) : null}
                     {folder.name}</div>
                 <div style={treeNodeStyle}>
                     {
@@ -123,21 +123,25 @@ export class Folder extends React.Component<FolderViewProps, FolderViewState> {
                                     onCollapseChange={onCollapseChange}
                                     onMovedToFolder={onMovedToFolder}
                                     onFileClicked={onFileClicked}
+                                    selectedFileId={selectedFileId}
                                 />
                             )) : null
                             : null
                     }
                     {
-                        !folder.collapsed ?
-                            folder.files ? folder.files.map((file, index) => (
-                                <File
-                                    key={index}
-                                    parentFolder={folder}
-                                    file={file}
-                                    depth={0}
-                                    onClick={onFileClicked}
-                                />
-                            )) : null
+                        !folder.collapsed && folder.files
+                            ? folder.files.map((file, index) => {
+                                return (
+                                    <File
+                                        key={index}
+                                        parentFolder={folder}
+                                        file={file}
+                                        depth={innerDepth + 1}
+                                        onClick={onFileClicked}
+                                        isSelected={file.id && file.id === selectedFileId}
+                                    />
+                                );
+                            })
                             : null
                     }
                 </div>
@@ -168,4 +172,5 @@ export interface FolderViewProps {
     onCollapseChange?: (folder: any, parentFolder: any) => void;
     onMovedToFolder?: (sourceItem: any, targetFolder: any) => void;
     onFileClicked?: (file: any) => void;
+    selectedFileId?: string;
 }

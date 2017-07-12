@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { matchPath } from 'react-router-dom';
 import { observer } from 'mobx-react';
 import { Nav, INavLinkGroup } from 'office-ui-fabric-react/lib/Nav';
 import { autobind } from 'office-ui-fabric-react/lib';
@@ -21,15 +22,17 @@ export default class Aside extends React.Component<AsideProps, any> {
     }
 
     public render() {
+        const { settingsStore, fiddleStore, onFiddleSelected, selectedFiddleId } = this.props;
+
         return (
             <SplitPane
                 split="horizontal"
-                primaryPaneSize={this.props.settingsStore.visualSettings.asidePrimaryPaneHeight}
+                primaryPaneSize={settingsStore.visualSettings.asidePrimaryPaneHeight}
                 primaryPaneMinSize={250}
                 secondaryPaneStyle={{ overflow: 'auto' }}
                 onPaneResized={this.onPaneResized}
                 onResizerDoubleClick={(paneStyle, e, splitPane) => {
-                    if (paneStyle.height === "60%") {
+                    if (paneStyle.height === '60%') {
                         this.onPaneResized(splitPane.calculateMaxSize());
                     } else {
                         this.onPaneResized('60%');
@@ -45,8 +48,9 @@ export default class Aside extends React.Component<AsideProps, any> {
                 //onRenderLink={this.renderNavLink} 
                 />
                 <FolderView
-                    folder={this.props.fiddleStore.fiddleRootFolder}
-                    onFileClicked={this.props.onFiddleSelected}
+                    folder={fiddleStore.fiddleRootFolder}
+                    onFileClicked={onFiddleSelected}
+                    selectedFileId={selectedFiddleId}
                 />
             </SplitPane>
         );
@@ -58,4 +62,5 @@ export interface AsideProps {
     settingsStore: SettingsStore;
     fiddleStore: FiddleStore;
     onFiddleSelected: (settings: FiddleSettings) => void;
+    selectedFiddleId?: string;
 }

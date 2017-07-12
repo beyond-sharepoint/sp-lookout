@@ -13,7 +13,7 @@ import './FolderView.css';
 @observer
 export class FolderView extends React.Component<FolderViewProps, FolderViewState> {
     public render() {
-        const { folder, onFileClicked } = this.props;
+        const { folder, onFileClicked, selectedFileId } = this.props;
 
         return (
             <div className="folder-view ms-fontColor-themePrimary" style={{ display: 'flex' }}>
@@ -24,6 +24,7 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
                     onCollapseChange={this.onCollapseChange}
                     onMovedToFolder={this.onMovedToFolder}
                     onFileClicked={onFileClicked}
+                    selectedFileId={selectedFileId}
                 />
             </div>
         );
@@ -59,4 +60,5 @@ export interface FolderViewState {
 export interface FolderViewProps {
     folder: any;
     onFileClicked?: (file: any) => void;
+    selectedFileId?: string;
 }

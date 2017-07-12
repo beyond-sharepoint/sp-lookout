@@ -6,4 +6,4 @@ export interface HostWebProxySettings {
 export const defaultHostWebProxySettings: HostWebProxySettings = {
     tenantBaseUrl: '',
     hostWebProxyServerRelativePath: '/Shared%20Documents/HostWebProxy.aspx'
-}
+};

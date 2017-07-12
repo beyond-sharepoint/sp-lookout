@@ -19,11 +19,19 @@ const FileSource = {
 }))
 export class File extends React.Component<FileProps, FileState> {
     public render() {
-        const { file, isDragging, onClick } = this.props;
+        const { file, isDragging, depth, onClick, isSelected } = this.props;
         const { connectDragSource } = this.props as any;
+        const style: any = {
+            paddingLeft: depth * 10
+        };
+
+        if (isSelected) {
+            style.color = 'white';
+            style.backgroundColor = '#0078d7';
+        }
 
         return connectDragSource(
-            <div className="file" onClick={this.onClick}>
+            <div className="file" style={style} onClick={this.onClick}>
                 {file.name}
             </div>
         );
@@ -47,4 +55,5 @@ export interface FileProps {
     isDragging?: boolean;
     depth: number;
     onClick?: (file: any) => void;
+    isSelected: boolean;
 }

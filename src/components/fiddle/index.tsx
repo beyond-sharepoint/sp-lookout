@@ -181,14 +181,17 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
 
         try {
 
-            const brewSettings: BrewSettings = defaultsDeep({
-                filename: currentFiddle.name,
-                input: currentFiddle.code,
-                brewMode: currentFiddle.brewMode,
-                allowDebuggerStatement: allowDebugger,
-                timeout: timeout,
-                requireConfig: toJS(currentFiddle.requireConfig)
-            }, defaultBrewSettings) as BrewSettings;
+            const brewSettings: BrewSettings = defaultsDeep(
+                {
+                    filename: currentFiddle.name,
+                    input: currentFiddle.code,
+                    brewMode: currentFiddle.brewMode,
+                    allowDebuggerStatement: allowDebugger,
+                    timeout: timeout,
+                    requireConfig: toJS(currentFiddle.requireConfig)
+                },
+                defaultBrewSettings
+            ) as BrewSettings;
 
             let result = await barista.brew(brewSettings);
             if (!result) {
@@ -324,8 +327,8 @@ export interface FiddleProps {
     currentFiddle: FiddleSettings;
 }
 
-export const defaultBrewSettings: Partial<BrewSettings> = { 
+export const defaultBrewSettings: Partial<BrewSettings> = {
     brewMode: 'sandfiddle',
     timeout: 5000,
     requireConfig: defaultFiddleSettings.requireConfig
-}
+};

@@ -2,7 +2,8 @@ import * as React from 'react';
 import {
     HashRouter as Router,
     Route,
-    Link
+    Link,
+    matchPath
 } from 'react-router-dom';
 import * as URI from 'urijs';
 import { action, extendObservable, toJS } from 'mobx';
@@ -162,13 +163,18 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
         ];
     }
 
-    public componentDidMount() {
+    public componentWillMount() {
         const currentUri = URI();
         if (currentUri.hasQuery('splauth')) {
             const targetRoute = currentUri.query(true)['splauth'];
             currentUri.fragment(targetRoute);
             window.location.href = currentUri.href();
         }
+
+        const selectedFiddlePath = matchPath(location.hash.replace('#', ''), { path: '/spfiddle/:fiddleId' });
+        this.setState({
+            selectedFiddleId: selectedFiddlePath.params.fiddleId
+        });
     }
 
     public render() {
@@ -203,17 +209,16 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
                                 settingsStore={this.props.settingsStore}
                                 fiddleStore={this.props.fiddleStore}
                                 onFiddleSelected={this.onFiddleSelected}
+                                selectedFiddleId={this.state.selectedFiddleId}
                             />
-                            <div style={{ width: '100%', height: '100%', overflow: 'auto' }}>
-                                {this.state.routes.map((route, index) => (
-                                    <Route
-                                        key={index}
-                                        path={route.path}
-                                        exact={route.exact}
-                                        component={route.main}
-                                    />
-                                ))}
-                            </div>
+                            {this.state.routes.map((route, index) => (
+                                <Route
+                                    key={index}
+                                    path={route.path}
+                                    exact={route.exact}
+                                    component={route.main}
+                                />
+                            ))}
                         </SplitPane>
                     </div>
                 </Router>
@@ -245,13 +250,10 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
 
     @action.bound
     private onFiddleSelected(fiddleSettings: FiddleSettings) {
-        // const { workspaceSettings } = this.props;
-        // workspaceSettings.currentFiddle = fiddleSettings;
-
-        // console.dir(toJS(fiddleSettings));
-        // this.forceUpdate();
-
         location.hash = '/SPFiddle/' + fiddleSettings.id;
+        this.setState({
+            selectedFiddleId: fiddleSettings.id
+        });
     }
 
     @autobind

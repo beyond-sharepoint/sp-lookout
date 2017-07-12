@@ -38,19 +38,19 @@ export const defaultFiddleRootFolder: FiddleFolder = {
             folders: [],
             files: [
                 {
-                    id: 'example-001',
+                    id: 'builtin-001',
                     name: 'node.js',
                 },
                 {
-                    id: 'example-001',
+                    id: 'builtin-002',
                     name: 'react-ui-tree.css',
                 },
                 {
-                    id: 'example-001',
+                    id: 'builtin-003',
                     name: 'react-ui-tree.js',
                 },
                 {
-                    id: 'example-001',
+                    id: 'builtin-004',
                     name: 'tree.js',
                 }
             ]

@@ -14,7 +14,7 @@ export class SettingsStore {
     @observable
     private _visualSettings: VisualSettings;
 
-    constructor(hostWebProxySettings?, visualSettings?: VisualSettings) {
+    constructor(hostWebProxySettings?: HostWebProxySettings, visualSettings?: VisualSettings) {
         if (!hostWebProxySettings) {
             this._hostWebProxySettings = observable(defaultHostWebProxySettings);
         } else {
@@ -53,11 +53,11 @@ export class SettingsStore {
     }
 
     @action static async saveToLocalStorage(settingsStore: SettingsStore) {
-        throw Error("Not Implemented");
+        throw Error('Not Implemented');
     }
 }
 
 type Settings = {
     hostWebProxySettings?: HostWebProxySettings,
     visualSettings?: VisualSettings
-}
+};
