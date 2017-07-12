@@ -158,19 +158,19 @@
   version "3.16.20-alpha"
   resolved "https://registry.yarnpkg.com/@types/z-schema/-/z-schema-3.16.20-alpha.tgz#36f588ccca27d8e86dd6bb595a973aede8803766"
 
-"@uifabric/styling@>=0.13.4 <1.0.0":
-  version "0.13.5"
-  resolved "https://registry.yarnpkg.com/@uifabric/styling/-/styling-0.13.5.tgz#7925c0f072dd1cc41c76292cd902b912c006761d"
+"@uifabric/styling@>=0.13.6 <1.0.0":
+  version "0.13.6"
+  resolved "https://registry.yarnpkg.com/@uifabric/styling/-/styling-0.13.6.tgz#075c76dac2a95d38e236b66ef7c07f7d94d79783"
   dependencies:
     "@microsoft/load-themed-styles" "^1.2.2"
-    "@uifabric/utilities" ">=4.7.1 <5.0.0"
+    "@uifabric/utilities" ">=4.7.2 <5.0.0"
     glamor "^2.20.24"
     rtl-css-js "^1.1.1"
     tslib "^1.6.0"
 
-"@uifabric/utilities@>=4.7.1 <5.0.0":
-  version "4.7.1"
-  resolved "https://registry.yarnpkg.com/@uifabric/utilities/-/utilities-4.7.1.tgz#ad5ad686d1575e529dc82bfea8f89ca43f75b5a9"
+"@uifabric/utilities@>=4.7.2 <5.0.0":
+  version "4.7.2"
+  resolved "https://registry.yarnpkg.com/@uifabric/utilities/-/utilities-4.7.2.tgz#191e6df7e9d2175bab6150c644ab87629f333f27"
   dependencies:
     prop-types "^15.5.10"
     tslib "^1.6.0"
@@ -3868,13 +3868,13 @@ obuf@^1.0.0, obuf@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/obuf/-/obuf-1.1.1.tgz#104124b6c602c6796881a042541d36db43a5264e"
 
-office-ui-fabric-react@^4.17.1:
-  version "4.17.1"
-  resolved "https://registry.yarnpkg.com/office-ui-fabric-react/-/office-ui-fabric-react-4.17.1.tgz#73707939c2ee5f7565840e7667b5938dccdf2047"
+office-ui-fabric-react@^4.18.0:
+  version "4.18.0"
+  resolved "https://registry.yarnpkg.com/office-ui-fabric-react/-/office-ui-fabric-react-4.18.0.tgz#cad5da215f4899a585143ad26c30793380a7db30"
   dependencies:
     "@microsoft/load-themed-styles" "^1.2.2"
-    "@uifabric/styling" ">=0.13.4 <1.0.0"
-    "@uifabric/utilities" ">=4.7.1 <5.0.0"
+    "@uifabric/styling" ">=0.13.6 <1.0.0"
+    "@uifabric/utilities" ">=4.7.2 <5.0.0"
     prop-types "^15.5.10"
     tslib "^1.6.0"
 
@@ -4708,9 +4708,9 @@ react-router@^4.1.1:
     prop-types "^15.5.4"
     warning "^3.0.0"
 
-react-scripts-ts@2.3.2:
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/react-scripts-ts/-/react-scripts-ts-2.3.2.tgz#7b75267f66e1086f9a11c2bd389ef3b1ba120657"
+react-scripts-ts@2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/react-scripts-ts/-/react-scripts-ts-2.4.0.tgz#52c8dd601dcdbe1c4de09e7b98534cb8de9e7cac"
   dependencies:
     app-root-path "^2.0.1"
     autoprefixer "7.1.0"
@@ -4733,11 +4733,11 @@ react-scripts-ts@2.3.2:
     source-map-loader "^0.2.1"
     style-loader "0.17.0"
     sw-precache-webpack-plugin "0.9.1"
-    ts-loader "^2.0.3"
+    ts-loader "^2.2.1"
     tslint "^5.2.0"
     tslint-loader "^3.5.3"
     tslint-react "^3.0.0"
-    typescript "~2.3.3"
+    typescript "~2.4.0"
     url-loader "0.5.8"
     webpack "2.6.0"
     webpack-dev-server "2.4.5"
@@ -5691,7 +5691,7 @@ trim-right@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/trim-right/-/trim-right-1.0.1.tgz#cb2e1203067e0c8de1f614094b9fe45704ea6003"
 
-ts-loader@^2.0.3:
+ts-loader@^2.2.1:
   version "2.2.2"
   resolved "https://registry.yarnpkg.com/ts-loader/-/ts-loader-2.2.2.tgz#6ea98ebe384ee9ba4c891fea6de6d4e7d8134730"
   dependencies:
@@ -5770,13 +5770,9 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
 
-typescript@^2.4.1:
+typescript@^2.4.1, typescript@~2.4.0:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.4.1.tgz#c3ccb16ddaa0b2314de031e7e6fee89e5ba346bc"
-
-typescript@~2.3.3:
-  version "2.3.4"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.3.4.tgz#3d38321828231e434f287514959c37a82b629f42"
 
 ua-parser-js@^0.7.9:
   version "0.7.13"

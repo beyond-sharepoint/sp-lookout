@@ -24,13 +24,14 @@
   },
   "exclude": [
     "node_modules",
-    "build",
+    "**/node_modules",
+    "**/build",
+    "packages",
     "scripts",
     "acceptance-tests",
     "webpack",
     "jest",
-    "src/setupTests.ts",
-    "hostwebproxy"
+    "src/setupTests.ts"
   ],
   "types": [
     "typePatches",
