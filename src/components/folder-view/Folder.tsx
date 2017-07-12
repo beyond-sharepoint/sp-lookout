@@ -2,19 +2,25 @@ import * as React from 'react';
 import { DropTarget, DragSource } from 'react-dnd';
 import { observer } from 'mobx-react';
 import { autobind } from 'office-ui-fabric-react/lib';
+import { sortBy } from 'lodash';
 import { IFolder, IFile, FolderViewTypes } from './index';
 import { File } from './File';
 
 const folderSource = {
-    canDrag(props: FolderViewProps) {
+    canDrag(props: FolderProps) {
         //Prevent the root folder from dragging.
         if (!props.parentFolder) {
             return false;
         }
 
+        //Prevent locked folders from dragging.
+        if (props.folder.locked === true) {
+            return false;
+        }
+
         return true;
     },
-    beginDrag(props: FolderViewProps) {
+    beginDrag(props: FolderProps) {
         return {
             kind: FolderViewTypes.Folder,
             name: props.folder.name,
@@ -25,11 +31,20 @@ const folderSource = {
 };
 
 const folderTarget = {
-    canDrop(props: FolderViewProps, monitor: any) {
+    canDrop(props: FolderProps, monitor: any) {
         const item = monitor.getItem();
+
+        if (props.folder.locked === true) {
+            return false;
+        }
 
         //Disallow the root folder from being dropped.
         if (!item.parentFolder) {
+            return false;
+        }
+
+        //Disallow locked items from being dropped.
+        if (item.locked === true) {
             return false;
         }
 
@@ -50,7 +65,7 @@ const folderTarget = {
 
         return true;
     },
-    drop(props: FolderViewProps, monitor: any, component: any) {
+    drop(props: FolderProps, monitor: any, component: any) {
         const hasDroppedOnChild = monitor.didDrop();
         if (hasDroppedOnChild) {
             return;
@@ -73,10 +88,20 @@ const folderTarget = {
     isDragging: monitor.isDragging(),
 }))
 @observer
-export class Folder extends React.Component<FolderViewProps, FolderViewState> {
+export class Folder extends React.Component<FolderProps, FolderState> {
 
     public render() {
-        const { depth, folder, onCollapseChange, onMovedToFolder, onFileClicked, selectedFileId } = this.props;
+        const {
+            depth,
+            folder,
+            onCollapseChange,
+            onLockChanged,
+            onMovedToFolder,
+            onFileClicked,
+            onFileLockChanged,
+            onFileStarChanged,
+            selectedFileId
+        } = this.props;
         const { connectDragSource, connectDropTarget } = this.props as any;
         const innerDepth = (depth || 0) + 1;
 
@@ -94,6 +119,11 @@ export class Folder extends React.Component<FolderViewProps, FolderViewState> {
             backgroundColor: !depth ? '#f4f4f4' : null,
         };
 
+        const folderLockStyle: React.CSSProperties = {
+            paddingLeft: '5px',
+            color: '#f4f4f4'
+        }
+
         let collapseClassName = 'collapse';
         if (folder.collapsed === true) {
             collapseClassName += ' fa fa-caret-right';
@@ -106,38 +136,45 @@ export class Folder extends React.Component<FolderViewProps, FolderViewState> {
                 <div style={rootNodeStyle} onClick={this.onCollapseChange}>
                     <span className={collapseClassName} style={{ paddingRight: '5px', width: '0.5em' }} aria-hidden="true" />
                     {folder.iconClassName ? (<span className={folder.iconClassName} style={{ paddingRight: '3px' }} />) : null}
-                    {folder.name}</div>
+                    <span>{folder.name}</span>
+                    <span className="file-lock" style={folderLockStyle} onClick={this.onLockChanged}>
+                        <i className={'fa ' + (folder.locked ? 'fa-lock' : 'fa-unlock')} aria-hidden="true"></i>
+                    </span>
+                </div>
                 <div style={treeNodeStyle}>
                     {
-                        !folder.collapsed ?
-                            folder.folders ? folder.folders.map((subFolder, index) => (
+                        !folder.collapsed && folder.folders
+                            ? sortBy(folder.folders, f => f.name).map((subFolder, index) => (
                                 <Folder
                                     key={index}
                                     parentFolder={folder}
                                     folder={subFolder}
                                     depth={innerDepth}
                                     onCollapseChange={onCollapseChange}
+                                    onLockChanged={onLockChanged}
                                     onMovedToFolder={onMovedToFolder}
                                     onFileClicked={onFileClicked}
+                                    onFileLockChanged={onFileLockChanged}
+                                    onFileStarChanged={onFileStarChanged}
                                     selectedFileId={selectedFileId}
                                 />
-                            )) : null
+                            ))
                             : null
                     }
                     {
                         !folder.collapsed && folder.files
-                            ? folder.files.map((file, index) => {
-                                return (
-                                    <File
-                                        key={index}
-                                        parentFolder={folder}
-                                        file={file}
-                                        depth={innerDepth + 1}
-                                        onClick={onFileClicked}
-                                        isSelected={!!file.id && file.id === selectedFileId}
-                                    />
-                                );
-                            })
+                            ? sortBy(folder.files, f => f.name).map((file, index) => (
+                                <File
+                                    key={index}
+                                    parentFolder={folder}
+                                    file={file}
+                                    depth={innerDepth + 1}
+                                    onClick={onFileClicked}
+                                    onLockChanged={onFileLockChanged}
+                                    onStarChanged={onFileStarChanged}
+                                    isSelected={!!file.id && file.id === selectedFileId}
+                                />
+                            ))
                             : null
                     }
                 </div>
@@ -156,17 +193,33 @@ export class Folder extends React.Component<FolderViewProps, FolderViewState> {
             }
         }
     }
+
+    @autobind
+    private onLockChanged(ev: React.MouseEvent<HTMLSpanElement>) {
+        ev.stopPropagation();
+        const { folder, onLockChanged } = this.props;
+        if (typeof onLockChanged === 'function') {
+            const wasLockedUndefined = typeof folder.locked === 'undefined';
+            onLockChanged(folder, !!!folder.locked);
+            if (wasLockedUndefined) {
+                this.forceUpdate();
+            }
+        }
+    }
 }
 
-export interface FolderViewState {
+export interface FolderState {
 }
 
-export interface FolderViewProps {
+export interface FolderProps {
     folder: IFolder;
     parentFolder: IFolder | null;
     depth: number;
     onCollapseChange?: (folder: IFolder, parentFolder: IFolder | null) => void;
     onMovedToFolder?: (sourceItem: IFolder | IFile, targetFolder: IFolder) => void;
+    onLockChanged?: (folder: IFolder, locked: boolean) => void;
     onFileClicked?: (file: IFile) => void;
+    onFileLockChanged?: (file: IFile, locked: boolean) => void;
+    onFileStarChanged?: (file: IFile, starred: boolean) => void;
     selectedFileId?: string;
 }

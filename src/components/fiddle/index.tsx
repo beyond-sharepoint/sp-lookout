@@ -270,6 +270,12 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
 
         const theme = currentFiddle.theme || 'vs';
 
+        const editorOptions = toJS(currentFiddle.editorOptions) as monaco.editor.IEditorOptions;
+        //TODO: need to force a editor re-render when locked changes.
+        // if (currentFiddle.locked) {
+        //     editorOptions.readOnly = true;
+        // }
+
         return (
             <SplitPane
                 split="vertical"
@@ -296,7 +302,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
                                 onChange={this.updateCode}
                                 editorWillMount={this.editorWillMount}
                                 editorWillDispose={this.editorWillDispose}
-                                options={toJS(currentFiddle.editorOptions)}
+                                options={editorOptions}
                             />
                             : null
                         }

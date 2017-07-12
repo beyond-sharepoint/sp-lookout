@@ -17,6 +17,7 @@ export const defaultFiddleRootFolder: FiddleFolder = {
     folders: [
         {
             name: 'examples',
+            locked: true,
             folders: [],
             files: [
                 {
@@ -54,6 +55,7 @@ export default web.get();`
         {
             name: 'built-in',
             collapsed: true,
+            locked: true,
             folders: [],
             files: [
                 {

@@ -2,7 +2,7 @@ import { autorun, observable, extendObservable, observe, action, computed, runIn
 import { FiddleSettings } from './FiddleSettings';
 import { FiddleFolder, defaultFiddleRootFolder } from './FiddleFolder';
 import * as localforage from 'localforage';
-import { defaultsDeep, find } from 'lodash';
+import { defaultsDeep, find, filter } from 'lodash';
 
 export const FiddlesLocalStorageKey = 'sp-lookout-fiddles';
 
@@ -20,6 +20,12 @@ export class FiddleStore {
 
     public get fiddleRootFolder(): FiddleFolder & IObservableObject {
         return this._fiddleRootFolder;
+    }
+
+    @computed
+    public get starred(): Array<FiddleSettings> {
+        const files = FiddleStore.getFlattenedFiles(this._fiddleRootFolder);
+        return filter(files, { starred: true });
     }
 
     public getFiddleSettings(id: string): FiddleSettings | undefined {

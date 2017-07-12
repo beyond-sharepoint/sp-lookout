@@ -171,7 +171,7 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps, {}>
         // Before initializing monaco editor
         this.editorWillMount(context.monaco);
 
-        const editorOptions = defaultsDeep(
+        const editorOptions: monaco.editor.IEditorOptions = defaultsDeep(
             {
                 value,
                 language,
@@ -180,7 +180,7 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps, {}>
             },
             options
         );
-
+        
         this.editor = context.monaco.editor.create(containerElement, editorOptions);
 
         // After initializing monaco editor

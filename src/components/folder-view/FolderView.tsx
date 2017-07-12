@@ -23,8 +23,11 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
                     parentFolder={null}
                     depth={0}
                     onCollapseChange={this.onCollapseChange}
+                    onLockChanged={this.onLockChanged}
                     onMovedToFolder={this.onMovedToFolder}
                     onFileClicked={onFileClicked}
+                    onFileLockChanged={this.onFileLockChanged}
+                    onFileStarChanged={this.onFileStarChanged}
                     selectedFileId={selectedFileId}
                 />
             </div>
@@ -40,6 +43,21 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
         } else {
             folder.collapsed = !folder.collapsed;
         }
+
+        this.props.onChange(this.props.folder);
+    }
+
+    @action.bound
+    private onLockChanged(folder: IFolder, locked: boolean) {
+        if (typeof folder.locked === 'undefined') {
+            extendObservable(folder, {
+                locked: locked
+            });
+        } else {
+            folder.locked = locked;
+        }
+
+        this.props.onChange(this.props.folder);
     }
 
     @action.bound
@@ -52,6 +70,34 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
             parentFolder.folders.splice(parentFolder.folders.indexOf(sourceItem.folder), 1);
             targetFolder.folders.push(sourceItem.folder);
         }
+
+        this.props.onChange(this.props.folder);
+    }
+
+    @action.bound
+    private onFileLockChanged(file: IFile, locked: boolean) {
+        if (typeof file.locked === 'undefined') {
+            extendObservable(file, {
+                locked: locked
+            });
+        } else {
+            file.locked = locked;
+        }
+
+        this.props.onChange(this.props.folder);
+    }
+
+    @action.bound
+    private onFileStarChanged(file: IFile, starred: boolean) {
+        if (typeof file.starred === 'undefined') {
+            extendObservable(file, {
+                starred: starred
+            });
+        } else {
+            file.starred = starred;
+        }
+
+        this.props.onChange(this.props.folder);
     }
 }
 
@@ -60,6 +106,7 @@ export interface FolderViewState {
 
 export interface FolderViewProps {
     folder: IFolder;
+    onChange: (folder: IFolder) => void;
     onFileClicked?: (file: IFile) => void;
     selectedFileId?: string;
 }

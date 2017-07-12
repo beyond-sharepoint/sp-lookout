@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { matchPath } from 'react-router-dom';
+import { IObservable } from 'mobx';
 import { observer } from 'mobx-react';
 import { Nav, INavLinkGroup, INavLink } from 'office-ui-fabric-react/lib/Nav';
 import { autobind } from 'office-ui-fabric-react/lib';
@@ -16,14 +17,9 @@ export default class Aside extends React.Component<AsideProps, any> {
     private _actionsItems: { near: Array<IContextualMenuItem>, far: Array<IContextualMenuItem> };
     private _spFiddleItems: { near: Array<IContextualMenuItem>, far: Array<IContextualMenuItem> };
 
-    @autobind
-    private onPaneResized(newSize: number | string) {
-        this.props.settingsStore.visualSettings.asidePrimaryPaneHeight = newSize;
-    }
-
     public render() {
         const { settingsStore, fiddleStore, onFiddleSelected, selectedPageKey, selectedFiddleId } = this.props;
-        
+
         return (
             <SplitPane
                 split="horizontal"
@@ -47,13 +43,32 @@ export default class Aside extends React.Component<AsideProps, any> {
                     selectedKey={selectedPageKey}
                 //onRenderLink={this.renderNavLink} 
                 />
+                <div>
+                { fiddleStore.starred.map((file, index) => {
+                    return (
+                        <div style={{cursor: 'pointer' }}><span style={{color: 'yellow', paddingLeft: '5px', paddingRight: '5px'}}><i className="fa fa-star" aria-hidden="true"></i></span>{file.name}</div>
+                    );
+                })
+                }
                 <FolderView
                     folder={fiddleStore.fiddleRootFolder as IFolder}
                     onFileClicked={onFiddleSelected}
                     selectedFileId={selectedFiddleId}
+                    onChange={this.onFiddleChange}
                 />
+                </div>
             </SplitPane>
         );
+    }
+
+    @autobind
+    private onPaneResized(newSize: number | string) {
+        this.props.settingsStore.visualSettings.asidePrimaryPaneHeight = newSize;
+    }
+
+    @autobind
+    private onFiddleChange() {
+        FiddleStore.saveToLocalStorage(this.props.fiddleStore);
     }
 }
 
