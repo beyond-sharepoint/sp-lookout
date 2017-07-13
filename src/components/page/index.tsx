@@ -50,7 +50,8 @@ export default class Page extends React.Component<PageProps, {}> {
                                 <WebPartBase
                                     locked={currentPage.locked}
                                     settings={webPart.settings}
-                                    onWebPartSettingsChanged={() => { this.onWebPartSettingsChanged(webPart.settings) }}
+                                    onWebPartSettingsChanged={() => { this.onWebPartSettingsChanged(webPart.settings); }}
+                                    onDeleteWebPart={() => { this.onDeleteWebPart(webPart.settings.id); }}
                                 >
                                     <span className="text">{webPart.text}</span>
                                 </WebPartBase>
@@ -100,6 +101,18 @@ export default class Page extends React.Component<PageProps, {}> {
             type: WebPartType.text,
             title: 'New WebPart'
         }));
+    }
+
+    @action.bound
+    private onDeleteWebPart(webPartId: string) {
+        const { currentPage } = this.props;
+        let webPart = find(currentPage.webParts, { id: webPartId});
+        if (!webPart) {
+            return;
+        }
+
+        currentPage.webParts.splice(currentPage.webParts.indexOf(webPart), 1);
+        PagesStore.saveToLocalStorage(this.props.pagesStore);
     }
 
     @action.bound

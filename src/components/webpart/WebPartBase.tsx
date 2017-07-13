@@ -37,7 +37,7 @@ export class WebPartBase extends React.Component<WebPartProps, WebPartState> {
                             <span className="action" onClick={this.showWebPartSettings}>
                                 <i className="ms-Icon ms-Icon--Settings" aria-hidden="true"></i>
                             </span>
-                            <span className="action">
+                            <span className="action" onClick={this.onDeleteWebPart}>
                                 <i className="ms-Icon ms-Icon--ChromeClose" aria-hidden="true"></i>
                             </span>
                         </span>
@@ -113,6 +113,13 @@ export class WebPartBase extends React.Component<WebPartProps, WebPartState> {
             this.props.onWebPartSettingsChanged();
         }
     }
+
+    @autobind
+    private onDeleteWebPart() {
+        if (typeof this.props.onDeleteWebPart === 'function') {
+            this.props.onDeleteWebPart();
+        }
+    }
 }
 
 export interface WebPartState {
@@ -123,4 +130,5 @@ export interface WebPartProps {
     locked: boolean
     settings: WebPartSettings,
     onWebPartSettingsChanged?: () => void;
+    onDeleteWebPart?: () => void;
 }
