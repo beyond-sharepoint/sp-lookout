@@ -10,6 +10,15 @@ export interface FiddleFolder {
     folders: Array<FiddleFolder>;
 }
 
+export const defaultFiddleFolder: FiddleFolder = {
+    name: 'SPFiddle',
+    collapsed: false,
+    locked: false,
+    starred: false,
+    files: [],
+    folders: []
+}
+
 export const defaultFiddleRootFolder: FiddleFolder = {
     name: 'SPFiddle',
     collapsed: false,

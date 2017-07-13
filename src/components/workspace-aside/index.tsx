@@ -1,14 +1,15 @@
 import * as React from 'react';
 import { matchPath } from 'react-router-dom';
-import { IObservable } from 'mobx';
+import { IObservable, action, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { Nav, INavLinkGroup, INavLink } from 'office-ui-fabric-react/lib/Nav';
 import { autobind } from 'office-ui-fabric-react/lib';
 import { IContextualMenuItem } from 'office-ui-fabric-react';
+import { find } from 'lodash';
 import SplitPane from '../split-pane/SplitPane';
-import { FolderView, IFolder } from '../folder-view';
+import { FolderView, IFolder, IFile } from '../folder-view';
 
-import { SettingsStore, PagesStore, FiddlesStore, FiddleSettings, FiddleFolder } from '../../models';
+import { SettingsStore, PagesStore, FiddlesStore, FiddleSettings, FiddleFolder, defaultFiddleSettings, defaultFiddleFolder, Util } from '../../models';
 
 import './index.css';
 
@@ -19,15 +20,15 @@ export default class Aside extends React.Component<AsideProps, any> {
 
     public render() {
         const { settingsStore, pagesStore, fiddlesStore, onFiddleSelected, selectedPageId, selectedFiddleId } = this.props;
-        
+
         let navLinks: Array<INavLink> = [];
-        for(let page of pagesStore.pages) {
+        for (let page of pagesStore.pages) {
             navLinks.push({
                 key: page.id,
                 name: page.name,
                 icon: page.iconClassName,
                 url: "#/pages/" + page.id,
-                onClick: () => {}
+                onClick: () => { }
             });
         }
         const navGroups: Array<INavLinkGroup> = [
@@ -72,7 +73,7 @@ export default class Aside extends React.Component<AsideProps, any> {
                     <div style={starredDivStyle}>
                         {fiddlesStore.starred.map((fiddleSettings, index) => {
                             return (
-                                <div style={{ cursor: 'pointer' }} onClick={() => onFiddleSelected(fiddleSettings)}>
+                                <div key={index} style={{ cursor: 'pointer' }} onClick={() => onFiddleSelected(fiddleSettings)}>
                                     <span style={{ color: 'orange', paddingLeft: '5px', paddingRight: '5px' }}>
                                         <i className="fa fa-star" aria-hidden="true"></i>
                                     </span>{fiddleSettings.name}
@@ -84,6 +85,8 @@ export default class Aside extends React.Component<AsideProps, any> {
                     <FolderView
                         folder={fiddlesStore.fiddleRootFolder as IFolder}
                         onFileClicked={onFiddleSelected}
+                        onAddFile={this.onAddFile}
+                        onAddFolder={this.onAddFolder}
                         selectedFileId={selectedFiddleId}
                         onChange={this.onFiddleChange}
                     />
@@ -99,6 +102,42 @@ export default class Aside extends React.Component<AsideProps, any> {
 
     @autobind
     private onFiddleChange() {
+        FiddlesStore.saveToLocalStorage(this.props.fiddlesStore);
+    }
+
+    @autobind
+    private onAddFile(targetFolder: IFolder) {
+        let newFileName = 'newFile.ts';
+        let ix = 0;
+        while (find(targetFolder.files, { name: newFileName })) {
+            newFileName = `newFile-${String('00' + ++ix).slice(-2)}.ts`;
+        }
+
+        let newFile: FiddleSettings = observable({
+            ...defaultFiddleSettings,
+            id: Util.makeId(8),
+            name: newFileName
+        });
+
+        targetFolder.files.push(newFile as IFile);
+        FiddlesStore.saveToLocalStorage(this.props.fiddlesStore);
+    }
+
+    @autobind
+    private onAddFolder(targetFolder: IFolder) {
+        let newFolderName = 'new folder';
+        let ix = 0;
+        while (find(targetFolder.folders, { name: newFolderName })) {
+            newFolderName = `new-folder-${String('00' + ++ix).slice(-2)}`;
+        }
+
+        let newFolder: FiddleFolder = observable({
+            ...defaultFiddleFolder,
+            id: Util.makeId(8),
+            name: newFolderName
+        });
+
+        targetFolder.folders.push(newFolder as IFolder);
         FiddlesStore.saveToLocalStorage(this.props.fiddlesStore);
     }
 }

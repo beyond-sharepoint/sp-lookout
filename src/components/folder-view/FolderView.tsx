@@ -17,7 +17,7 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
         const { folder, onFileClicked, selectedFileId } = this.props;
 
         return (
-            <div className="folder-view ms-fontColor-themePrimary" style={{ display: 'flex' }}>
+            <div className="folder-view ms-fontColor-themePrimary">
                 <Folder
                     folder={folder}
                     parentFolder={null}
@@ -25,6 +25,8 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
                     onCollapseChange={this.onCollapseChange}
                     onLockChanged={this.onLockChanged}
                     onMovedToFolder={this.onMovedToFolder}
+                    onAddFile={this.onAddFile}
+                    onAddFolder={this.onAddFolder}
                     onFileClicked={onFileClicked}
                     onFileLockChanged={this.onFileLockChanged}
                     onFileStarChanged={this.onFileStarChanged}
@@ -74,6 +76,61 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
         this.props.onChange(this.props.folder);
     }
 
+    public getFlattenedFolders(folder: IFolder): Array<IFolder> {
+        if (!folder) {
+            return [];
+        }
+
+        let result: Array<IFolder> = [];
+        for (let f of folder.folders) {
+            result.push(f);
+            result = result.concat(this.getFlattenedFolders(f));
+        }
+        return result;
+    }
+
+    private getTargetFolder(folder: IFolder, fileId?: string) {
+        if (!fileId) {
+            return this.props.folder;
+        }
+
+        let results: Array<{ folder: IFolder, file: IFile }> = [];
+        const flattenedFolders = this.getFlattenedFolders(folder);
+        for (let innerFolder of flattenedFolders) {
+            for (let file of innerFolder.files) {
+                if (file.id === fileId) {
+                    return innerFolder;
+                }
+            }
+        }
+
+        return this.props.folder;
+    }
+
+    @action.bound
+    private onAddFile() {
+        const targetFolder = this.getTargetFolder(this.props.folder, this.props.selectedFileId);
+        if (targetFolder.locked) {
+            return;
+        }
+
+        if (typeof this.props.onAddFile !== 'undefined') {
+            this.props.onAddFile(targetFolder);
+        }
+    }
+
+    @action.bound
+    private onAddFolder() {
+        const targetFolder = this.getTargetFolder(this.props.folder, this.props.selectedFileId);
+        if (targetFolder.locked) {
+            return;
+        }
+
+        if (typeof this.props.onAddFolder !== 'undefined') {
+            this.props.onAddFolder(targetFolder);
+        }
+    }
+
     @action.bound
     private onFileLockChanged(file: IFile, locked: boolean) {
         if (typeof file.locked === 'undefined') {
@@ -108,5 +165,7 @@ export interface FolderViewProps {
     folder: IFolder;
     onChange: (folder: IFolder) => void;
     onFileClicked?: (file: IFile) => void;
+    onAddFile?: (targetFolder: IFolder) => void;
+    onAddFolder?: (targetFolder: IFolder) => void;
     selectedFileId?: string;
 }

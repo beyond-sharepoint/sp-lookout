@@ -40,7 +40,7 @@ export class FiddlesStore {
 
     @action
     static async saveToLocalStorage(fiddlesStore: FiddlesStore): Promise<FiddleFolder> {
-         return localforage.setItem(FiddlesLocalStorageKey, toJS(fiddlesStore._fiddleRootFolder));
+        return localforage.setItem(FiddlesLocalStorageKey, toJS(fiddlesStore._fiddleRootFolder));
     }
 
     public static getFlattenedFolders(folder: FiddleFolder): Array<FiddleFolder> {

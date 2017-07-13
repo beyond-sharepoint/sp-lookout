@@ -13,4 +13,19 @@ export class Util {
 
         return extendObservable(obj, newProps);
     }
+
+    /**
+     * Utility function to create a random string of characters of a given length.
+     * @param length Desired length of the id
+     */
+    public static makeId(length: number): string {
+        let text = '';
+        let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+        for (let i = 0; i < length; i++) {
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+        }
+
+        return text;
+    }
 }

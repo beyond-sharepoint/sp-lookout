@@ -94,6 +94,7 @@ export class Folder extends React.Component<FolderProps, FolderState> {
         const {
             depth,
             folder,
+            parentFolder,
             onCollapseChange,
             onLockChanged,
             onMovedToFolder,
@@ -109,15 +110,27 @@ export class Folder extends React.Component<FolderProps, FolderState> {
             return null;
         }
 
-        const treeNodeStyle = {
-            cursor: 'pointer',
-            userSelect: 'none'
-        };
-
-        const rootNodeStyle = {
+        const rootNodeStyle: any = {
             paddingLeft: innerDepth * 10,
             backgroundColor: !depth ? '#f4f4f4' : null,
+            flex: '1'
         };
+
+        if (!parentFolder) {
+            rootNodeStyle.display = 'flex';
+        }
+
+        const nodeStyle: any = {
+            cursor: 'pointer',
+            userSelect: 'none',
+        };
+
+        if (parentFolder) {
+            nodeStyle.display = 'flex';
+            nodeStyle.flexDirection = 'column';
+        } else {
+            nodeStyle.flex = '1';
+        }
 
         const folderLockStyle: React.CSSProperties = {
             paddingLeft: '5px',
@@ -131,8 +144,18 @@ export class Folder extends React.Component<FolderProps, FolderState> {
             collapseClassName += ' fa fa-caret-down';
         }
 
+        let addIconStyle: React.CSSProperties = {
+            padding: '0 5px',
+            cursor: 'pointer'
+        };
+
+        const rootSubFolderStyles: any = {};
+        if (!parentFolder) {
+            rootSubFolderStyles.overflow = 'auto';
+        }
+
         return connectDragSource(connectDropTarget(
-            <div className="folder" style={{ flex: 1 }}>
+            <div className="folder" style={nodeStyle}>
                 <div style={rootNodeStyle} onClick={this.onCollapseChange}>
                     <span className={collapseClassName} style={{ paddingRight: '5px', width: '0.5em' }} aria-hidden="true" />
                     {folder.iconClassName ? (<span className={folder.iconClassName} style={{ paddingRight: '3px' }} />) : null}
@@ -140,8 +163,21 @@ export class Folder extends React.Component<FolderProps, FolderState> {
                     <span className="file-lock" style={folderLockStyle} onClick={this.onLockChanged}>
                         <i className={'fa ' + (folder.locked ? 'fa-lock' : 'fa-unlock')} aria-hidden="true"></i>
                     </span>
+                    {!parentFolder
+                        ? (
+                            <span style={{ marginLeft: 'auto' }}>
+                                <span style={addIconStyle} title="Add File" onClick={this.onAddFile}>
+                                    <i className="ms-Icon ms-Icon--PageAdd" aria-hidden="true" />
+                                </span>
+                                <span style={addIconStyle} title="Add Folder" onClick={this.onAddFolder}>
+                                    <i className="ms-Icon ms-Icon--FabricNewFolder" aria-hidden="true" />
+                                </span>
+                            </span>
+                        )
+                        : null
+                    }
                 </div>
-                <div style={treeNodeStyle}>
+                <div style={rootSubFolderStyles}>
                     {
                         !folder.collapsed && folder.folders
                             ? sortBy(folder.folders, f => f.name).map((subFolder, index) => (
@@ -206,6 +242,24 @@ export class Folder extends React.Component<FolderProps, FolderState> {
             }
         }
     }
+
+    @autobind
+    private onAddFile(ev: React.MouseEvent<HTMLSpanElement>) {
+        ev.stopPropagation();
+        const { folder, onAddFile } = this.props;
+        if (typeof onAddFile !== 'undefined') {
+            onAddFile();
+        }
+    }
+
+    @autobind
+    private onAddFolder(ev: React.MouseEvent<HTMLSpanElement>) {
+        ev.stopPropagation();
+        const { folder, onAddFolder } = this.props;
+        if (typeof onAddFolder !== 'undefined') {
+            onAddFolder();
+        }
+    }
 }
 
 export interface FolderState {
@@ -217,6 +271,8 @@ export interface FolderProps {
     depth: number;
     onCollapseChange?: (folder: IFolder, parentFolder: IFolder | null) => void;
     onMovedToFolder?: (sourceItem: IFolder | IFile, targetFolder: IFolder) => void;
+    onAddFile?: () => void;
+    onAddFolder?: () => void;
     onLockChanged?: (folder: IFolder, locked: boolean) => void;
     onFileClicked?: (file: IFile) => void;
     onFileLockChanged?: (file: IFile, locked: boolean) => void;

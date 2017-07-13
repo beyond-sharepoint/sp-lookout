@@ -2,17 +2,20 @@ import * as React from 'react';
 import { observer } from 'mobx-react';
 
 /**
- * Represents a component that renders a dynamic SPLookout component on a Lookout Page
+ * Represents a component that renders a dynamic component on a Page
  */
 @observer
-export default class SPLookoutPageComponent extends React.Component<{}, {}> {
+export default class WebPartBase extends React.Component<{}, {}> {
   public constructor(props: any) {
     super(props);
   }
 
-  render() {
+  public render() {
     return (
       <div></div>
     );
+  }
+
+  public renderSideBar() {
   }
 }
