@@ -5,6 +5,7 @@ export interface WebPartSettings {
     w: number;
     h: number;
     type: WebPartType;
+    title: string;
     [others: string]: any;
 }
 
@@ -17,6 +18,6 @@ export enum WebPartType {
 }
 
 export const defaultWebPartSettings: Partial<WebPartSettings> = {
-    text: 'hello, world',
+    title: 'New WebPart',
     type: WebPartType.viewer
 }

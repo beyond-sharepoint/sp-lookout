@@ -5,7 +5,9 @@ import { observer } from 'mobx-react';
 import { Menu, MainButton, ChildButton } from 'react-mfb';
 import { find } from 'lodash';
 
-import { PagesStore, PageSettings, WebPartType, defaultWebPartSettings, Util } from '../../models';
+import { WebPartBase } from '../webpart';
+
+import { PagesStore, PageSettings, WebPartSettings, WebPartType, defaultWebPartSettings, Util } from '../../models';
 
 import './index.css';
 
@@ -20,12 +22,12 @@ export default class Page extends React.Component<PageProps, {}> {
         let layout: Array<any> = [];
         for (let webPart of webParts) {
             layout.push({
-                ...webPart,
                 x: webPart.x,
                 y: webPart.y,
                 w: webPart.w,
                 h: webPart.h,
-                i: webPart.id
+                i: webPart.id,
+                settings: webPart
             });
         }
         return (
@@ -43,7 +45,17 @@ export default class Page extends React.Component<PageProps, {}> {
                     {...this.props}
                 >
                     {layout.map((webPart, ix) => {
-                        return (<div key={webPart.id}><span className="text">{webPart.text}</span></div>);
+                        return (
+                            <div key={webPart.i}>
+                                <WebPartBase
+                                    locked={currentPage.locked}
+                                    settings={webPart.settings}
+                                    onWebPartSettingsChanged={() => { this.onWebPartSettingsChanged(webPart.settings) }}
+                                >
+                                    <span className="text">{webPart.text}</span>
+                                </WebPartBase>
+                            </div>
+                        );
                     })}
                 </Layout>
                 {currentPage.locked
@@ -86,7 +98,7 @@ export default class Page extends React.Component<PageProps, {}> {
             w: 2,
             h: 2,
             type: WebPartType.text,
-            text: "asdf"
+            title: 'New WebPart'
         }));
     }
 
@@ -115,6 +127,11 @@ export default class Page extends React.Component<PageProps, {}> {
             webPart.h = position.h;
             webPart.w = position.w;
         }
+        PagesStore.saveToLocalStorage(this.props.pagesStore);
+    }
+
+    @action.bound
+    private onWebPartSettingsChanged(settings: WebPartSettings) {
         PagesStore.saveToLocalStorage(this.props.pagesStore);
     }
 }

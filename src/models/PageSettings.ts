@@ -32,7 +32,7 @@ export const defaultPages: Array<PageSettings> = [
                 w: 4,
                 h: 8,
                 type: WebPartType.text,
-                text: 'SPLookout!',
+                title: 'SP Lookout!',
                 props: {}
             }
         ],
