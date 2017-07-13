@@ -46,14 +46,31 @@ export default class Page extends React.Component<PageProps, {}> {
                         return (<div key={webPart.id}><span className="text">{webPart.text}</span></div>);
                     })}
                 </Layout>
-                <Menu effect={'zoomin'} method={'hover'} position={'br'}>
-                    <MainButton iconResting="ms-Icon ms-Icon--Add" iconActive="ms-Icon ms-Icon--Cancel" />
-                    <ChildButton
-                        onClick={this.startAddWebPart}
-                        icon="ms-Icon ms-Icon--Checkbox"
-                        label="Add WebPart"
-                    />
-                </Menu>
+                {currentPage.locked
+                    ?
+                    <Menu effect={'zoomin'} method={'hover'} position={'br'}>
+                        <MainButton iconResting="ms-Icon ms-Icon--Lock" iconActive="ms-Icon ms-Icon--Cancel" />
+                        <ChildButton
+                            onClick={this.unlockPage}
+                            icon="ms-Icon ms-Icon--Unlock"
+                            label="Unlock Page"
+                        />
+                    </Menu>
+                    :
+                    <Menu effect={'zoomin'} method={'hover'} position={'br'}>
+                        <MainButton iconResting="ms-Icon ms-Icon--Add" iconActive="ms-Icon ms-Icon--Cancel" />
+                        <ChildButton
+                            onClick={this.startAddWebPart}
+                            icon="ms-Icon ms-Icon--Checkbox"
+                            label="Add WebPart"
+                        />
+                        <ChildButton
+                            onClick={this.lockPage}
+                            icon="ms-Icon ms-Icon--Lock"
+                            label="Lock Page"
+                        />
+                    </Menu>
+                }
             </div>
         );
     }
@@ -74,8 +91,19 @@ export default class Page extends React.Component<PageProps, {}> {
     }
 
     @action.bound
+    private lockPage() {
+        this.props.currentPage.locked = true;
+        PagesStore.saveToLocalStorage(this.props.pagesStore);
+    }
+
+    @action.bound
+    private unlockPage() {
+        this.props.currentPage.locked = false;
+        PagesStore.saveToLocalStorage(this.props.pagesStore);
+    }
+
+    @action.bound
     private onLayoutChange(layout: any) {
-        console.dir(layout);
         for (let position of layout) {
             const webPart = find(this.props.currentPage.webParts, { id: position.i });
             if (!webPart) {
