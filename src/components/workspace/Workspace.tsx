@@ -171,9 +171,9 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
                 }
             },
             {
-                path: '/spfiddle/:fiddleId',
+                path: '/fiddle/:fiddlePath*',
                 main: (stateProps) => {
-                    const currentFiddle = this.props.fiddlesStore.getFiddleSettings(stateProps.match.params.fiddleId);
+                    const currentFiddle = this.props.fiddlesStore.getFiddleSettingsByPath(stateProps.match.params.fiddlePath);
                     if (currentFiddle) {
                         Util.extendObjectWithDefaults(currentFiddle, defaultFiddleSettings);
                         return (
@@ -206,10 +206,10 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
             });
         }
 
-        const selectedFiddlePath = matchPath(location.hash.replace('#', ''), { path: '/spfiddle/:fiddleId' });
+        const selectedFiddlePath = matchPath(location.hash.replace('#', ''), { path: '/fiddle/:fiddlePath*' });
         if (selectedFiddlePath) {
             this.setState({
-                selectedFiddleId: selectedFiddlePath.params.fiddleId
+                selectedPaths: selectedFiddlePath.params.fiddlePath
             });
         }
     }
@@ -250,7 +250,7 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
                                 onFolderSelected={this.onFolderSelected}
                                 onFiddleSelected={this.onFiddleSelected}
                                 selectedPageId={this.state.selectedPageId}
-                                selectedItemId={this.state.selectedItemId}
+                                selectedPaths={this.state.selectedPaths}
                             />
                             {this.state.routes.map((route, index) => (
                                 <Route
@@ -293,24 +293,24 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
     private onPageSelected(ev, nav) {
         this.setState({
             selectedPageKey: nav.key,
-            selectedItemId: null
+            selectedPaths: null
         });
     }
 
     @action.bound
-    private onFiddleSelected(fiddleSettings: FiddleSettings) {
-        location.hash = '/SPFiddle/' + fiddleSettings.id;
+    private onFiddleSelected(fiddleSettings: FiddleSettings, path: string) {
+        location.hash = '/fiddle/' + path;
         this.setState({
             selectedPageKey: null,
-            selectedItemId: fiddleSettings.id
+            selectedPaths: path
         });
     }
 
     @action.bound
-    private onFolderSelected(folder: FiddleFolder) {
+    private onFolderSelected(folder: FiddleFolder, path: string) {
         this.setState({
             selectedPageKey: null,
-            selectedItemId: null
+            selectedPaths: path
         });
     }
 

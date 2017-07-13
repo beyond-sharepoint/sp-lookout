@@ -14,13 +14,14 @@ import './FolderView.css';
 @observer
 export class FolderView extends React.Component<FolderViewProps, FolderViewState> {
     public render() {
-        const { folder, onFileSelected, onFolderSelected, selectedItemId } = this.props;
+        const { folder, onFileSelected, onFolderSelected, selectedPaths } = this.props;
 
         return (
             <div className="folder-view ms-fontColor-themePrimary">
                 <Folder
                     folder={folder}
                     parentFolder={null}
+                    parentPath={null}
                     depth={0}
                     onCollapseChange={this.onCollapseChange}
                     onLockChanged={this.onLockChanged}
@@ -32,7 +33,7 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
                     onFolderSelected={onFolderSelected}
                     onFileLockChanged={this.onFileLockChanged}
                     onFileStarChanged={this.onFileStarChanged}
-                    selectedItemId={selectedItemId}
+                    selectedPaths={selectedPaths}
                 />
             </div>
         );
@@ -129,7 +130,7 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
 
     @action.bound
     private onAddFile() {
-        const target = this.getTargetFolder(this.props.folder, this.props.selectedItemId);
+        const target = this.getTargetFolder(this.props.folder, this.props.selectedPaths);
         if (target.folder.locked) {
             return;
         }
@@ -141,7 +142,7 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
 
     @action.bound
     private onAddFolder() {
-        const target = this.getTargetFolder(this.props.folder, this.props.selectedItemId);
+        const target = this.getTargetFolder(this.props.folder, this.props.selectedPaths);
         if (target.folder.locked) {
             return;
         }
@@ -153,7 +154,7 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
 
     @action.bound
     private onDelete() {
-        const target = this.getTargetFolder(this.props.folder, this.props.selectedItemId);
+        const target = this.getTargetFolder(this.props.folder, this.props.selectedPaths);
         if (target.file && !target.file.locked && !target.folder.locked) {
             if (typeof this.props.onDeleteFile !== 'undefined') {
                 this.props.onDeleteFile(target.folder, target.file);
@@ -197,11 +198,11 @@ export interface FolderViewState {
 export interface FolderViewProps {
     folder: IFolder;
     onChange: (folder: IFolder) => void;
-    onFileSelected?: (file: IFile) => void;
-    onFolderSelected?: (folder: IFolder) => void;
+    onFileSelected?: (file: IFile, filePath: string) => void;
+    onFolderSelected?: (folder: IFolder, folderPath: string) => void;
     onAddFile?: (targetFolder: IFolder) => void;
     onAddFolder?: (targetFolder: IFolder) => void;
     onDeleteFile?: (parentFolder: IFolder, targetFile: IFile) => void;
     onDeleteFolder?: (parentFolder: IFolder, targetFolder: IFolder) => void;
-    selectedItemId?: string | string[];
+    selectedPaths?: string | string[];
 }

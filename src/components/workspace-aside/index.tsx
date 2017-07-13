@@ -26,7 +26,7 @@ export default class Aside extends React.Component<AsideProps, any> {
             onFiddleSelected,
             onFolderSelected,
             selectedPageId,
-            selectedItemId,
+            selectedPaths,
         } = this.props;
 
         let navLinks: Array<INavLink> = [];
@@ -81,7 +81,7 @@ export default class Aside extends React.Component<AsideProps, any> {
                     <div style={starredDivStyle}>
                         {fiddlesStore.starred.map((fiddleSettings, index) => {
                             return (
-                                <div key={index} style={{ cursor: 'pointer' }} onClick={() => onFiddleSelected(fiddleSettings)}>
+                                <div key={index} style={{ cursor: 'pointer' }} onClick={() => onFiddleSelected(fiddleSettings, '')}>
                                     <span style={{ color: 'orange', paddingLeft: '5px', paddingRight: '5px' }}>
                                         <i className="fa fa-star" aria-hidden="true"></i>
                                     </span>{fiddleSettings.name}
@@ -98,7 +98,7 @@ export default class Aside extends React.Component<AsideProps, any> {
                         onAddFolder={this.onAddFolder}
                         onDeleteFile={this.onDeleteFile}
                         onChange={this.onFiddleChange}
-                        selectedItemId={selectedItemId}
+                        selectedPaths={selectedPaths}
                     />
                 </div>
             </SplitPane>
@@ -168,8 +168,8 @@ export interface AsideProps {
     settingsStore: SettingsStore;
     pagesStore: PagesStore;
     fiddlesStore: FiddlesStore;
-    onFolderSelected: (folder: FiddleFolder) => void;
-    onFiddleSelected: (settings: FiddleSettings) => void;
+    onFolderSelected: (folder: FiddleFolder, path: string) => void;
+    onFiddleSelected: (settings: FiddleSettings, path: string) => void;
     selectedPageId?: string;
-    selectedItemId?: string | string[];
+    selectedPaths?: string | string[];
 }

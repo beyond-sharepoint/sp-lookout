@@ -95,6 +95,7 @@ export class Folder extends React.Component<FolderProps, FolderState> {
             depth,
             folder,
             parentFolder,
+            parentPath,
             onCollapseChange,
             onLockChanged,
             onMovedToFolder,
@@ -102,14 +103,16 @@ export class Folder extends React.Component<FolderProps, FolderState> {
             onFolderSelected,
             onFileLockChanged,
             onFileStarChanged,
-            selectedItemId
+            selectedPaths
         } = this.props;
         const { connectDragSource, connectDropTarget } = this.props as any;
-        const innerDepth = (depth || 0) + 1;
 
         if (!folder) {
             return null;
         }
+
+        const innerDepth = (depth || 0) + 1;
+        const currentPath = parentPath ? `${parentPath}/${folder.name}` : folder.name;
 
         const rootNodeStyle: any = {
             paddingLeft: innerDepth * 10,
@@ -161,7 +164,7 @@ export class Folder extends React.Component<FolderProps, FolderState> {
 
         return connectDragSource(connectDropTarget(
             <div className="folder" style={nodeStyle}>
-                <div style={rootNodeStyle} onClick={this.onFolderSelected}>
+                <div style={rootNodeStyle} onClick={(ev) => this.onFolderSelected(ev, currentPath)}>
                     <span className={collapseClassName} style={{ paddingRight: '5px', width: '0.5em' }} aria-hidden="true" />
                     {folder.iconClassName ? (<span className={folder.iconClassName} style={{ paddingRight: '3px' }} />) : null}
                     <span>{folder.name}</span>
@@ -192,6 +195,7 @@ export class Folder extends React.Component<FolderProps, FolderState> {
                                 <Folder
                                     key={index}
                                     parentFolder={folder}
+                                    parentPath={currentPath}
                                     folder={subFolder}
                                     depth={innerDepth}
                                     onCollapseChange={onCollapseChange}
@@ -201,7 +205,7 @@ export class Folder extends React.Component<FolderProps, FolderState> {
                                     onFolderSelected={onFolderSelected}
                                     onFileLockChanged={onFileLockChanged}
                                     onFileStarChanged={onFileStarChanged}
-                                    selectedItemId={selectedItemId}
+                                    selectedPaths={selectedPaths}
                                 />
                             ))
                             : null
@@ -212,12 +216,13 @@ export class Folder extends React.Component<FolderProps, FolderState> {
                                 <File
                                     key={index}
                                     parentFolder={folder}
+                                    parentPath={currentPath}
                                     file={file}
                                     depth={innerDepth + 1}
                                     onClick={onFileSelected}
                                     onLockChanged={onFileLockChanged}
                                     onStarChanged={onFileStarChanged}
-                                    isSelected={!!file.id && file.id === selectedItemId}
+                                    selectedPaths={selectedPaths}
                                 />
                             ))
                             : null
@@ -228,7 +233,7 @@ export class Folder extends React.Component<FolderProps, FolderState> {
     }
 
     @autobind
-    private onFolderSelected() {
+    private onFolderSelected(ev: React.MouseEvent<HTMLDivElement>, currentPath: string) {
         const { folder, parentFolder, onCollapseChange, onFolderSelected } = this.props;
         if (typeof onCollapseChange === 'function') {
             const wasCollapsedUndefined = typeof folder.collapsed === 'undefined';
@@ -239,7 +244,7 @@ export class Folder extends React.Component<FolderProps, FolderState> {
         }
 
         if (typeof onFolderSelected === 'function') {
-            onFolderSelected(folder);
+            onFolderSelected(folder, currentPath);
         }
     }
 
@@ -290,6 +295,7 @@ export interface FolderState {
 export interface FolderProps {
     folder: IFolder;
     parentFolder: IFolder | null;
+    parentPath: string | null;
     depth: number;
     onCollapseChange?: (folder: IFolder, parentFolder: IFolder | null) => void;
     onMovedToFolder?: (sourceItem: IFolder | IFile, targetFolder: IFolder) => void;
@@ -297,9 +303,9 @@ export interface FolderProps {
     onAddFolder?: () => void;
     onDelete?: () => void;
     onLockChanged?: (folder: IFolder, locked: boolean) => void;
-    onFileSelected?: (file: IFile) => void;
-    onFolderSelected?: (folder: IFolder) => void;
+    onFileSelected?: (file: IFile, filePath: string) => void;
+    onFolderSelected?: (folder: IFolder, folderPath: string) => void;
     onFileLockChanged?: (file: IFile, locked: boolean) => void;
     onFileStarChanged?: (file: IFile, starred: boolean) => void;
-    selectedItemId?: string | string[];
+    selectedPaths?: string | string[];
 }

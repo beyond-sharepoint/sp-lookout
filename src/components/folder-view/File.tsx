@@ -2,6 +2,7 @@ import * as React from 'react';
 import { observer } from 'mobx-react';
 import { autobind } from 'office-ui-fabric-react/lib';
 import { DragSource } from 'react-dnd';
+import { find } from 'lodash';
 import { IFolder, IFile, FolderViewTypes } from './index';
 
 const FileSource = {
@@ -35,7 +36,7 @@ const FileSource = {
 @observer
 export class File extends React.Component<FileProps, FileState> {
     public render() {
-        const { file, isDragging, depth, isSelected } = this.props;
+        const { parentFolder, parentPath, file, isDragging, depth, selectedPaths } = this.props;
         const { connectDragSource } = this.props as any;
         const style: React.CSSProperties = {
             paddingLeft: depth * 10
@@ -51,6 +52,15 @@ export class File extends React.Component<FileProps, FileState> {
             color: '#f4f4f4'
         }
 
+        const currentPath = parentPath ? `${parentPath}/${file.name}` : `${file.name}`;
+
+        let isSelected = false;
+        if (selectedPaths instanceof Array) {
+            isSelected = !!find(selectedPaths, currentPath);
+        } else {
+            isSelected = (selectedPaths === currentPath);
+        }
+
         if (isSelected) {
             style.color = 'white';
             style.backgroundColor = '#0078d7';
@@ -63,7 +73,7 @@ export class File extends React.Component<FileProps, FileState> {
         }
 
         return connectDragSource(
-            <div className="file" style={style} onClick={this.onClick} title={file.description || file.name}>
+            <div className="file" style={style} onClick={(ev) => this.onClick(ev, currentPath)} title={file.description || file.name}>
                 {file.name}
                 {isSelected ?
                     <span className="file-star" style={fileStarStyle} onClick={this.onStarChanged}>
@@ -82,10 +92,10 @@ export class File extends React.Component<FileProps, FileState> {
     }
 
     @autobind
-    private onClick() {
+    private onClick(ev: React.MouseEvent<HTMLDivElement>, currentPath: string) {
         const { file, onClick } = this.props;
         if (typeof onClick === 'function') {
-            onClick(file);
+            onClick(file, currentPath);
         }
     }
 
@@ -121,11 +131,12 @@ export interface FileState {
 
 export interface FileProps {
     parentFolder: IFolder | null;
+    parentPath: string | null;
     file: IFile;
     isDragging?: boolean;
     depth: number;
-    onClick?: (file: IFile) => void;
+    onClick?: (file: IFile, filePath: string) => void;
     onStarChanged?: (file: IFile, starred: boolean) => void;
     onLockChanged?: (file: IFile, locked: boolean) => void;
-    isSelected: boolean;
+    selectedPaths?: string | string[];
 }
