@@ -36,6 +36,7 @@
     "react-dom": "^15.6.1",
     "react-grid-layout": "^0.14.6",
     "react-inspector": "^2.1.1",
+    "react-mfb": "^0.5.0",
     "react-router": "^4.1.1",
     "react-router-dom": "^4.1.1",
     "sp-pnp-js": "^2.0.7",

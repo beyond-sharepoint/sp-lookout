@@ -4,6 +4,19 @@ export interface WebPartSettings {
     y: number;
     w: number;
     h: number;
-    text: string;
+    type: WebPartType;
     [others: string]: any;
+}
+
+export enum WebPartType {
+    chart = 'chart',
+    note = 'note',
+    text = 'text',
+    time = 'time',
+    viewer = 'viewer'
+}
+
+export const defaultWebPartSettings: Partial<WebPartSettings> = {
+    text: 'hello, world',
+    type: WebPartType.viewer
 }

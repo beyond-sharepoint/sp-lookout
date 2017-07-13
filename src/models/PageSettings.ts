@@ -1,4 +1,4 @@
-import { WebPartSettings } from './WebPartSettings';
+import { WebPartSettings, WebPartType } from './WebPartSettings';
 
 export interface PageGroup {
     name: string;
@@ -31,6 +31,7 @@ export const defaultPages: Array<PageSettings> = [
                 y: 0,
                 w: 4,
                 h: 8,
+                type: WebPartType.text,
                 text: 'SPLookout!',
                 props: {}
             }
