@@ -19,7 +19,15 @@ export default class Aside extends React.Component<AsideProps, any> {
     private _spFiddleItems: { near: Array<IContextualMenuItem>, far: Array<IContextualMenuItem> };
 
     public render() {
-        const { settingsStore, pagesStore, fiddlesStore, onFiddleSelected, selectedPageId, selectedFiddleId } = this.props;
+        const {
+            settingsStore,
+            pagesStore,
+            fiddlesStore,
+            onFiddleSelected,
+            onFolderSelected,
+            selectedPageId,
+            selectedItemId,
+        } = this.props;
 
         let navLinks: Array<INavLink> = [];
         for (let page of pagesStore.pages) {
@@ -84,11 +92,13 @@ export default class Aside extends React.Component<AsideProps, any> {
                     </div>
                     <FolderView
                         folder={fiddlesStore.fiddleRootFolder as IFolder}
-                        onFileClicked={onFiddleSelected}
+                        onFileSelected={onFiddleSelected}
+                        onFolderSelected={onFolderSelected}
                         onAddFile={this.onAddFile}
                         onAddFolder={this.onAddFolder}
-                        selectedFileId={selectedFiddleId}
+                        onDeleteFile={this.onDeleteFile}
                         onChange={this.onFiddleChange}
+                        selectedItemId={selectedItemId}
                     />
                 </div>
             </SplitPane>
@@ -140,6 +150,17 @@ export default class Aside extends React.Component<AsideProps, any> {
         targetFolder.folders.push(newFolder as IFolder);
         FiddlesStore.saveToLocalStorage(this.props.fiddlesStore);
     }
+
+    @autobind
+    private onDeleteFile(targetFolder: IFolder, targetFile: IFile) {
+        const targetIndex = targetFolder.files.indexOf(targetFile);
+        if (targetIndex < 0) {
+            return;
+        }
+
+        targetFolder.files.splice(targetIndex, 1);
+        FiddlesStore.saveToLocalStorage(this.props.fiddlesStore);
+    }
 }
 
 export interface AsideProps {
@@ -147,7 +168,8 @@ export interface AsideProps {
     settingsStore: SettingsStore;
     pagesStore: PagesStore;
     fiddlesStore: FiddlesStore;
+    onFolderSelected: (folder: FiddleFolder) => void;
     onFiddleSelected: (settings: FiddleSettings) => void;
     selectedPageId?: string;
-    selectedFiddleId?: string;
+    selectedItemId?: string | string[];
 }

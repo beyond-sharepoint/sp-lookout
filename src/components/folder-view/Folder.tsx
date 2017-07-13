@@ -98,10 +98,11 @@ export class Folder extends React.Component<FolderProps, FolderState> {
             onCollapseChange,
             onLockChanged,
             onMovedToFolder,
-            onFileClicked,
+            onFileSelected,
+            onFolderSelected,
             onFileLockChanged,
             onFileStarChanged,
-            selectedFileId
+            selectedItemId
         } = this.props;
         const { connectDragSource, connectDropTarget } = this.props as any;
         const innerDepth = (depth || 0) + 1;
@@ -160,7 +161,7 @@ export class Folder extends React.Component<FolderProps, FolderState> {
 
         return connectDragSource(connectDropTarget(
             <div className="folder" style={nodeStyle}>
-                <div style={rootNodeStyle} onClick={this.onCollapseChange}>
+                <div style={rootNodeStyle} onClick={this.onFolderSelected}>
                     <span className={collapseClassName} style={{ paddingRight: '5px', width: '0.5em' }} aria-hidden="true" />
                     {folder.iconClassName ? (<span className={folder.iconClassName} style={{ paddingRight: '3px' }} />) : null}
                     <span>{folder.name}</span>
@@ -175,6 +176,9 @@ export class Folder extends React.Component<FolderProps, FolderState> {
                                 </span>
                                 <span style={addIconStyle} title="Add Folder" onClick={this.onAddFolder}>
                                     <i className="ms-Icon ms-Icon--FabricNewFolder" aria-hidden="true" />
+                                </span>
+                                <span style={addIconStyle} title="Delete" onClick={this.onDelete}>
+                                    <i className="ms-Icon ms-Icon--RecycleBin" aria-hidden="true" />
                                 </span>
                             </span>
                         )
@@ -193,10 +197,11 @@ export class Folder extends React.Component<FolderProps, FolderState> {
                                     onCollapseChange={onCollapseChange}
                                     onLockChanged={onLockChanged}
                                     onMovedToFolder={onMovedToFolder}
-                                    onFileClicked={onFileClicked}
+                                    onFileSelected={onFileSelected}
+                                    onFolderSelected={onFolderSelected}
                                     onFileLockChanged={onFileLockChanged}
                                     onFileStarChanged={onFileStarChanged}
-                                    selectedFileId={selectedFileId}
+                                    selectedItemId={selectedItemId}
                                 />
                             ))
                             : null
@@ -209,10 +214,10 @@ export class Folder extends React.Component<FolderProps, FolderState> {
                                     parentFolder={folder}
                                     file={file}
                                     depth={innerDepth + 1}
-                                    onClick={onFileClicked}
+                                    onClick={onFileSelected}
                                     onLockChanged={onFileLockChanged}
                                     onStarChanged={onFileStarChanged}
-                                    isSelected={!!file.id && file.id === selectedFileId}
+                                    isSelected={!!file.id && file.id === selectedItemId}
                                 />
                             ))
                             : null
@@ -223,14 +228,18 @@ export class Folder extends React.Component<FolderProps, FolderState> {
     }
 
     @autobind
-    private onCollapseChange() {
-        const { folder, parentFolder, onCollapseChange } = this.props;
+    private onFolderSelected() {
+        const { folder, parentFolder, onCollapseChange, onFolderSelected } = this.props;
         if (typeof onCollapseChange === 'function') {
             const wasCollapsedUndefined = typeof folder.collapsed === 'undefined';
             onCollapseChange(folder, parentFolder);
             if (wasCollapsedUndefined) {
                 this.forceUpdate();
             }
+        }
+
+        if (typeof onFolderSelected === 'function') {
+            onFolderSelected(folder);
         }
     }
 
@@ -264,6 +273,15 @@ export class Folder extends React.Component<FolderProps, FolderState> {
             onAddFolder();
         }
     }
+
+    @autobind
+    private onDelete(ev: React.MouseEvent<HTMLSpanElement>) {
+        ev.stopPropagation();
+        const { folder, onDelete } = this.props;
+        if (typeof onDelete !== 'undefined') {
+            onDelete();
+        }
+    }
 }
 
 export interface FolderState {
@@ -277,9 +295,11 @@ export interface FolderProps {
     onMovedToFolder?: (sourceItem: IFolder | IFile, targetFolder: IFolder) => void;
     onAddFile?: () => void;
     onAddFolder?: () => void;
+    onDelete?: () => void;
     onLockChanged?: (folder: IFolder, locked: boolean) => void;
-    onFileClicked?: (file: IFile) => void;
+    onFileSelected?: (file: IFile) => void;
+    onFolderSelected?: (folder: IFolder) => void;
     onFileLockChanged?: (file: IFile, locked: boolean) => void;
     onFileStarChanged?: (file: IFile, starred: boolean) => void;
-    selectedFileId?: string;
+    selectedItemId?: string | string[];
 }

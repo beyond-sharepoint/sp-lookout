@@ -14,7 +14,7 @@ import './FolderView.css';
 @observer
 export class FolderView extends React.Component<FolderViewProps, FolderViewState> {
     public render() {
-        const { folder, onFileClicked, selectedFileId } = this.props;
+        const { folder, onFileSelected, onFolderSelected, selectedItemId } = this.props;
 
         return (
             <div className="folder-view ms-fontColor-themePrimary">
@@ -27,10 +27,12 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
                     onMovedToFolder={this.onMovedToFolder}
                     onAddFile={this.onAddFile}
                     onAddFolder={this.onAddFolder}
-                    onFileClicked={onFileClicked}
+                    onDelete={this.onDelete}
+                    onFileSelected={onFileSelected}
+                    onFolderSelected={onFolderSelected}
                     onFileLockChanged={this.onFileLockChanged}
                     onFileStarChanged={this.onFileStarChanged}
-                    selectedFileId={selectedFileId}
+                    selectedItemId={selectedItemId}
                 />
             </div>
         );
@@ -89,9 +91,21 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
         return result;
     }
 
-    private getTargetFolder(folder: IFolder, fileId?: string) {
+    private getTargetFolder(folder: IFolder, fileId?: string | string[]) {
         if (!fileId) {
-            return this.props.folder;
+            return {
+                folder: this.props.folder,
+                file: undefined
+            }
+        }
+
+        for (let file of folder.files) {
+            if (file.id === fileId) {
+                return {
+                    folder: folder,
+                    file: file
+                }
+            }
         }
 
         let results: Array<{ folder: IFolder, file: IFile }> = [];
@@ -99,36 +113,55 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
         for (let innerFolder of flattenedFolders) {
             for (let file of innerFolder.files) {
                 if (file.id === fileId) {
-                    return innerFolder;
+                    return {
+                        folder: innerFolder,
+                        file: file
+                    }
                 }
             }
         }
 
-        return this.props.folder;
+        return {
+            folder: this.props.folder,
+            file: undefined
+        }
     }
 
     @action.bound
     private onAddFile() {
-        const targetFolder = this.getTargetFolder(this.props.folder, this.props.selectedFileId);
-        if (targetFolder.locked) {
+        const target = this.getTargetFolder(this.props.folder, this.props.selectedItemId);
+        if (target.folder.locked) {
             return;
         }
 
         if (typeof this.props.onAddFile !== 'undefined') {
-            this.props.onAddFile(targetFolder);
+            this.props.onAddFile(target.folder);
         }
     }
 
     @action.bound
     private onAddFolder() {
-        const targetFolder = this.getTargetFolder(this.props.folder, this.props.selectedFileId);
-        if (targetFolder.locked) {
+        const target = this.getTargetFolder(this.props.folder, this.props.selectedItemId);
+        if (target.folder.locked) {
             return;
         }
 
         if (typeof this.props.onAddFolder !== 'undefined') {
-            this.props.onAddFolder(targetFolder);
+            this.props.onAddFolder(target.folder);
         }
+    }
+
+    @action.bound
+    private onDelete() {
+        const target = this.getTargetFolder(this.props.folder, this.props.selectedItemId);
+        if (target.file && !target.file.locked && !target.folder.locked) {
+            if (typeof this.props.onDeleteFile !== 'undefined') {
+                this.props.onDeleteFile(target.folder, target.file);
+                return;
+            }
+        }
+
+        //TODO: Delete Folder
     }
 
     @action.bound
@@ -164,8 +197,11 @@ export interface FolderViewState {
 export interface FolderViewProps {
     folder: IFolder;
     onChange: (folder: IFolder) => void;
-    onFileClicked?: (file: IFile) => void;
+    onFileSelected?: (file: IFile) => void;
+    onFolderSelected?: (folder: IFolder) => void;
     onAddFile?: (targetFolder: IFolder) => void;
     onAddFolder?: (targetFolder: IFolder) => void;
-    selectedFileId?: string;
+    onDeleteFile?: (parentFolder: IFolder, targetFile: IFile) => void;
+    onDeleteFolder?: (parentFolder: IFolder, targetFolder: IFolder) => void;
+    selectedItemId?: string | string[];
 }

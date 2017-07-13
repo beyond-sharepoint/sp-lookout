@@ -20,7 +20,7 @@ import Page from '../page';
 import Aside from '../workspace-aside';
 import Fiddle from '../fiddle';
 
-import { SettingsStore, PagesStore, FiddlesStore, FiddleSettings, defaultFiddleSettings, Util } from '../../models';
+import { SettingsStore, PagesStore, FiddlesStore, FiddleFolder, FiddleSettings, defaultFiddleSettings, Util } from '../../models';
 
 import './Workspace.css';
 
@@ -232,7 +232,7 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
                             primaryPaneMinSize={0}
                             primaryPaneMaxSize={700}
                             primaryPaneStyle={{ overflow: 'auto' }}
-                            secondaryPaneStyle={{ overflow: 'auto'}}
+                            secondaryPaneStyle={{ overflow: 'auto' }}
                             onPaneResized={(size) => { this.setState({ sidebarSize: size }); }}
                             onResizerDoubleClick={(paneStyle) => {
                                 if (paneStyle.width === 215) {
@@ -247,9 +247,10 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
                                 settingsStore={this.props.settingsStore}
                                 pagesStore={this.props.pagesStore}
                                 fiddlesStore={this.props.fiddlesStore}
+                                onFolderSelected={this.onFolderSelected}
                                 onFiddleSelected={this.onFiddleSelected}
                                 selectedPageId={this.state.selectedPageId}
-                                selectedFiddleId={this.state.selectedFiddleId}
+                                selectedItemId={this.state.selectedItemId}
                             />
                             {this.state.routes.map((route, index) => (
                                 <Route
@@ -292,16 +293,24 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
     private onPageSelected(ev, nav) {
         this.setState({
             selectedPageKey: nav.key,
-            selectedFiddleId: null
+            selectedItemId: null
         });
     }
-    
+
     @action.bound
     private onFiddleSelected(fiddleSettings: FiddleSettings) {
         location.hash = '/SPFiddle/' + fiddleSettings.id;
         this.setState({
             selectedPageKey: null,
-            selectedFiddleId: fiddleSettings.id
+            selectedItemId: fiddleSettings.id
+        });
+    }
+
+    @action.bound
+    private onFolderSelected(folder: FiddleFolder) {
+        this.setState({
+            selectedPageKey: null,
+            selectedItemId: null
         });
     }
 
