@@ -1,9 +1,10 @@
 import * as React from 'react';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
-import { action, extendObservable } from 'mobx';
+import { action, extendObservable, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import { autobind } from 'office-ui-fabric-react/lib';
+import * as URI from 'urijs';
 import { IFolder, IFile } from './index';
 import { Folder } from './Folder';
 import { File } from './File';
@@ -21,7 +22,7 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
                 <Folder
                     folder={folder}
                     parentFolder={null}
-                    parentPath={null}
+                    path=""
                     depth={0}
                     onCollapseChange={this.onCollapseChange}
                     onLockChanged={this.onLockChanged}
@@ -79,90 +80,153 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
         this.props.onChange(this.props.folder);
     }
 
-    public getFlattenedFolders(folder: IFolder): Array<IFolder> {
+    private getFolderMap(folder: IFolder, path?: string): { [path: string]: IFolder } {
         if (!folder) {
-            return [];
+            return {};
         }
 
-        let result: Array<IFolder> = [];
+        let result: { [path: string]: IFolder } = {};
         for (let f of folder.folders) {
-            result.push(f);
-            result = result.concat(this.getFlattenedFolders(f));
+            const currentPath = path ? `${path}${f.name}/` : `${f.name}/`;
+            result[currentPath] = f;
+            result = {
+                ...this.getFolderMap(f, currentPath),
+                ...result
+            }
         }
         return result;
     }
 
-    private getTargetFolder(folder: IFolder, fileId?: string | string[]) {
-        if (!fileId) {
-            return {
-                folder: this.props.folder,
-                file: undefined
-            }
+    private getFileMap(folder: IFolder, folderMap?: { [path: string]: IFolder }): { [path: string]: IFile } {
+        if (!folder) {
+            return {};
         }
 
-        for (let file of folder.files) {
-            if (file.id === fileId) {
-                return {
-                    folder: folder,
-                    file: file
-                }
-            }
+        let result: { [path: string]: IFile } = {};
+        for (let currentFolderFile of folder.files) {
+            result[currentFolderFile.name] = currentFolderFile;
         }
-
-        let results: Array<{ folder: IFolder, file: IFile }> = [];
-        const flattenedFolders = this.getFlattenedFolders(folder);
-        for (let innerFolder of flattenedFolders) {
+        if (!folderMap) {
+            folderMap = this.getFolderMap(folder);
+        }
+        for (let path of Object.keys(folderMap)) {
+            let innerFolder = folderMap[path];
             for (let file of innerFolder.files) {
-                if (file.id === fileId) {
-                    return {
-                        folder: innerFolder,
-                        file: file
-                    }
-                }
+                result[`${path}${file.name}`] = file;
             }
         }
 
-        return {
-            folder: this.props.folder,
-            file: undefined
+        return result;
+    }
+
+    private getDirectory(path?: string | Array<string>) {
+        if (!path) {
+            return '';
         }
+
+        if (path instanceof Array) {
+            path = path[0];
+        }
+
+        return URI(path).directory();
+    }
+
+    private getPathName(path?: string | Array<string>) {
+        if (!path) {
+            return '';
+        }
+
+        if (path instanceof Array) {
+            path = path[0];
+        }
+
+        return URI(path).pathname();
     }
 
     @action.bound
     private onAddFile() {
-        const target = this.getTargetFolder(this.props.folder, this.props.selectedPaths);
-        if (target.folder.locked) {
+        let targetFolder: IFolder | null = null;
+        const directory = this.getDirectory(this.props.selectedPaths);
+        if (directory) {
+            const folderMap = this.getFolderMap(this.props.folder);
+            targetFolder = folderMap[directory + '/'];
+        }
+
+        if (!targetFolder) {
+            targetFolder = this.props.folder;
+        }
+
+        if (targetFolder.locked) {
             return;
         }
 
         if (typeof this.props.onAddFile !== 'undefined') {
-            this.props.onAddFile(target.folder);
+            this.props.onAddFile(targetFolder);
         }
     }
 
     @action.bound
     private onAddFolder() {
-        const target = this.getTargetFolder(this.props.folder, this.props.selectedPaths);
-        if (target.folder.locked) {
+        let targetFolder: IFolder | null = null;
+        const directory = this.getDirectory(this.props.selectedPaths);
+        if (directory) {
+            const folderMap = this.getFolderMap(this.props.folder);
+            targetFolder = folderMap[directory + '/'];
+        }
+
+        if (!targetFolder) {
+            targetFolder = this.props.folder;
+        }
+
+        if (targetFolder.locked) {
             return;
         }
 
         if (typeof this.props.onAddFolder !== 'undefined') {
-            this.props.onAddFolder(target.folder);
+            this.props.onAddFolder(targetFolder);
         }
     }
 
     @action.bound
     private onDelete() {
-        const target = this.getTargetFolder(this.props.folder, this.props.selectedPaths);
-        if (target.file && !target.file.locked && !target.folder.locked) {
-            if (typeof this.props.onDeleteFile !== 'undefined') {
-                this.props.onDeleteFile(target.folder, target.file);
-                return;
-            }
+        let targetFolder: IFolder = this.props.folder;
+        const folderMap = this.getFolderMap(this.props.folder);
+        const directory = this.getDirectory(this.props.selectedPaths);
+        if (directory) {
+            targetFolder = folderMap[directory + '/'];
+        }
+        if (!targetFolder) {
+            return;
         }
 
-        //TODO: Delete Folder
+        const pathName = this.getPathName(this.props.selectedPaths);
+        if (!URI(pathName).filename()) {
+            let parentFolderPath = directory.substring(0, directory.lastIndexOf('/'));
+            let parentFolder: IFolder = this.props.folder;
+            if (parentFolderPath) {
+                parentFolder = folderMap[parentFolderPath + '/'];
+            }
+
+            if (!parentFolder) {
+                return;
+            }
+
+            if (!targetFolder.locked && !parentFolder.locked) {
+                if (typeof this.props.onDeleteFolder !== 'undefined') {
+                    this.props.onDeleteFolder(parentFolder, targetFolder);
+                    return;
+                }
+            }
+        } else {
+            const fileMap = this.getFileMap(this.props.folder, folderMap);
+            const targetFile = fileMap[pathName];
+            if (targetFile && !targetFile.locked && !targetFolder.locked) {
+                if (typeof this.props.onDeleteFile !== 'undefined') {
+                    this.props.onDeleteFile(targetFolder, targetFile);
+                    return;
+                }
+            }
+        }
     }
 
     @action.bound

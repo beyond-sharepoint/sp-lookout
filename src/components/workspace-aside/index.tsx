@@ -9,7 +9,7 @@ import { find } from 'lodash';
 import SplitPane from '../split-pane/SplitPane';
 import { FolderView, IFolder, IFile } from '../folder-view';
 
-import { SettingsStore, PagesStore, FiddlesStore, FiddleSettings, FiddleFolder, defaultFiddleSettings, defaultFiddleFolder, Util } from '../../models';
+import { SettingsStore, PagesStore, FiddlesStore, FiddleSettings, FiddleFolder, defaultFiddleSettings, defaultFiddleFolder } from '../../models';
 
 import './index.css';
 
@@ -81,7 +81,7 @@ export default class Aside extends React.Component<AsideProps, any> {
                     <div style={starredDivStyle}>
                         {fiddlesStore.starred.map((fiddleSettings, index) => {
                             return (
-                                <div key={index} style={{ cursor: 'pointer' }} onClick={() => onFiddleSelected(fiddleSettings, '')}>
+                                <div key={index} style={{ cursor: 'pointer' }} onClick={() => onFiddleSelected(fiddleSettings, this.props.fiddlesStore.getPathForFiddleSettings(fiddleSettings) || '')}>
                                     <span style={{ color: 'orange', paddingLeft: '5px', paddingRight: '5px' }}>
                                         <i className="fa fa-star" aria-hidden="true"></i>
                                     </span>{fiddleSettings.name}
@@ -97,6 +97,7 @@ export default class Aside extends React.Component<AsideProps, any> {
                         onAddFile={this.onAddFile}
                         onAddFolder={this.onAddFolder}
                         onDeleteFile={this.onDeleteFile}
+                        onDeleteFolder={this.onDeleteFolder}
                         onChange={this.onFiddleChange}
                         selectedPaths={selectedPaths}
                     />
@@ -125,10 +126,10 @@ export default class Aside extends React.Component<AsideProps, any> {
 
         let newFile: FiddleSettings = observable({
             ...defaultFiddleSettings,
-            id: Util.makeId(8),
             name: newFileName
         });
 
+        targetFolder.collapsed = false;
         targetFolder.files.push(newFile as IFile);
         FiddlesStore.saveToLocalStorage(this.props.fiddlesStore);
     }
@@ -143,10 +144,10 @@ export default class Aside extends React.Component<AsideProps, any> {
 
         let newFolder: FiddleFolder = observable({
             ...defaultFiddleFolder,
-            id: Util.makeId(8),
             name: newFolderName
         });
 
+        targetFolder.collapsed = false;
         targetFolder.folders.push(newFolder as IFolder);
         FiddlesStore.saveToLocalStorage(this.props.fiddlesStore);
     }
@@ -159,6 +160,17 @@ export default class Aside extends React.Component<AsideProps, any> {
         }
 
         targetFolder.files.splice(targetIndex, 1);
+        FiddlesStore.saveToLocalStorage(this.props.fiddlesStore);
+    }
+
+    @autobind
+    private onDeleteFolder(parentFolder: IFolder, targetFolder: IFolder) {
+        const targetIndex = parentFolder.folders.indexOf(targetFolder);
+        if(targetIndex < 0) {
+            return;
+        }
+
+        parentFolder.folders.splice(targetIndex, 1);
         FiddlesStore.saveToLocalStorage(this.props.fiddlesStore);
     }
 }

@@ -36,7 +36,7 @@ const FileSource = {
 @observer
 export class File extends React.Component<FileProps, FileState> {
     public render() {
-        const { parentFolder, parentPath, file, isDragging, depth, selectedPaths } = this.props;
+        const { parentFolder, path, file, isDragging, depth, selectedPaths } = this.props;
         const { connectDragSource } = this.props as any;
         const style: React.CSSProperties = {
             paddingLeft: depth * 10
@@ -52,13 +52,11 @@ export class File extends React.Component<FileProps, FileState> {
             color: '#f4f4f4'
         }
 
-        const currentPath = parentPath ? `${parentPath}/${file.name}` : `${file.name}`;
-
         let isSelected = false;
         if (selectedPaths instanceof Array) {
-            isSelected = !!find(selectedPaths, currentPath);
+            isSelected = !!find(selectedPaths, path);
         } else {
-            isSelected = (selectedPaths === currentPath);
+            isSelected = (selectedPaths === path);
         }
 
         if (isSelected) {
@@ -73,7 +71,7 @@ export class File extends React.Component<FileProps, FileState> {
         }
 
         return connectDragSource(
-            <div className="file" style={style} onClick={(ev) => this.onClick(ev, currentPath)} title={file.description || file.name}>
+            <div className="file" style={style} onClick={(ev) => this.onClick(ev, path)} title={file.description || file.name}>
                 {file.name}
                 {isSelected ?
                     <span className="file-star" style={fileStarStyle} onClick={this.onStarChanged}>
@@ -131,7 +129,7 @@ export interface FileState {
 
 export interface FileProps {
     parentFolder: IFolder | null;
-    parentPath: string | null;
+    path: string;
     file: IFile;
     isDragging?: boolean;
     depth: number;

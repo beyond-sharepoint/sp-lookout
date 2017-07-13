@@ -2,7 +2,6 @@
 /// <reference path="../../node_modules/monaco-editor/monaco.d.ts" />
 
 export interface FiddleSettings {
-    id: string;
     name: string;
     description?: string;
     locked?: boolean;
@@ -37,12 +36,15 @@ export const defaultPaths = {
 };
 
 export const defaultFiddleSettings: Partial<FiddleSettings> = {
-    theme: 'vs',
+    description: '',
+    locked: false,
+    starred: false,
     code: 'const foo = "Hello, world!";\nexport default foo;',
+    theme: 'vs',
+    editorOptions: defaultEditorOptions,
     requireConfig: {
         paths: defaultPaths
     },
-    editorOptions: defaultEditorOptions,
     brewTimeout: 5000,
     brewMode: 'sandfiddle',
 };

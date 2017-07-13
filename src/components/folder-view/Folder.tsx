@@ -2,7 +2,7 @@ import * as React from 'react';
 import { DropTarget, DragSource } from 'react-dnd';
 import { observer } from 'mobx-react';
 import { autobind } from 'office-ui-fabric-react/lib';
-import { sortBy } from 'lodash';
+import { sortBy, find } from 'lodash';
 import { IFolder, IFile, FolderViewTypes } from './index';
 import { File } from './File';
 
@@ -53,13 +53,23 @@ const folderTarget = {
             return false;
         }
 
-        //Prevent a folder's parent from picking up a drop of a file on it's containing folder.
+        //Disallow a folder's parent from picking up a drop of a file on it's containing folder.
         if (item.parentFolder !== props.folder && !monitor.isOver({ shallow: true })) {
             return false;
         }
 
         //Disallow dropping a folder on itself.
         if (item.folder === props.folder) {
+            return false;
+        }
+
+        //Disallow dropping an item if the folder contains a folder of the same name.
+        if (find(props.folder.folders, { name: item.name })) {
+            return false;
+        }
+
+        //Disallow dropping an item if the folder contains a file of the same name.
+        if (find(props.folder.files, { name: item.name })) {
             return false;
         }
 
@@ -95,7 +105,7 @@ export class Folder extends React.Component<FolderProps, FolderState> {
             depth,
             folder,
             parentFolder,
-            parentPath,
+            path,
             onCollapseChange,
             onLockChanged,
             onMovedToFolder,
@@ -112,7 +122,6 @@ export class Folder extends React.Component<FolderProps, FolderState> {
         }
 
         const innerDepth = (depth || 0) + 1;
-        const currentPath = parentPath ? `${parentPath}/${folder.name}` : folder.name;
 
         const rootNodeStyle: any = {
             paddingLeft: innerDepth * 10,
@@ -162,9 +171,23 @@ export class Folder extends React.Component<FolderProps, FolderState> {
             rootSubFolderStyles.overflow = 'auto';
         }
 
+        let isSelected = false;
+        if (selectedPaths instanceof Array) {
+            isSelected = !!find(selectedPaths, path);
+        } else {
+            isSelected = (selectedPaths === path);
+        }
+
+        if (isSelected) {
+            rootNodeStyle.color = 'white';
+            rootNodeStyle.backgroundColor = '#0078d7';
+
+            folderLockStyle.color = 'white';
+        }
+
         return connectDragSource(connectDropTarget(
             <div className="folder" style={nodeStyle}>
-                <div style={rootNodeStyle} onClick={(ev) => this.onFolderSelected(ev, currentPath)}>
+                <div style={rootNodeStyle} onClick={(ev) => this.onFolderSelected(ev, path)}>
                     <span className={collapseClassName} style={{ paddingRight: '5px', width: '0.5em' }} aria-hidden="true" />
                     {folder.iconClassName ? (<span className={folder.iconClassName} style={{ paddingRight: '3px' }} />) : null}
                     <span>{folder.name}</span>
@@ -195,7 +218,7 @@ export class Folder extends React.Component<FolderProps, FolderState> {
                                 <Folder
                                     key={index}
                                     parentFolder={folder}
-                                    parentPath={currentPath}
+                                    path={path ? `${path}${subFolder.name}/` : `${subFolder.name}/`}
                                     folder={subFolder}
                                     depth={innerDepth}
                                     onCollapseChange={onCollapseChange}
@@ -216,7 +239,7 @@ export class Folder extends React.Component<FolderProps, FolderState> {
                                 <File
                                     key={index}
                                     parentFolder={folder}
-                                    parentPath={currentPath}
+                                    path={path ? `${path}${file.name}` : file.name}
                                     file={file}
                                     depth={innerDepth + 1}
                                     onClick={onFileSelected}
@@ -295,7 +318,7 @@ export interface FolderState {
 export interface FolderProps {
     folder: IFolder;
     parentFolder: IFolder | null;
-    parentPath: string | null;
+    path: string;
     depth: number;
     onCollapseChange?: (folder: IFolder, parentFolder: IFolder | null) => void;
     onMovedToFolder?: (sourceItem: IFolder | IFile, targetFolder: IFolder) => void;

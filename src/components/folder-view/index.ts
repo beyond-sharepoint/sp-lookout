@@ -9,7 +9,6 @@ export interface IFolder {
 }
 
 export interface IFile {
-    id: string;
     name: string;
     description?: string;
     locked?: boolean;

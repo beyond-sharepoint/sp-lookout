@@ -2,7 +2,7 @@ import { autorun, observable, extendObservable, observe, action, computed, runIn
 import { FiddleSettings } from './FiddleSettings';
 import { FiddleFolder, defaultFiddleRootFolder } from './FiddleFolder';
 import * as localforage from 'localforage';
-import { defaultsDeep, find, filter, pick } from 'lodash';
+import { defaultsDeep, find, filter, values, findKey } from 'lodash';
 
 export const FiddlesLocalStorageKey = 'sp-lookout-fiddles';
 
@@ -24,25 +24,23 @@ export class FiddlesStore {
 
     @computed
     public get starred(): Array<FiddleSettings> {
-        const filesFlat = FiddlesStore.getFlattenedFiles(this._fiddleRootFolder);
-        const filteredFiles = filter(filesFlat, (t) => t.file.starred);
-        let result: Array<FiddleSettings> = [];
-        for(let file of filteredFiles) {
-            result.push(file.file);
-        }
-        return result;
-    }
-
-    public getFiddleSettingsById(id: string): FiddleSettings | undefined {
-        const filesFlat = FiddlesStore.getFlattenedFiles(this._fiddleRootFolder);
-        const result = find(filesFlat, (t) => t.file.id === id);
-        return result ? result.file : undefined;
+        const fileMap = FiddlesStore.getFileMap(this._fiddleRootFolder);
+        return filter(values(fileMap), (t) => t.starred);
     }
 
     public getFiddleSettingsByPath(path: string): FiddleSettings | undefined {
-        const filesFlat = FiddlesStore.getFlattenedFiles(this._fiddleRootFolder);
-        const result = find(filesFlat, { path: path });
-        return result ? result.file : undefined;
+        const fileMap = FiddlesStore.getFileMap(this._fiddleRootFolder);
+        return fileMap[path];
+    }
+
+    public getPathForFiddleSettings(settings): string | undefined {
+        const fileMap = FiddlesStore.getFileMap(this._fiddleRootFolder);
+        return findKey(fileMap, settings);
+    }
+
+    public getFiddleFolderByPath(path: string): FiddleFolder | undefined {
+        const folderMap = FiddlesStore.getFolderMap(this._fiddleRootFolder);
+        return folderMap[path];
     }
 
     static async loadFromLocalStorage(): Promise<FiddlesStore> {
@@ -55,46 +53,37 @@ export class FiddlesStore {
         return localforage.setItem(FiddlesLocalStorageKey, toJS(fiddlesStore._fiddleRootFolder));
     }
 
-    public static getFlattenedFolders(folder: FiddleFolder, parentPath?: string): Array<{path: string, folder: FiddleFolder}> {
+    public static getFolderMap(folder: FiddleFolder, path?: string): { [path: string]: FiddleFolder } {
         if (!folder) {
-            return [];
+            return {};
         }
 
-        if (!parentPath) {
-            parentPath = folder.name;
-        }
-
-        let result: Array<{path: string, folder: FiddleFolder}> = [];
+        let result: { [path: string]: FiddleFolder } = {};
         for (let f of folder.folders) {
-            const currentPath = parentPath ? `${parentPath}/${f.name}` : f.name;
-            result.push({
-                path: currentPath,
-                folder: f
-            });
-            result = result.concat(this.getFlattenedFolders(f, currentPath));
+            const currentPath = path ? `${path}/${f.name}` : f.name;
+            result[currentPath] = f;
+            result = {
+                ...this.getFolderMap(f, currentPath),
+                ...result
+            }
         }
         return result;
     }
 
-    public static getFlattenedFiles(folder: FiddleFolder): Array<{path: string, file: FiddleSettings}> {
+    public static getFileMap(folder: FiddleFolder): { [path: string]: FiddleSettings } {
         if (!folder) {
-            return [];
+            return {};
         }
 
-        let result: Array<{path: string, file: FiddleSettings}> = [];
+        let result: { [path: string]: FiddleSettings } = {};
         for (let currentFolderFile of folder.files) {
-            result.push({
-                path: currentFolderFile.name,
-                file: currentFolderFile
-            });
+            result[currentFolderFile.name] = currentFolderFile;
         }
-        const flattenedFolders = this.getFlattenedFolders(folder);
-        for (let innerFolder of flattenedFolders) {
-            for (let file of innerFolder.folder.files) {
-                result.push({
-                    path: `${innerFolder.path}/${file.name}`,
-                    file: file
-                });
+        const folderMap = this.getFolderMap(folder);
+        for (let path of Object.keys(folderMap)) {
+            let innerFolder = folderMap[path];
+            for (let file of innerFolder.files) {
+                result[`${path}/${file.name}`] = file;
             }
         }
 
