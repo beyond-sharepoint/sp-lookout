@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { action } from 'mobx';
 import { observer } from 'mobx-react';
 import { autobind } from 'office-ui-fabric-react/lib';
 import { Panel, PanelType, IPanelProps } from 'office-ui-fabric-react/lib/Panel';

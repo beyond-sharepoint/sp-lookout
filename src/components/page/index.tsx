@@ -18,9 +18,8 @@ export default class Page extends React.Component<PageProps, {}> {
     public render() {
         const { currentPage } = this.props;
         const { columns, rowHeight, locked } = currentPage;
-        const webParts = toJS(currentPage.webParts);
         let layout: Array<any> = [];
-        for (let webPart of webParts) {
+        for (let webPart of currentPage.webParts) {
             layout.push({
                 x: webPart.x,
                 y: webPart.y,

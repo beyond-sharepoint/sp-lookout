@@ -19,10 +19,16 @@
     align-self: flex-start;
     padding-left: 5px;
     cursor: default;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .webpart-title-actions {
     margin-left: auto;
+    overflow: hidden;
+    white-space: nowrap;
+    flex-shrink: 0
 }
 
 .webpart-title-actions .action {
