@@ -1,4 +1,5 @@
 export interface WebPartSettings {
+    id: string;
     x: number;
     y: number;
     w: number;

@@ -26,11 +26,11 @@ export const defaultPages: Array<PageSettings> = [
         locked: false,
         webParts: [
             {
+                id: "0",
                 x: 0,
                 y: 0,
                 w: 4,
                 h: 8,
-                i: "0",
                 text: 'SPLookout!',
                 props: {}
             }

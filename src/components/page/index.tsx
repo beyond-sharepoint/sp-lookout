@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as ReactGridLayout from 'react-grid-layout';
 import { action, extendObservable, toJS } from 'mobx';
 import { observer } from 'mobx-react';
-import * as _ from 'lodash';
+import { find } from 'lodash';
 
 import { PagesStore, PageSettings } from '../../models';
 import './index.css';
@@ -14,8 +14,18 @@ export default class Page extends React.Component<PageProps, {}> {
     public render() {
         const { currentPage } = this.props;
         const { columns, rowHeight, locked } = currentPage;
-        const layout = toJS(currentPage.webParts);
-        console.dir(layout);
+        const webParts = toJS(currentPage.webParts);
+        let layout: Array<any> = [];
+        for(let webPart of webParts) {
+            layout.push({
+                ...webPart,
+                x: webPart.x,
+                y: webPart.y,
+                w: webPart.w,
+                h: webPart.h,
+                i: webPart.id
+            });
+        }
         return (
             <Layout
                 className="dashboard"
@@ -29,7 +39,7 @@ export default class Page extends React.Component<PageProps, {}> {
                 style={{ height: '100%' }}
                 {...this.props}
             >
-                {_.map(layout, function (webPart, ix) {
+                {layout.map((webPart, ix) => {
                     return (<div key={ix}><span className="text">{webPart.text}</span></div>);
                 })}
             </Layout>
@@ -38,7 +48,17 @@ export default class Page extends React.Component<PageProps, {}> {
 
     @action.bound
     private onLayoutChange(layout: any) {
-        this.props.currentPage.webParts = layout;
+        for(let position of layout) {
+            const webPart = find(this.props.currentPage.webParts, { id: position.i });
+            if (!webPart) {
+                continue;
+            }
+
+            webPart.x = position.x;
+            webPart.y = position.y;
+            webPart.h = position.h;
+            webPart.w = position.w;
+        }
         PagesStore.saveToLocalStorage(this.props.pagesStore);
     }
 }
