@@ -137,6 +137,10 @@ export class Folder extends React.Component<FolderProps, FolderState> {
             color: '#f4f4f4'
         }
 
+        if (!parentFolder) {
+            folderLockStyle.color = '#0078d7';
+        }
+
         let collapseClassName = 'collapse';
         if (folder.collapsed === true) {
             collapseClassName += ' fa fa-caret-right';
