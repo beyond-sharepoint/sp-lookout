@@ -28,6 +28,7 @@ export default class Page extends React.Component<PageProps, {}> {
                 i: webPart.id,
                 isDraggable: !webPart.locked,
                 isResizable: !webPart.locked,
+                static: webPart.locked,
                 settings: webPart
             });
         }
