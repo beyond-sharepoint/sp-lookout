@@ -121,7 +121,7 @@ export class Folder extends React.Component<FolderProps, FolderState> {
             return null;
         }
 
-        const innerDepth = (depth || 0) + 1;
+        const innerDepth = (depth || 0);
 
         const rootNodeStyle: any = {
             paddingLeft: innerDepth * 10,
@@ -129,6 +129,7 @@ export class Folder extends React.Component<FolderProps, FolderState> {
         };
 
         if (!parentFolder) {
+            rootNodeStyle.paddingLeft = '3px';
             rootNodeStyle.display = 'flex';
             rootNodeStyle.overflow = 'hidden';
         }
@@ -223,7 +224,7 @@ export class Folder extends React.Component<FolderProps, FolderState> {
                                     parentFolder={folder}
                                     path={path ? `${path}${subFolder.name}/` : `${subFolder.name}/`}
                                     folder={subFolder}
-                                    depth={innerDepth}
+                                    depth={innerDepth+1}
                                     onCollapseChange={onCollapseChange}
                                     onLockChanged={onLockChanged}
                                     onMovedToFolder={onMovedToFolder}

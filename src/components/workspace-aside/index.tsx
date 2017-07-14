@@ -51,6 +51,7 @@ export default class Aside extends React.Component<AsideProps, any> {
         if (fiddlesStore.starred.length > 0) {
             starredDivStyle.display = null;
             starredDivStyle.paddingBottom = '5px';
+            starredDivStyle.overflowX = 'auto';
         }
 
         return (
@@ -79,7 +80,7 @@ export default class Aside extends React.Component<AsideProps, any> {
                     <div style={starredDivStyle}>
                         {fiddlesStore.starred.map((fiddleSettings, index) => {
                             return (
-                                <div key={index} style={{ cursor: 'pointer' }} onClick={() => onFiddleSelected(fiddleSettings, this.props.fiddlesStore.getPathForFiddleSettings(fiddleSettings) || '')}>
+                                <div key={index} style={{ cursor: 'pointer', whiteSpace: 'nowrap' }} onClick={() => onFiddleSelected(fiddleSettings, this.props.fiddlesStore.getPathForFiddleSettings(fiddleSettings) || '')}>
                                     <span style={{ color: 'orange', paddingLeft: '5px', paddingRight: '5px' }}>
                                         <i className="fa fa-star" aria-hidden="true"></i>
                                     </span>{fiddleSettings.name}
