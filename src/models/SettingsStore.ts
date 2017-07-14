@@ -1,4 +1,4 @@
-import { action, observable    } from 'mobx';
+import { action, observable, toJS } from 'mobx';
 import { debounce, throttle, defaultsDeep, find } from 'lodash';
 import * as localforage from 'localforage';
 
@@ -53,7 +53,12 @@ export class SettingsStore {
     }
 
     @action static async saveToLocalStorage(settingsStore: SettingsStore) {
-        throw Error('Not Implemented');
+        const settingsToPersist = {
+            hostWebProxySettings: toJS(settingsStore._hostWebProxySettings),
+            visualSettings: toJS(settingsStore._visualSettings)
+        };
+
+        return localforage.setItem(SettingsLocalStorageKey, settingsToPersist);
     }
 }
 

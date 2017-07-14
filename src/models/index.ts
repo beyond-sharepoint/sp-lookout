@@ -1,4 +1,5 @@
 export * from './SettingsStore';
+export * from './HostWebProxySettings';
 export * from './VisualSettings';
 
 export * from './FiddlesStore';

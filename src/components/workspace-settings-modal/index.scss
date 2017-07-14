@@ -1,0 +1,24 @@
+.settings-modal-container {
+    height: 80vh;
+    width: 60vw;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: stretch;
+}
+
+.settings-modal-header {
+    background: #402312;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    font-size: 21px;
+    font-weight: 400;
+    padding-left: 28px;
+    min-height: 40px;
+}
+
+.settings-modal-body {
+    flex: 4 4 auto;
+    padding: 5px 28px;
+    overflow-y: auto;
+}

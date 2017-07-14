@@ -55,20 +55,17 @@
     background-color: #eeeff0;
     cursor: col-resize;
     font-size: 14px;
-
     .resizer_drag {
         width: 4px;
         height: 20px;
         border-left: 1px solid rgba(0, 0, 0, 0.0980392);
         border-right: 1px solid rgba(0, 0, 0, 0.0980392);
     }
-
     &.horizontal {
         width: 100%;
         height: 10px;
         min-height: 10px;
         cursor: row-resize;
-
         .resizer_drag {
             width: 20px;
             height: 4px;
@@ -78,26 +75,22 @@
             border-left: 0;
         }
     }
-
     &:active,
     &:hover,
     &.resizer_clone {
         background-color: #ccc;
     }
-
     &.resizer_clone {
         position: absolute;
         opacity: .9;
         z-index: 12000;
     }
-
     &.resize-not-allowed {
         cursor: auto;
-
         &:hover {
-            background-color: #eeeff0;;
+            background-color: #eeeff0;
+            ;
         }
-
         .resizer_drag {
             display: none;
         }

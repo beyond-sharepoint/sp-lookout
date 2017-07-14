@@ -175,7 +175,6 @@ export default class Aside extends React.Component<AsideProps, any> {
 }
 
 export interface AsideProps {
-    navItems: INavLinkGroup[];
     settingsStore: SettingsStore;
     pagesStore: PagesStore;
     fiddlesStore: FiddlesStore;
