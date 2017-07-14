@@ -164,7 +164,6 @@ export default class Page extends React.Component<PageProps, {}> {
 
     @action.bound
     private onLayoutChange(layout: any) {
-        console.dir(layout);
         for (let position of layout) {
             const webPart = find(this.props.currentPage.webParts, { id: position.i });
             if (!webPart || webPart.locked) {
