@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { observable, action, extendObservable } from 'mobx';
+import { action } from 'mobx';
 import { observer } from 'mobx-react';
 import { get, set } from 'lodash';
 

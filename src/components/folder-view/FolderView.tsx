@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
-import { action, extendObservable, toJS } from 'mobx';
+import { action } from 'mobx';
 import { observer } from 'mobx-react';
 import { autobind } from 'office-ui-fabric-react/lib';
 import * as URI from 'urijs';
@@ -42,27 +42,13 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
 
     @action.bound
     private onCollapseChange(folder: IFolder, parentFolder: IFolder) {
-        if (typeof folder.collapsed === 'undefined') {
-            extendObservable(folder, {
-                collapsed: true
-            });
-        } else {
-            folder.collapsed = !folder.collapsed;
-        }
-
+        folder.collapsed = !folder.collapsed;
         this.props.onChange(this.props.folder);
     }
 
     @action.bound
     private onLockChanged(folder: IFolder, locked: boolean) {
-        if (typeof folder.locked === 'undefined') {
-            extendObservable(folder, {
-                locked: locked
-            });
-        } else {
-            folder.locked = locked;
-        }
-
+        folder.locked = locked;
         this.props.onChange(this.props.folder);
     }
 
@@ -231,27 +217,13 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
 
     @action.bound
     private onFileLockChanged(file: IFile, locked: boolean) {
-        if (typeof file.locked === 'undefined') {
-            extendObservable(file, {
-                locked: locked
-            });
-        } else {
-            file.locked = locked;
-        }
-
+        file.locked = locked;
         this.props.onChange(this.props.folder);
     }
 
     @action.bound
     private onFileStarChanged(file: IFile, starred: boolean) {
-        if (typeof file.starred === 'undefined') {
-            extendObservable(file, {
-                starred: starred
-            });
-        } else {
-            file.starred = starred;
-        }
-
+        file.starred = starred;
         this.props.onChange(this.props.folder);
     }
 }

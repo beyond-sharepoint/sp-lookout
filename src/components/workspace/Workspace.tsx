@@ -6,7 +6,7 @@ import {
     matchPath
 } from 'react-router-dom';
 import * as URI from 'urijs';
-import { action, extendObservable, toJS } from 'mobx';
+import { action } from 'mobx';
 import { observer } from 'mobx-react';
 import * as localforage from 'localforage';
 import { autobind } from 'office-ui-fabric-react/lib';

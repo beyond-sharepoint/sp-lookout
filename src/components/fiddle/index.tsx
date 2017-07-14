@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { observable, action, extendObservable, toJS } from 'mobx';
+import { action, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import * as Mousetrap from 'mousetrap';
 import * as URI from 'urijs';
@@ -216,30 +216,6 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
         }
     }
 
-    private async debug() {
-        return this.brew(true, 0);
-    }
-
-    @action.bound
-    private updateCode(code: string) {
-        this.props.currentFiddle.code = code;
-        FiddlesStore.saveToLocalStorage(this.props.fiddlesStore);
-    }
-
-    @autobind
-    private showFiddleSettings() {
-        this.setState({
-            showFiddleSettingsModal: true
-        });
-    }
-
-    @autobind
-    private hideFiddleSettings() {
-        this.setState({
-            showFiddleSettingsModal: false
-        });
-    }
-
     public componentDidMount() {
         const thisElement = ReactDOM.findDOMNode(this);
         this._mousetrap = new Mousetrap(
@@ -257,16 +233,16 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
 
     public render() {
         const { fiddlesStore, currentFiddle } = this.props;
+        const { code, theme, editorOptions } = currentFiddle;
 
         const { isBrewing, lastBrewResult, lastBrewResultIsError, showEditor } = this.state;
+
         let fiddleResultPaneStyle: any = {};
         if (lastBrewResultIsError) {
             fiddleResultPaneStyle.backgroundColor = 'rgb(255, 214, 214)';
         }
 
-        const theme = currentFiddle.theme || 'vs';
-
-        const editorOptions = toJS(currentFiddle.editorOptions) as monaco.editor.IEditorOptions;
+        const editorOptionsJS = toJS(editorOptions) as monaco.editor.IEditorOptions;
         //TODO: need to force a editor re-render when locked changes.
         // if (currentFiddle.locked) {
         //     editorOptions.readOnly = true;
@@ -291,14 +267,14 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
                     <div style={{ flex: '1' }}>
                         {showEditor ?
                             <MonacoEditor
-                                value={currentFiddle.code}
-                                theme={currentFiddle.theme}
+                                value={code}
+                                theme={theme}
                                 language="typescript"
                                 filename={currentFiddle.name}
                                 onChange={this.updateCode}
                                 editorWillMount={this.editorWillMount}
                                 editorWillDispose={this.editorWillDispose}
-                                options={editorOptions}
+                                options={editorOptionsJS}
                             />
                             : null
                         }
@@ -321,6 +297,32 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
             </SplitPane>
         );
     }
+
+    @action.bound
+    private async debug() {
+        return this.brew(true, 0);
+    }
+
+    @action.bound
+    private updateCode(code: string) {
+        this.props.currentFiddle.code = code;
+        FiddlesStore.saveToLocalStorage(this.props.fiddlesStore);
+    }
+
+    @autobind
+    private showFiddleSettings() {
+        this.setState({
+            showFiddleSettingsModal: true
+        });
+    }
+
+    @autobind
+    private hideFiddleSettings() {
+        this.setState({
+            showFiddleSettingsModal: false
+        });
+        FiddlesStore.saveToLocalStorage(this.props.fiddlesStore);
+    }
 }
 
 export interface FiddleProps {
@@ -329,7 +331,9 @@ export interface FiddleProps {
     currentFiddle: FiddleSettings;
 }
 
-export const defaultBrewSettings: Partial<BrewSettings> = {
+export const defaultBrewSettings: BrewSettings = {
+    filename: '',
+    input: '',
     brewMode: 'sandfiddle',
     timeout: 5000,
     requireConfig: defaultFiddleSettings.requireConfig

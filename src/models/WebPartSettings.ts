@@ -19,7 +19,12 @@ export enum WebPartType {
     viewer = 'viewer'
 }
 
-export const defaultWebPartSettings: Partial<WebPartSettings> = {
+export const defaultWebPartSettings: WebPartSettings = {
+    id: '',
+    x: 0,
+    y: 0,
+    w: 0,
+    h: 0,
     title: 'New WebPart',
     type: WebPartType.text,
     locked: false,

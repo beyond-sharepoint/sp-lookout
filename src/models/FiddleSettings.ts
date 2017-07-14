@@ -3,16 +3,16 @@
 
 export interface FiddleSettings {
     name: string;
-    description?: string;
-    locked?: boolean;
-    starred?: boolean;
-    code?: string;
-    theme?: string;
-    lastResult?: any;
-    editorOptions?: monaco.editor.IEditorOptions;
-    requireConfig?: RequireConfig;
-    brewMode?: 'require' | 'sandfiddle';
-    brewTimeout?: number;
+    description: string;
+    locked: boolean;
+    starred: boolean;
+    code: string;
+    theme: string;
+    lastResult: any;
+    editorOptions: monaco.editor.IEditorOptions;
+    requireConfig: RequireConfig;
+    brewMode: 'require' | 'sandfiddle';
+    brewTimeout: number;
 }
 
 export const defaultEditorOptions: monaco.editor.IEditorOptions = {
@@ -35,11 +35,13 @@ export const defaultPaths = {
     'Chartjs': 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min'
 };
 
-export const defaultFiddleSettings: Partial<FiddleSettings> = {
+export const defaultFiddleSettings: FiddleSettings = {
+    name: '',
     description: '',
     locked: false,
     starred: false,
     code: 'const foo = "Hello, world!";\nexport default foo;',
+    lastResult: null,
     theme: 'vs',
     editorOptions: defaultEditorOptions,
     requireConfig: {

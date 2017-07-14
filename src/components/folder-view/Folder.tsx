@@ -121,10 +121,15 @@ export class Folder extends React.Component<FolderProps, FolderState> {
             return null;
         }
 
-        const innerDepth = (depth || 0);
+        let isSelected = false;
+        if (selectedPaths instanceof Array) {
+            isSelected = !!find(selectedPaths, path);
+        } else {
+            isSelected = (selectedPaths === path);
+        }
 
         const rootNodeStyle: any = {
-            paddingLeft: innerDepth * 10,
+            paddingLeft: depth * 10,
             backgroundColor: !depth ? '#f4f4f4' : null,
         };
 
@@ -176,13 +181,6 @@ export class Folder extends React.Component<FolderProps, FolderState> {
             rootSubFolderStyles.flex = '1';
         }
 
-        let isSelected = false;
-        if (selectedPaths instanceof Array) {
-            isSelected = !!find(selectedPaths, path);
-        } else {
-            isSelected = (selectedPaths === path);
-        }
-
         if (isSelected) {
             rootNodeStyle.color = 'white';
             rootNodeStyle.backgroundColor = '#0078d7';
@@ -225,7 +223,7 @@ export class Folder extends React.Component<FolderProps, FolderState> {
                                     parentFolder={folder}
                                     path={path ? `${path}${subFolder.name}/` : `${subFolder.name}/`}
                                     folder={subFolder}
-                                    depth={innerDepth+1}
+                                    depth={depth + 1}
                                     onCollapseChange={onCollapseChange}
                                     onLockChanged={onLockChanged}
                                     onMovedToFolder={onMovedToFolder}
@@ -246,7 +244,7 @@ export class Folder extends React.Component<FolderProps, FolderState> {
                                     parentFolder={folder}
                                     path={path ? `${path}${file.name}` : file.name}
                                     file={file}
-                                    depth={innerDepth + 1}
+                                    depth={depth + 1}
                                     onClick={onFileSelected}
                                     onLockChanged={onFileLockChanged}
                                     onStarChanged={onFileStarChanged}
