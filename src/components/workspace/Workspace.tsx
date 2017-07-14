@@ -141,7 +141,7 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
                 path: '/',
                 exact: true,
                 main: () => {
-                    const currentPage = this.props.pagesStore.getPageSettings("dashboard");
+                    const currentPage = this.props.pagesStore.getPageSettings('dashboard');
                     if (!currentPage) {
                         return <span>Dashboard not found...</span>;
                     }
@@ -164,7 +164,7 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
                                 pagesStore={this.props.pagesStore}
                                 currentPage={currentPage}
                             />
-                        )
+                        );
                     }
 
                     return null;
@@ -283,12 +283,7 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
             </div>
         );
     }
-
-    @autobind
-    private async _onClickHandler2(e: React.MouseEvent<HTMLElement>) {
-        return false;
-    }
-
+    
     @action.bound
     private onPageSelected(ev, nav) {
         this.setState({

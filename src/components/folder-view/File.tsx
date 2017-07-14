@@ -45,12 +45,12 @@ export class File extends React.Component<FileProps, FileState> {
         const fileStarStyle: React.CSSProperties = {
             paddingLeft: '10px',
             color: '#f4f4f4'
-        }
+        };
 
         const fileLockStyle: React.CSSProperties = {
             paddingLeft: '5px',
             color: '#f4f4f4'
-        }
+        };
 
         let isSelected = false;
         if (selectedPaths instanceof Array) {
@@ -75,13 +75,13 @@ export class File extends React.Component<FileProps, FileState> {
                 {file.name}
                 {isSelected ?
                     <span className="file-star" style={fileStarStyle} onClick={this.onStarChanged}>
-                        <i className={'fa ' + (file.starred ? 'fa-star' : 'fa-star-o')} aria-hidden="true"></i>
+                        <i className={'fa ' + (file.starred ? 'fa-star' : 'fa-star-o')} aria-hidden="true" />
                     </span>
                     : null
                 }
                 {isSelected ?
                     <span className="file-lock" style={fileLockStyle} onClick={this.onLockChanged}>
-                        <i className={'fa ' + (file.locked ? 'fa-lock' : 'fa-unlock')} aria-hidden="true"></i>
+                        <i className={'fa ' + (file.locked ? 'fa-lock' : 'fa-unlock')} aria-hidden="true" />
                     </span>
                     : null
                 }

@@ -33,7 +33,7 @@ export class FiddlesStore {
         return fileMap[path];
     }
 
-    public getPathForFiddleSettings(settings): string | undefined {
+    public getPathForFiddleSettings(settings: FiddleSettings): string | undefined {
         const fileMap = FiddlesStore.getFileMap(this._fiddleRootFolder);
         return findKey(fileMap, settings);
     }
@@ -65,7 +65,7 @@ export class FiddlesStore {
             result = {
                 ...this.getFolderMap(f, currentPath),
                 ...result
-            }
+            };
         }
         return result;
     }

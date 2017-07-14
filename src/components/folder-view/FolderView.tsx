@@ -78,7 +78,7 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
             result = {
                 ...this.getFolderMap(f, currentPath),
                 ...result
-            }
+            };
         }
         return result;
     }

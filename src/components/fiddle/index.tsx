@@ -62,7 +62,6 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
             }
         ];
 
-
         this.state = {
             fiddlePaneSize: '50%',
             showFiddleSettingsModal: false,

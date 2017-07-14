@@ -4,17 +4,17 @@ import { observer } from 'mobx-react';
 import { autobind } from 'office-ui-fabric-react/lib';
 
 import { Line } from 'react-chartjs-2';
-import { WebPartBase } from './WebPartBase'
+import { WebPartBase } from './WebPartBase';
 import { Util } from '../../models';
 
 @observer
 export class ChartWebPart extends WebPartBase {
     private _data: any;
-    constructor(props) {
+    constructor(props: any) {
         super(props);
 
         this._data = {
-            labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
             datasets: [{
                 label: '# of Votes',
                 data: [12, 19, 3, 5, 2, 3],
@@ -36,9 +36,10 @@ export class ChartWebPart extends WebPartBase {
                 ],
                 borderWidth: 1
             }]
-        }
+        };
     }
-    renderWebPartContent(props) {
+    
+    renderWebPartContent(props: any) {
         return (
             <Line
                 data={this._data}
@@ -46,6 +47,6 @@ export class ChartWebPart extends WebPartBase {
                     maintainAspectRatio: false
                 }}
             />
-        )
+        );
     }
 }

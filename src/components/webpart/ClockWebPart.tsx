@@ -3,7 +3,7 @@ import { action, observable, isObservable, extendObservable, toJS } from 'mobx';
 import { autobind } from 'office-ui-fabric-react/lib';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import * as moment from 'moment';
-import { WebPartBase, WebPartState } from './WebPartBase'
+import { WebPartBase, WebPartState } from './WebPartBase';
 
 export class ClockWebPart extends WebPartBase {
     private _timer;
@@ -27,24 +27,23 @@ export class ClockWebPart extends WebPartBase {
     public getWebPartContainerStyle(): React.CSSProperties | undefined {
         return {
             alignItems: 'center'
-        }
+        };
     }
 
-    public renderWebPartContent(props) {
+    public renderWebPartContent(props: any) {
         return (
             <div style={{ alignItems: 'center' }}>{this.state.time}</div>
-        )
+        );
     }
 
     public renderWebPartSettings() {
         return (
             <div>
                 {super.renderWebPartSettings()}
-                <TextField label='Date Format' value={this.props.settings.props.format} onChanged={this.onFormatChanged} />
+                <TextField label="Date Format" value={this.props.settings.props.format} onChanged={this.onFormatChanged} />
             </div>
-        )
+        );
     }
-
 
     @autobind
     private tick() {
@@ -54,7 +53,7 @@ export class ClockWebPart extends WebPartBase {
     }
 
     @action.bound
-    private onFormatChanged(newFormat) {
+    private onFormatChanged(newFormat: string) {
         if (!isObservable(this.props.settings.props.format)) {
             extendObservable(this.props.settings.props, {
                 format: newFormat

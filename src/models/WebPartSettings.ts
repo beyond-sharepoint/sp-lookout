@@ -29,4 +29,4 @@ export const defaultWebPartSettings: WebPartSettings = {
     type: WebPartType.text,
     locked: false,
     props: {}
-}
+};

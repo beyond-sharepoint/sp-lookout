@@ -35,8 +35,8 @@ export default class Aside extends React.Component<AsideProps, any> {
                 key: page.id,
                 name: page.name,
                 icon: page.iconClassName,
-                url: "#/pages/" + page.id,
-                onClick: () => { }
+                url: '#/pages/' + page.id,
+                onClick: () => { /*Without a click handler, the icon isn't rendered. nice, guys. */ }
             });
         }
         const navGroups: Array<INavLinkGroup> = [
@@ -82,7 +82,7 @@ export default class Aside extends React.Component<AsideProps, any> {
                             return (
                                 <div key={index} style={{ cursor: 'pointer', whiteSpace: 'nowrap' }} onClick={() => onFiddleSelected(fiddleSettings, this.props.fiddlesStore.getPathForFiddleSettings(fiddleSettings) || '')}>
                                     <span style={{ color: 'orange', paddingLeft: '5px', paddingRight: '5px' }}>
-                                        <i className="fa fa-star" aria-hidden="true"></i>
+                                        <i className="fa fa-star" aria-hidden="true" />
                                     </span>{fiddleSettings.name}
                                 </div>
                             );
@@ -165,7 +165,7 @@ export default class Aside extends React.Component<AsideProps, any> {
     @autobind
     private onDeleteFolder(parentFolder: IFolder, targetFolder: IFolder) {
         const targetIndex = parentFolder.folders.indexOf(targetFolder);
-        if(targetIndex < 0) {
+        if (targetIndex < 0) {
             return;
         }
 

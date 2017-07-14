@@ -3,13 +3,13 @@ import { action, observable, isObservable, extendObservable, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import { autobind } from 'office-ui-fabric-react/lib';
 
-import { WebPartBase } from './WebPartBase'
+import { WebPartBase } from './WebPartBase';
 import { Util } from '../../models';
 
 @observer
 export class NoteWebPart extends WebPartBase {
 
-    renderWebPartContent(props) {
+    renderWebPartContent(props: any) {
         return (
             <textarea 
                 value={props.text}
@@ -21,7 +21,7 @@ export class NoteWebPart extends WebPartBase {
                     outline: 'none'
                 }}
             />
-        )
+        );
     }
 
     @action.bound

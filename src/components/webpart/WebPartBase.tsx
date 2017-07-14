@@ -29,7 +29,7 @@ export class WebPartBase extends React.Component<WebPartProps, any> {
 
         this.state = {
             showPanel: false
-        }
+        };
     }
 
     public render() {
@@ -46,17 +46,17 @@ export class WebPartBase extends React.Component<WebPartProps, any> {
                     {!locked ?
                         <span className="webpart-title-actions">
                             <span className="action" onClick={this.onToggleLock} title="Lock/Unlock WebPart">
-                                <i className={`ms-Icon ms-Icon--${settings.locked ? 'Lock' : 'Unlock'}`} aria-hidden="true"></i>
+                                <i className={`ms-Icon ms-Icon--${settings.locked ? 'Lock' : 'Unlock'}`} aria-hidden="true" />
                             </span>
                             {!settings.locked ?
                                 <span className="action" onClick={this.showWebPartSettings} title="Show WebPart Settings">
-                                    <i className="ms-Icon ms-Icon--Settings" aria-hidden="true"></i>
+                                    <i className="ms-Icon ms-Icon--Settings" aria-hidden="true" />
                                 </span>
                                 : null
                             }
                             {!settings.locked ?
                                 <span className="action" onClick={this.onDeleteWebPart} title="Delete WebPart">
-                                    <i className="ms-Icon ms-Icon--ChromeClose" aria-hidden="true"></i>
+                                    <i className="ms-Icon ms-Icon--ChromeClose" aria-hidden="true" />
                                 </span>
                                 : null
                             }
@@ -72,7 +72,7 @@ export class WebPartBase extends React.Component<WebPartProps, any> {
                     type={PanelType.smallFixedFar}
                     onDismiss={this.hideWebPartSettings}
                     onRenderFooterContent={this.renderWebPartSettingsFooter}
-                    headerText='WebPart Settings'
+                    headerText="WebPart Settings"
                 >
                     {typeof this.renderWebPartSettings === 'function' ? this.renderWebPartSettings() : null}
                 </Panel>
@@ -84,21 +84,21 @@ export class WebPartBase extends React.Component<WebPartProps, any> {
     public renderWebPartContent(webPartProps: any): JSX.Element {
         return (
             <span>{webPartProps.text}</span>
-        )
+        );
     }
 
     public renderWebPartSettings() {
         return (
             <div>
-                <TextField label='WebPart Title' value={this.props.settings.title} onChanged={this.onWebPartTitleChanged} />
+                <TextField label="WebPart Title" value={this.props.settings.title} onChanged={this.onWebPartTitleChanged} />
                 <Dropdown
-                    label='WebPart Type'
+                    label="WebPart Type"
                     selectedKey={WebPartType[this.props.settings.type]}
                     onChanged={this.onWebPartTypeChanged}
                     options={webPartOptions}
                 />
             </div>
-        )
+        );
     }
 
     @autobind
@@ -107,7 +107,8 @@ export class WebPartBase extends React.Component<WebPartProps, any> {
             <div>
                 <PrimaryButton
                     onClick={this.hideWebPartSettings}
-                    style={{ 'marginRight': '8px' }} >
+                    style={{ 'marginRight': '8px' }}
+                >
                     Save
                 </PrimaryButton>
                 <DefaultButton
@@ -172,12 +173,12 @@ export class WebPartBase extends React.Component<WebPartProps, any> {
 }
 
 export interface WebPartState {
-    showPanel: boolean
+    showPanel: boolean;
 }
 
 export interface WebPartProps {
-    locked: boolean
-    settings: WebPartSettings,
+    locked: boolean;
+    settings: WebPartSettings;
     onWebPartSettingsChanged?: () => void;
     onDeleteWebPart?: () => void;
 }

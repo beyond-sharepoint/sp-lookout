@@ -102,7 +102,7 @@ export default class Page extends React.Component<PageProps, {}> {
             settings: webPartSettings,
             onWebPartSettingsChanged: () => { this.onWebPartSettingsChanged(webPartSettings); },
             onDeleteWebPart: () => { this.onDeleteWebPart(webPartSettings.id); }
-        }
+        };
 
         let WebPart = WebPartMapping[webPartSettings.type];
         if (!WebPart) {

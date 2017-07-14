@@ -134,7 +134,7 @@ export class Folder extends React.Component<FolderProps, FolderState> {
         };
 
         if (!parentFolder) {
-            rootNodeStyle.cursor = 'pointer'
+            rootNodeStyle.cursor = 'pointer';
             rootNodeStyle.paddingLeft = '3px';
             rootNodeStyle.display = 'flex';
             rootNodeStyle.overflow = 'hidden';
@@ -151,13 +151,13 @@ export class Folder extends React.Component<FolderProps, FolderState> {
         } else {
             nodeStyle.display = 'flex';
             nodeStyle.flexDirection = 'column';
-            nodeStyle.height = "100%";
+            nodeStyle.height = '100%';
         }
 
         const folderLockStyle: React.CSSProperties = {
             paddingLeft: '5px',
             color: '#f4f4f4'
-        }
+        };
 
         if (!parentFolder) {
             folderLockStyle.color = '#0078d7';
@@ -195,7 +195,7 @@ export class Folder extends React.Component<FolderProps, FolderState> {
                     {folder.iconClassName ? (<span className={folder.iconClassName} style={{ paddingRight: '3px' }} />) : null}
                     <span>{folder.name}</span>
                     <span className="file-lock" style={folderLockStyle} onClick={this.onLockChanged}>
-                        <i className={'fa ' + (folder.locked ? 'fa-lock' : 'fa-unlock')} aria-hidden="true"></i>
+                        <i className={'fa ' + (folder.locked ? 'fa-lock' : 'fa-unlock')} aria-hidden="true" />
                     </span>
                     {!parentFolder
                         ? (

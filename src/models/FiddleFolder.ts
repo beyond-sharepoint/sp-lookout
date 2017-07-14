@@ -18,7 +18,7 @@ export const defaultFiddleFolder: FiddleFolder = {
     iconClassName: '',
     files: [],
     folders: []
-}
+};
 
 export const defaultFiddleRootFolder: FiddleFolder = {
     ...defaultFiddleFolder,
