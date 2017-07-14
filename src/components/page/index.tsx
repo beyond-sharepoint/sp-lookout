@@ -13,6 +13,17 @@ import './index.css';
 
 const Layout = ReactGridLayout.WidthProvider(ReactGridLayout);
 
+/**
+ * Defines the mapping between WebPartType and the WebPart instance.
+ * Note that the keys are unable to be enum values until TS 2.5+
+ */
+const WebPartMapping = {
+    'chart': WebParts.ChartWebPart,
+    'clock': WebParts.ClockWebPart,
+    'note': WebParts.NoteWebPart,
+    'text': WebParts.WebPartBase
+};
+
 @observer
 export default class Page extends React.Component<PageProps, {}> {
     public render() {
@@ -86,39 +97,23 @@ export default class Page extends React.Component<PageProps, {}> {
     private renderWebPart(webPartSettings: WebPartSettings) {
         const { currentPage } = this.props;
 
-        let commonWebPartProps = {
+        const webPartProps = {
             locked: currentPage.locked,
             settings: webPartSettings,
             onWebPartSettingsChanged: () => { this.onWebPartSettingsChanged(webPartSettings); },
             onDeleteWebPart: () => { this.onDeleteWebPart(webPartSettings.id); }
         }
-        switch (webPartSettings.type) {
-            case WebPartType.chart:
-                return (
-                    <WebParts.ChartWebPart
-                        {...commonWebPartProps}
-                    />
-                );
-            case WebPartType.clock:
-                return (
-                    <WebParts.ClockWebPart
-                        {...commonWebPartProps}
-                    />
-                );
-            case WebPartType.note:
-                return (
-                    <WebParts.NoteWebPart
-                        {...commonWebPartProps}
-                    />
-                );
-            case WebPartType.text:
-            default:
-                return (
-                    <WebParts.WebPartBase
-                        {...commonWebPartProps}
-                    />
-                );
+
+        let WebPart = WebPartMapping[webPartSettings.type];
+        if (!WebPart) {
+            throw Error(`A WebPart did not correspond to the specified type: ${webPartSettings.type}. Please check the web part mapping.`);
         }
+
+        return (
+            <WebPart
+                {...webPartProps}
+            />
+        );
     }
 
     @action.bound
