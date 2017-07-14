@@ -35,7 +35,7 @@ export class WorkspaceSettingsModal extends React.Component<WorkspaceSettingsPro
                     <Pivot>
                         <PivotItem linkText="Proxy Options">
                             <TextField
-                                addonString='https://'
+                                addonString="https://"
                                 label="Tenant url"
                                 value={settingsStore.hostWebProxySettings.tenantBaseUrl}
                                 onChanged={this.updateTenantUrl}

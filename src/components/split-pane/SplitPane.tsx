@@ -35,9 +35,11 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
         this.resizerElement = ReactDOM.findDOMNode(this.resizer);
         document.addEventListener('mouseup', this.handleMouseUp);
         document.addEventListener('touchend', this.handleMouseUp);
+        window.addEventListener('resize', this.handleWindowResize);
     }
 
     public componentWillUnmount() {
+        window.removeEventListener('resize', this.handleWindowResize);
         document.removeEventListener('mouseup', this.handleMouseUp);
         document.removeEventListener('touchend', this.handleMouseUp);
     }
@@ -188,6 +190,18 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
     }
 
     @autobind
+    private handleWindowResize(ev: UIEvent) {
+        if (typeof this.props.onWindowResize === 'function') {
+            this.props.onWindowResize(ev, this);
+        }
+        
+        const calculatedMaxSize = this.calculateMaxSize();
+        this.setState({
+            calculatedMaxSize: calculatedMaxSize
+        });
+    }
+
+    @autobind
     private handleMouseDown(e: any) {
         const { allowResize, onDragStarted, split } = this.props;
         if (e.button === 2 || allowResize === false) {
@@ -304,6 +318,7 @@ export interface SplitPaneProps {
     onDragStarted?: Function;
     onDragFinished?: Function;
     onResizerDoubleClick?: (paneStyle: React.CSSProperties, e: React.MouseEvent<HTMLDivElement>, splitPane: SplitPane) => void;
+    onWindowResize?: (ev: UIEvent, splitPane: SplitPane) => void;
     children: React.ReactNode[];
 }
 

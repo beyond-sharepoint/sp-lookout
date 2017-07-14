@@ -256,6 +256,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
                 secondaryPaneStyle={{ overflow: 'auto' }}
                 onPaneResized={(size) => { this.setState({ fiddlePaneSize: size }); }}
                 onResizerDoubleClick={() => { this.setState({ fiddlePaneSize: '50%' }); }}
+                onWindowResize={() => { this.setState({ fiddlePaneSize: '50%' }); }}
             >
                 <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                     <CommandBar

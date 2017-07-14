@@ -243,6 +243,9 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
                                     this.setState({ sidebarSize: 215 });
                                 }
                             }}
+                            onWindowResize={(ev) => {
+                                this.setState({ sidebarSize: 215});
+                            }}
                         >
                             <Aside
                                 settingsStore={settingsStore}
