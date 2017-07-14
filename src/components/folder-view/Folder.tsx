@@ -129,17 +129,18 @@ export class Folder extends React.Component<FolderProps, FolderState> {
         };
 
         if (!parentFolder) {
+            rootNodeStyle.cursor = 'pointer'
             rootNodeStyle.paddingLeft = '3px';
             rootNodeStyle.display = 'flex';
             rootNodeStyle.overflow = 'hidden';
         }
 
         const nodeStyle: any = {
-            cursor: 'pointer',
             userSelect: 'none',
         };
 
         if (parentFolder) {
+            nodeStyle.cursor = 'pointer';
             nodeStyle.display = 'flex';
             nodeStyle.flexDirection = 'column';
         } else {
@@ -215,7 +216,7 @@ export class Folder extends React.Component<FolderProps, FolderState> {
                         : null
                     }
                 </div>
-                <div style={rootSubFolderStyles}>
+                <div style={rootSubFolderStyles} onClick={this.clearSelection}>
                     {
                         !folder.collapsed && folder.folders
                             ? sortBy(folder.folders, f => f.name).map((subFolder, index) => (
@@ -261,6 +262,7 @@ export class Folder extends React.Component<FolderProps, FolderState> {
 
     @autobind
     private onFolderSelected(ev: React.MouseEvent<HTMLDivElement>, currentPath: string) {
+        ev.stopPropagation();
         const { folder, parentFolder, onCollapseChange, onFolderSelected } = this.props;
         if (typeof onCollapseChange === 'function') {
             const wasCollapsedUndefined = typeof folder.collapsed === 'undefined';
@@ -272,6 +274,14 @@ export class Folder extends React.Component<FolderProps, FolderState> {
 
         if (typeof onFolderSelected === 'function') {
             onFolderSelected(folder, currentPath);
+        }
+    }
+
+    @autobind
+    private clearSelection(ev: React.MouseEvent<HTMLDivElement>) {
+        const { folder, parentFolder, onCollapseChange, onFolderSelected } = this.props;
+        if (typeof onFolderSelected === 'function') {
+            onFolderSelected(folder, null);
         }
     }
 
@@ -331,7 +341,7 @@ export interface FolderProps {
     onDelete?: () => void;
     onLockChanged?: (folder: IFolder, locked: boolean) => void;
     onFileSelected?: (file: IFile, filePath: string) => void;
-    onFolderSelected?: (folder: IFolder, folderPath: string) => void;
+    onFolderSelected?: (folder: IFolder, folderPath: string | null) => void;
     onFileLockChanged?: (file: IFile, locked: boolean) => void;
     onFileStarChanged?: (file: IFile, starred: boolean) => void;
     selectedPaths?: string | string[];

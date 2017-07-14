@@ -91,6 +91,7 @@ export class File extends React.Component<FileProps, FileState> {
 
     @autobind
     private onClick(ev: React.MouseEvent<HTMLDivElement>, currentPath: string) {
+        ev.stopPropagation();
         const { file, onClick } = this.props;
         if (typeof onClick === 'function') {
             onClick(file, currentPath);
