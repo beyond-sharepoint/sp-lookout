@@ -5,7 +5,7 @@ import { observer } from 'mobx-react';
 import { Menu, MainButton, ChildButton } from 'react-mfb';
 import { find } from 'lodash';
 
-import { WebPartBase } from '../webpart';
+import * as WebParts from '../webpart';
 
 import { PagesStore, PageSettings, WebPartSettings, WebPartType, defaultWebPartSettings, Util } from '../../models';
 
@@ -26,6 +26,8 @@ export default class Page extends React.Component<PageProps, {}> {
                 w: webPart.w,
                 h: webPart.h,
                 i: webPart.id,
+                isDraggable: !webPart.locked,
+                isResizable: !webPart.locked,
                 settings: webPart
             });
         }
@@ -46,14 +48,7 @@ export default class Page extends React.Component<PageProps, {}> {
                     {layout.map((webPart, ix) => {
                         return (
                             <div key={webPart.i}>
-                                <WebPartBase
-                                    locked={currentPage.locked}
-                                    settings={webPart.settings}
-                                    onWebPartSettingsChanged={() => { this.onWebPartSettingsChanged(webPart.settings); }}
-                                    onDeleteWebPart={() => { this.onDeleteWebPart(webPart.settings.id); }}
-                                >
-                                    <span className="text">{webPart.text}</span>
-                                </WebPartBase>
+                                {this.renderWebPart(webPart.settings)}
                             </div>
                         );
                     })}
@@ -87,6 +82,38 @@ export default class Page extends React.Component<PageProps, {}> {
         );
     }
 
+    private renderWebPart(webPartSettings: WebPartSettings) {
+        const { currentPage } = this.props;
+
+        let commonWebPartProps = {
+            locked: currentPage.locked,
+            settings: webPartSettings,
+            onWebPartSettingsChanged: () => { this.onWebPartSettingsChanged(webPartSettings); },
+            onDeleteWebPart: () => { this.onDeleteWebPart(webPartSettings.id); }
+        }
+        switch (webPartSettings.type) {
+            case WebPartType.clock:
+                return (
+                    <WebParts.ClockWebPart
+                        {...commonWebPartProps}
+                    />
+                );
+            case WebPartType.note:
+                return (
+                    <WebParts.NoteWebPart
+                        {...commonWebPartProps}
+                    />
+                );
+            case WebPartType.text:
+            default:
+                return (
+                    <WebParts.WebPartBase
+                        {...commonWebPartProps}
+                    />
+                );
+        }
+    }
+
     @action.bound
     private startAddWebPart() {
         const { currentPage } = this.props;
@@ -98,14 +125,16 @@ export default class Page extends React.Component<PageProps, {}> {
             w: 2,
             h: 2,
             type: WebPartType.text,
-            title: 'New WebPart'
+            title: 'New WebPart',
+            locked: false,
+            props: {}
         }));
     }
 
     @action.bound
     private onDeleteWebPart(webPartId: string) {
         const { currentPage } = this.props;
-        let webPart = find(currentPage.webParts, { id: webPartId});
+        let webPart = find(currentPage.webParts, { id: webPartId });
         if (!webPart) {
             return;
         }
@@ -128,9 +157,10 @@ export default class Page extends React.Component<PageProps, {}> {
 
     @action.bound
     private onLayoutChange(layout: any) {
+        console.dir(layout);
         for (let position of layout) {
             const webPart = find(this.props.currentPage.webParts, { id: position.i });
-            if (!webPart) {
+            if (!webPart || webPart.locked) {
                 continue;
             }
 

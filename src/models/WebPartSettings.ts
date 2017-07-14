@@ -6,18 +6,22 @@ export interface WebPartSettings {
     h: number;
     type: WebPartType;
     title: string;
-    [others: string]: any;
+    locked: boolean;
+    props: any;
+    //[others: string]: any;
 }
 
 export enum WebPartType {
     chart = 'chart',
+    clock = 'clock',
     note = 'note',
     text = 'text',
-    time = 'time',
     viewer = 'viewer'
 }
 
 export const defaultWebPartSettings: Partial<WebPartSettings> = {
     title: 'New WebPart',
-    type: WebPartType.viewer
+    type: WebPartType.text,
+    locked: false,
+    props: {}
 }
