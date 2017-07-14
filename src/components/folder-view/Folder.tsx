@@ -263,11 +263,7 @@ export class Folder extends React.Component<FolderProps, FolderState> {
         ev.stopPropagation();
         const { folder, parentFolder, onCollapseChange, onFolderSelected } = this.props;
         if (typeof onCollapseChange === 'function') {
-            const wasCollapsedUndefined = typeof folder.collapsed === 'undefined';
             onCollapseChange(folder, parentFolder);
-            if (wasCollapsedUndefined) {
-                this.forceUpdate();
-            }
         }
 
         if (typeof onFolderSelected === 'function') {
@@ -288,11 +284,7 @@ export class Folder extends React.Component<FolderProps, FolderState> {
         ev.stopPropagation();
         const { folder, onLockChanged } = this.props;
         if (typeof onLockChanged === 'function') {
-            const wasLockedUndefined = typeof folder.locked === 'undefined';
             onLockChanged(folder, !!!folder.locked);
-            if (wasLockedUndefined) {
-                this.forceUpdate();
-            }
         }
     }
 

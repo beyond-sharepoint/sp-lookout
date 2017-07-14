@@ -103,11 +103,7 @@ export class File extends React.Component<FileProps, FileState> {
         ev.stopPropagation();
         const { file, onStarChanged } = this.props;
         if (typeof onStarChanged === 'function') {
-            const wasStarUndefined = typeof file.starred === 'undefined';
             onStarChanged(file, !!!file.starred);
-            if (wasStarUndefined) {
-                this.forceUpdate();
-            }
         }
     }
 
@@ -116,11 +112,7 @@ export class File extends React.Component<FileProps, FileState> {
         ev.stopPropagation();
         const { file, onLockChanged } = this.props;
         if (typeof onLockChanged === 'function') {
-            const wasLockedUndefined = typeof file.locked === 'undefined';
             onLockChanged(file, !!!file.locked);
-            if (wasLockedUndefined) {
-                this.forceUpdate();
-            }
         }
     }
 }
