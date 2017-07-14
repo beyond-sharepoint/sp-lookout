@@ -126,11 +126,11 @@ export class Folder extends React.Component<FolderProps, FolderState> {
         const rootNodeStyle: any = {
             paddingLeft: innerDepth * 10,
             backgroundColor: !depth ? '#f4f4f4' : null,
-            flex: '1'
         };
 
         if (!parentFolder) {
             rootNodeStyle.display = 'flex';
+            rootNodeStyle.overflow = 'hidden';
         }
 
         const nodeStyle: any = {
@@ -142,7 +142,9 @@ export class Folder extends React.Component<FolderProps, FolderState> {
             nodeStyle.display = 'flex';
             nodeStyle.flexDirection = 'column';
         } else {
-            nodeStyle.flex = '1';
+            nodeStyle.display = 'flex';
+            nodeStyle.flexDirection = 'column';
+            nodeStyle.height = "100%";
         }
 
         const folderLockStyle: React.CSSProperties = {
@@ -169,6 +171,7 @@ export class Folder extends React.Component<FolderProps, FolderState> {
         const rootSubFolderStyles: any = {};
         if (!parentFolder) {
             rootSubFolderStyles.overflow = 'auto';
+            rootSubFolderStyles.flex = '1';
         }
 
         let isSelected = false;

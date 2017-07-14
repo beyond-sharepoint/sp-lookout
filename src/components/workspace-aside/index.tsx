@@ -46,7 +46,6 @@ export default class Aside extends React.Component<AsideProps, any> {
         ];
 
         const starredDivStyle: React.CSSProperties = {
-            display: 'none'
         };
 
         if (fiddlesStore.starred.length > 0) {
@@ -59,7 +58,6 @@ export default class Aside extends React.Component<AsideProps, any> {
                 split="horizontal"
                 primaryPaneSize={settingsStore.visualSettings.asidePrimaryPaneHeight}
                 primaryPaneMinSize={250}
-                secondaryPaneStyle={{ overflow: 'auto' }}
                 onPaneResized={this.onPaneResized}
                 onResizerDoubleClick={(paneStyle, e, splitPane) => {
                     if (paneStyle.height === '60%') {
@@ -77,7 +75,7 @@ export default class Aside extends React.Component<AsideProps, any> {
                     selectedKey={selectedPageId}
                 //onRenderLink={this.renderNavLink} 
                 />
-                <div>
+                <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                     <div style={starredDivStyle}>
                         {fiddlesStore.starred.map((fiddleSettings, index) => {
                             return (
