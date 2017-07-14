@@ -16,7 +16,9 @@ export class NoteWebPart extends WebPartBase {
                 onChange={this.onNoteChanged}
                 style={{
                     flex: '1',
-                    resize: 'none'
+                    resize: 'none',
+                    border: 'none',
+                    outline: 'none'
                 }}
             />
         )

@@ -92,6 +92,12 @@ export default class Page extends React.Component<PageProps, {}> {
             onDeleteWebPart: () => { this.onDeleteWebPart(webPartSettings.id); }
         }
         switch (webPartSettings.type) {
+            case WebPartType.chart:
+                return (
+                    <WebParts.ChartWebPart
+                        {...commonWebPartProps}
+                    />
+                );
             case WebPartType.clock:
                 return (
                     <WebParts.ClockWebPart

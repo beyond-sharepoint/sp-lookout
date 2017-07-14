@@ -7,7 +7,7 @@ import { WebPartBase } from './WebPartBase'
 import { Util } from '../../models';
 
 @observer
-export class BaristaWebPart extends WebPartBase<any> {
+export class BaristaWebPart extends WebPartBase {
 
     renderWebPartContent(props) {
         return (

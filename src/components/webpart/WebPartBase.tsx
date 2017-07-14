@@ -12,6 +12,13 @@ import { WebPartSettings, WebPartType } from '../../models';
 
 import './index.css';
 
+const webPartOptions = [
+    { key: 'chart', text: 'Chart' },
+    { key: 'clock', text: 'Clock' },
+    { key: 'note', text: 'Note' },
+    { key: 'text', text: 'Text' },
+];
+
 /**
  * Represents a component that renders a dynamic component on a Page
  */
@@ -41,12 +48,18 @@ export class WebPartBase extends React.Component<WebPartProps, any> {
                             <span className="action" onClick={this.onToggleLock} title="Lock/Unlock WebPart">
                                 <i className={`ms-Icon ms-Icon--${settings.locked ? 'Lock' : 'Unlock'}`} aria-hidden="true"></i>
                             </span>
-                            <span className="action" onClick={this.showWebPartSettings} title="Show WebPart Settings">
-                                <i className="ms-Icon ms-Icon--Settings" aria-hidden="true"></i>
-                            </span>
-                            <span className="action" onClick={this.onDeleteWebPart} title="Delete WebPart">
-                                <i className="ms-Icon ms-Icon--ChromeClose" aria-hidden="true"></i>
-                            </span>
+                            {!settings.locked ?
+                                <span className="action" onClick={this.showWebPartSettings} title="Show WebPart Settings">
+                                    <i className="ms-Icon ms-Icon--Settings" aria-hidden="true"></i>
+                                </span>
+                                : null
+                            }
+                            {!settings.locked ?
+                                <span className="action" onClick={this.onDeleteWebPart} title="Delete WebPart">
+                                    <i className="ms-Icon ms-Icon--ChromeClose" aria-hidden="true"></i>
+                                </span>
+                                : null
+                            }
                         </span>
                         : null
                     }
@@ -82,13 +95,7 @@ export class WebPartBase extends React.Component<WebPartProps, any> {
                     label='WebPart Type'
                     selectedKey={WebPartType[this.props.settings.type]}
                     onChanged={this.onWebPartTypeChanged}
-                    options={
-                        [
-                            { key: 'clock', text: 'Clock' },
-                            { key: 'note', text: 'Note' },
-                            { key: 'text', text: 'Text' }
-                        ]
-                    }
+                    options={webPartOptions}
                 />
             </div>
         )
