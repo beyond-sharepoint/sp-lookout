@@ -16,7 +16,7 @@ import './index.css';
  * Represents a component that renders a dynamic component on a Page
  */
 @observer
-export class WebPartBase extends React.Component<WebPartProps, WebPartState & any> {
+export class WebPartBase extends React.Component<WebPartProps, any> {
     public constructor(props: any) {
         super(props);
 
@@ -27,6 +27,8 @@ export class WebPartBase extends React.Component<WebPartProps, WebPartState & an
 
     public render() {
         const { locked, settings, children } = this.props;
+
+        const containerStyle = this.getWebPartContainerStyle();
 
         return (
             <div className="webpart-main">
@@ -49,7 +51,7 @@ export class WebPartBase extends React.Component<WebPartProps, WebPartState & an
                         : null
                     }
                 </div>
-                <div className="webpart-container">
+                <div className="webpart-container" style={containerStyle}>
                     {typeof this.renderWebPartContent === 'function' ? this.renderWebPartContent(settings.props || {}) : null}
                 </div>
                 <Panel
@@ -108,6 +110,11 @@ export class WebPartBase extends React.Component<WebPartProps, WebPartState & an
                 </DefaultButton>
             </div>
         );
+    }
+
+    @autobind
+    public getWebPartContainerStyle(): React.CSSProperties | undefined {
+        return undefined;
     }
 
     @autobind
