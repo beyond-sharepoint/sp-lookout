@@ -39,7 +39,8 @@ export class File extends React.Component<FileProps, FileState> {
         const { parentFolder, path, file, isDragging, depth, selectedPaths } = this.props;
         const { connectDragSource } = this.props as any;
         const style: React.CSSProperties = {
-            paddingLeft: depth * 10
+            paddingLeft: depth * 10,
+            width: '100%'
         };
 
         const fileStarStyle: React.CSSProperties = {

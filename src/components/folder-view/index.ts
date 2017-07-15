@@ -1,5 +1,6 @@
 export interface IFolder {
     name: string;
+    description: string;
     collapsed?: boolean;
     locked?: boolean;
     starred?: boolean;

@@ -38,6 +38,10 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
         window.addEventListener('resize', this.handleWindowResize);
     }
 
+    public componentWillReceiveProps(nextProps) {
+        console.dir(nextProps);
+    }
+
     public componentWillUnmount() {
         window.removeEventListener('resize', this.handleWindowResize);
         document.removeEventListener('mouseup', this.handleMouseUp);
@@ -47,56 +51,50 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
     public render() {
         const {
             allowResize, children, split,
-            primaryPaneSize, primaryPaneMinSize, primaryPaneMaxSize,
             className, primaryPaneClassName, secondaryPaneClassName,
+            primaryPaneMaxSize, primaryPaneMinSize,
             primaryPaneStyle, secondaryPaneStyle,
             onResizerDoubleClick
         } = this.props;
 
+        let { primaryPaneSize } = this.props;
+
         let paneStyle, paneStyle2;
         switch (split) {
             case 'vertical': {
+
+                if (this.paneWrapper && typeof primaryPaneSize === 'string' && primaryPaneSize.endsWith('%')) {
+                    const clientRect = this.paneWrapper.getBoundingClientRect();
+                    const resizerRect = this.resizerElement.getBoundingClientRect();
+                    const pct = parseInt(primaryPaneSize.replace('%', ''), 10) / 100;
+                    primaryPaneSize = (clientRect.width - resizerRect.width) * pct;
+                }
+
                 paneStyle = {
-                    width: primaryPaneSize,
-                    minWidth: primaryPaneMinSize,
-                    maxWidth: primaryPaneMaxSize,
+                    flexBasis: primaryPaneSize,
                     ...primaryPaneStyle
                 };
 
-                let paneStyle2Width: number | string | undefined = undefined;
-                if (typeof paneStyle.width === 'string' && paneStyle.width.endsWith('%')) {
-                    paneStyle2Width = (100 - parseInt(paneStyle.width.replace('%', ''), 10)) + '%';
-                } else if (typeof paneStyle.width === 'number' && this.paneWrapper) {
-                    const clientRect = this.paneWrapper.getBoundingClientRect();
-                    const resizerRect = this.resizerElement.getBoundingClientRect();
-                    paneStyle2Width = clientRect.width - (paneStyle.width + resizerRect.width);
-                }
-
                 paneStyle2 = {
-                    width: paneStyle2Width,
                     ...secondaryPaneStyle
                 };
                 break;
             }
             case 'horizontal': {
+
+                if (this.paneWrapper && typeof primaryPaneSize === 'string' && primaryPaneSize.endsWith('%')) {
+                    const clientRect = this.paneWrapper.getBoundingClientRect();
+                    const resizerRect = this.resizerElement.getBoundingClientRect();
+                    const pct = parseInt(primaryPaneSize.replace('%', ''), 10) / 100;
+                    primaryPaneSize = (clientRect.height - resizerRect.height) * pct;
+                }
+
                 paneStyle = {
-                    height: primaryPaneSize,
-                    minHeight: primaryPaneMinSize,
-                    maxHeight: primaryPaneMaxSize,
+                    flexBasis: primaryPaneSize,
                     ...primaryPaneStyle
                 };
 
-                let paneStyle2Height: number | string | undefined = undefined;
-                if (typeof paneStyle.height === 'string' && paneStyle.height.endsWith('%')) {
-                    paneStyle2Height = (100 - parseInt(paneStyle.height.replace('%', ''), 10)) + '%';
-                } else if (typeof paneStyle.height === 'number' && this.paneWrapper) {
-                    const clientRect = this.paneWrapper.getBoundingClientRect();
-                    const resizerRect = this.resizerElement.getBoundingClientRect();
-                    paneStyle2Height = clientRect.height - (paneStyle.height + resizerRect.height);
-                }
-
                 paneStyle2 = {
-                    height: paneStyle2Height,
                     ...secondaryPaneStyle
                 };
                 break;
@@ -105,21 +103,11 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
                 throw Error(`Unknown or unexpected split type: ${split}`);
         }
 
-        let onePaneStyle: any;
-        if (!children || children.length < 2) {
-            onePaneStyle = {
-                width: '100%',
-                maxWidth: '100%',
-                height: '100%',
-                ...primaryPaneStyle
-            };
-        }
-
         return (
             <div
                 className={`splitter ${split === 'vertical' ? 'vertical' : 'horizontal'} ${className || ''}`}
-                style={onePaneStyle !== 'undefined' ? onePaneStyle : null}
-                ref={node => { if (node !== null) { this.paneWrapper = node; } }}
+                style={{width: '100%', height: '100%', display: 'flex'}}
+                ref={node => { if (node) { this.paneWrapper = node; } }}
             >
                 <Pane
                     className={`primary ${primaryPaneClassName || ''}`}
@@ -136,7 +124,7 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
                             split={split}
                             onMouseDown={this.handleMouseDown}
                             onDoubleClick={(e) => onResizerDoubleClick ? onResizerDoubleClick(paneStyle, e, this) : undefined}
-                            ref={node => { if (node !== null) { this.resizer = node; } }}
+                            ref={node => { if (node) { this.resizer = node; } }}
                             allowResize={allowResize}
                         />
                         : null
@@ -148,7 +136,7 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
                             className={secondaryPaneClassName || ''}
                             split={split}
                             style={paneStyle2}
-                            ref={node => { if (node !== null) { this.paneSecondary = node; } }}
+                            ref={node => { if (node) { this.paneSecondary = node; } }}
                         >
                             {children[1]}
                         </Pane>
@@ -194,7 +182,7 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
         if (typeof this.props.onWindowResize === 'function') {
             this.props.onWindowResize(ev, this);
         }
-        
+
         const calculatedMaxSize = this.calculateMaxSize();
         this.setState({
             calculatedMaxSize: calculatedMaxSize

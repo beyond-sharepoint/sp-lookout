@@ -2,6 +2,7 @@ import { FiddleSettings, defaultFiddleSettings, defaultEditorOptions, defaultPat
 
 export interface FiddleFolder {
     name: string;
+    description: string;
     collapsed: boolean;
     locked: boolean;
     starred: boolean;
@@ -12,6 +13,7 @@ export interface FiddleFolder {
 
 export const defaultFiddleFolder: FiddleFolder = {
     name: 'SPFiddle',
+    description: '',
     collapsed: false,
     locked: false,
     starred: false,
@@ -23,11 +25,13 @@ export const defaultFiddleFolder: FiddleFolder = {
 export const defaultFiddleRootFolder: FiddleFolder = {
     ...defaultFiddleFolder,
     name: 'SPFiddle',
+    description: '',
     iconClassName: 'fa fa-code',
     folders: [
         {
             ...defaultFiddleFolder,
             name: 'examples',
+            description: 'Contains examples of common usages.',
             locked: true,
             starred: true,
             files: [
@@ -67,24 +71,29 @@ export default web.get();`,
         {
             ...defaultFiddleFolder,
             name: 'built-in',
+            description: 'Scripts that provide data to built-in webparts. Changes made will be reverted on next app reload.',
             collapsed: true,
             locked: true,
             files: [
                 {
                     ...defaultFiddleSettings,
                     name: 'node.js',
+                    locked: true,
                 },
                 {
                     ...defaultFiddleSettings,
                     name: 'react-ui-tree.css',
+                    locked: true,
                 },
                 {
                     ...defaultFiddleSettings,
                     name: 'react-ui-tree.js',
+                    locked: true,
                 },
                 {
                     ...defaultFiddleSettings,
                     name: 'tree.js',
+                    locked: true,
                 }
             ]
         },

@@ -2,7 +2,7 @@ import { autorun, observable, extendObservable, observe, action, computed, runIn
 import { FiddleSettings } from './FiddleSettings';
 import { FiddleFolder, defaultFiddleRootFolder } from './FiddleFolder';
 import * as localforage from 'localforage';
-import { defaultsDeep, find, filter, values, findKey } from 'lodash';
+import { assign, defaultsDeep, find, filter, values, findKey } from 'lodash';
 
 export const FiddlesLocalStorageKey = 'sp-lookout-fiddles';
 
@@ -45,6 +45,10 @@ export class FiddlesStore {
 
     static async loadFromLocalStorage(): Promise<FiddlesStore> {
         const fiddleRootFolder = await localforage.getItem(FiddlesLocalStorageKey) as FiddleFolder;
+        
+        const builtInFolder = find(fiddleRootFolder.folders, { name: 'built-in' });
+        assign(builtInFolder, find(defaultFiddleRootFolder.folders, {name: 'built-in'}));
+
         return new FiddlesStore(fiddleRootFolder);
     }
 

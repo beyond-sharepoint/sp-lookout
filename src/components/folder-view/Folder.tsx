@@ -190,7 +190,7 @@ export class Folder extends React.Component<FolderProps, FolderState> {
 
         return connectDragSource(connectDropTarget(
             <div className="folder" style={nodeStyle}>
-                <div style={rootNodeStyle} onClick={(ev) => this.onFolderSelected(ev, path)}>
+                <div style={rootNodeStyle} onClick={(ev) => this.onFolderSelected(ev, path)} title={folder.description}>
                     <span className={collapseClassName} style={{ paddingRight: '5px', width: '0.5em' }} aria-hidden="true" />
                     {folder.iconClassName ? (<span className={folder.iconClassName} style={{ paddingRight: '3px' }} />) : null}
                     <span>{folder.name}</span>

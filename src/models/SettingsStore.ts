@@ -15,7 +15,6 @@ export class SettingsStore {
     private _visualSettings: VisualSettings;
 
     constructor(baristaSettings?: BaristaSettings, visualSettings?: VisualSettings) {
-        console.dir(baristaSettings);
         if (!baristaSettings) {
             this._baristaSettings = observable(defaultBaristaSettings);
         } else {
