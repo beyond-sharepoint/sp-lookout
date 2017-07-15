@@ -63,13 +63,6 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
         switch (split) {
             case 'vertical': {
 
-                if (this.paneWrapper && typeof primaryPaneSize === 'string' && primaryPaneSize.endsWith('%')) {
-                    const clientRect = this.paneWrapper.getBoundingClientRect();
-                    const resizerRect = this.resizerElement.getBoundingClientRect();
-                    const pct = parseInt(primaryPaneSize.replace('%', ''), 10) / 100;
-                    primaryPaneSize = (clientRect.width - resizerRect.width) * pct;
-                }
-
                 paneStyle = {
                     flexBasis: primaryPaneSize,
                     ...primaryPaneStyle
@@ -81,13 +74,6 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
                 break;
             }
             case 'horizontal': {
-
-                if (this.paneWrapper && typeof primaryPaneSize === 'string' && primaryPaneSize.endsWith('%')) {
-                    const clientRect = this.paneWrapper.getBoundingClientRect();
-                    const resizerRect = this.resizerElement.getBoundingClientRect();
-                    const pct = parseInt(primaryPaneSize.replace('%', ''), 10) / 100;
-                    primaryPaneSize = (clientRect.height - resizerRect.height) * pct;
-                }
 
                 paneStyle = {
                     flexBasis: primaryPaneSize,
@@ -106,7 +92,7 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
         return (
             <div
                 className={`splitter ${split === 'vertical' ? 'vertical' : 'horizontal'} ${className || ''}`}
-                style={{width: '100%', height: '100%', display: 'flex'}}
+                style={{ width: '100%', height: '100%', display: 'flex' }}
                 ref={node => { if (node) { this.paneWrapper = node; } }}
             >
                 <Pane

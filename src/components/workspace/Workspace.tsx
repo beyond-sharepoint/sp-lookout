@@ -170,7 +170,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
                             secondaryPaneStyle={{ overflow: 'auto' }}
                             onPaneResized={(size) => { this.setState({ sidebarSize: size }); }}
                             onResizerDoubleClick={(paneStyle) => {
-                                if (paneStyle.width === 215) {
+                                if (paneStyle.flexBasis === 215) {
                                     this.setState({ sidebarSize: 0 });
                                 } else {
                                     this.setState({ sidebarSize: 215 });

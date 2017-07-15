@@ -61,7 +61,7 @@ export default class Aside extends React.Component<AsideProps, any> {
                 primaryPaneMinSize={250}
                 onPaneResized={this.onPaneResized}
                 onResizerDoubleClick={(paneStyle, e, splitPane) => {
-                    if (paneStyle.height === '60%') {
+                    if (paneStyle.flexBasis === '60%') {
                         this.onPaneResized(splitPane.calculateMaxSize());
                     } else {
                         this.onPaneResized('60%');
