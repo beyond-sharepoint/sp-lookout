@@ -25,10 +25,11 @@ import { SettingsStore, PagesStore, FiddlesStore, FiddleFolder, FiddleSettings, 
 import './Workspace.css';
 
 @observer
-export default class Workspace extends React.Component<WorkspaceProps, any> {
+export default class Workspace extends React.Component<WorkspaceProps, WorkspaceState> {
     private _appBarItems;
     private _appBarFarItems;
     private _barista: Barista;
+    private _routes: Array<any>;
 
     public constructor(props: WorkspaceProps) {
         super(props);
@@ -36,12 +37,9 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
         const { settingsStore } = this.props;
 
         this.state = {
-            dockIsVisible: false,
-            readOnly: false,
             showSettingsModal: false,
-            showShortcutsModal: false,
             sidebarSize: 215,
-            webFullUrl: 'https://baristalabs.sharepoint.com'
+            sidebarPrevSize: 0
         };
 
         this._barista = new Barista({
@@ -74,69 +72,7 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
             }
         ];
 
-        this.state.asideItems =
-            [
-                {
-                    links:
-                    [
-                        {
-                            name: 'Dashboard',
-                            key: 'dashboard',
-                            url: '#/',
-                            icon: 'PanoIndicator',
-                            onClick: this.onPageSelected
-                        }
-                    ]
-                },
-                {
-                    links:
-                    [
-                        {
-                            name: 'Governance',
-                            key: 'governance',
-                            icon: 'BarChart4',
-                            onClick: this.onPageSelected,
-                            links: [{
-                                name: 'Structure',
-                                url: '#/charts/structure',
-                                key: 'key1'
-                            },
-                            {
-                                name: 'Activity',
-                                url: '#/charts/activity',
-                                key: 'key2'
-                            },
-                            {
-                                name: 'Usage',
-                                url: '#/charts/usage',
-                                key: 'key3'
-                            },
-                            {
-                                name: 'Custom',
-                                url: '#/charts/custom',
-                                key: 'key4'
-                            }
-                            ],
-                            isExpanded: true
-                        },
-                        {
-                            name: 'Actions',
-                            key: 'actions',
-                            icon: 'SetAction',
-                            onClick: this.onPageSelected,
-                            links: [{
-                                name: 'JSLink',
-                                icon: 'Link',
-                                onClick: this.onPageSelected,
-                                key: 'jslink',
-                            }],
-                            isExpanded: true
-                        }
-                    ]
-                }
-            ] as INavLinkGroup[];
-
-        this.state.routes = [
+        this._routes = [
             {
                 path: '/',
                 exact: true,
@@ -214,6 +150,10 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
         }
     }
 
+    public componentWillReceiveProps(nextProps) {
+        console.dir(nextProps);
+    }
+
     public render() {
         const { settingsStore, pagesStore, fiddlesStore } = this.props;
 
@@ -256,7 +196,7 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
                                 selectedPageId={this.state.selectedPageId}
                                 selectedPaths={this.state.selectedPaths}
                             />
-                            {this.state.routes.map((route, index) => (
+                            {this._routes.map((route, index) => (
                                 <Route
                                     key={index}
                                     path={route.path}
@@ -279,8 +219,8 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
     @action.bound
     private onPageSelected(ev, nav) {
         this.setState({
-            selectedPageKey: nav.key,
-            selectedPaths: null
+            selectedPageId: nav.key,
+            selectedPaths: undefined
         });
     }
 
@@ -288,7 +228,7 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
     private onFiddleSelected(fiddleSettings: FiddleSettings, path: string) {
         location.hash = '/fiddle/' + path;
         this.setState({
-            selectedPageKey: null,
+            selectedPageId: undefined,
             selectedPaths: path
         });
     }
@@ -296,7 +236,7 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
     @action.bound
     private onFolderSelected(folder: FiddleFolder, path: string) {
         this.setState({
-            selectedPageKey: null,
+            selectedPageId: undefined,
             selectedPaths: path
         });
     }
@@ -330,6 +270,14 @@ export default class Workspace extends React.Component<WorkspaceProps, any> {
             });
         }
     }
+}
+
+export interface WorkspaceState {
+    showSettingsModal: boolean;
+    sidebarSize: number;
+    sidebarPrevSize: number;
+    selectedPageId?: string;
+    selectedPaths?: string | string[];
 }
 
 export interface WorkspaceProps {

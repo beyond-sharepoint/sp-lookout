@@ -42,7 +42,7 @@ export default class Barista {
 
         //TODO: determine any dependent modules that have a spl prefix and get them.
 
-        const defines: {[id: string]: string} = {
+        const defines: { [id: string]: string } = {
             filename: transpileResult.outputText
         };
 
