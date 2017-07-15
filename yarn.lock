@@ -80,16 +80,16 @@
   resolved "https://registry.yarnpkg.com/@types/jest/-/jest-20.0.2.tgz#86c751121fb53dbd39bb1a08c45083da13f2dc67"
 
 "@types/jquery@*":
-  version "3.2.7"
-  resolved "https://registry.yarnpkg.com/@types/jquery/-/jquery-3.2.7.tgz#e91cb855096f328962c8e63194e7d2d36f1dce9b"
+  version "3.2.8"
+  resolved "https://registry.yarnpkg.com/@types/jquery/-/jquery-3.2.8.tgz#a41896537f9bda11964b46cda81ac78f15df194c"
 
 "@types/lodash@4.14.52":
   version "4.14.52"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.52.tgz#de5c7ab14da1289733233c9b0ec6f9e377db90f5"
 
-"@types/lodash@^4.14.68":
-  version "4.14.68"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.68.tgz#754fbab68bd2bbb69547dc8ce7574f7012eed7f6"
+"@types/lodash@^4.14.69":
+  version "4.14.69"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.69.tgz#2bbd48c1565e02506f48ed8d1e8e53ea493fd0e6"
 
 "@types/microsoft-ajax@*":
   version "0.0.32"
@@ -103,9 +103,9 @@
   version "6.0.64"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-6.0.64.tgz#cdc901411f6301e1437dfed23bc68f54442e4dc8"
 
-"@types/node@^8.0.11":
-  version "8.0.11"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.11.tgz#3cf80de7185292c6dab156ece696dffed0cc3502"
+"@types/node@^8.0.13":
+  version "8.0.13"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.13.tgz#530f0f9254209b0335bf5cc6387822594ef47093"
 
 "@types/react-dom@^15.5.1":
   version "15.5.1"
@@ -154,9 +154,9 @@
   version "3.16.20-alpha"
   resolved "https://registry.yarnpkg.com/@types/z-schema/-/z-schema-3.16.20-alpha.tgz#36f588ccca27d8e86dd6bb595a973aede8803766"
 
-"@uifabric/styling@>=0.13.6 <1.0.0":
-  version "0.13.6"
-  resolved "https://registry.yarnpkg.com/@uifabric/styling/-/styling-0.13.6.tgz#075c76dac2a95d38e236b66ef7c07f7d94d79783"
+"@uifabric/styling@>=0.13.9 <1.0.0":
+  version "0.13.9"
+  resolved "https://registry.yarnpkg.com/@uifabric/styling/-/styling-0.13.9.tgz#265b3da522b672f4c9fd72548207d75bde8cb720"
   dependencies:
     "@microsoft/load-themed-styles" "^1.2.2"
     "@uifabric/utilities" ">=4.7.2 <5.0.0"
@@ -872,12 +872,12 @@ caniuse-api@^1.5.2:
     lodash.uniq "^4.5.0"
 
 caniuse-db@^1.0.30000529, caniuse-db@^1.0.30000634, caniuse-db@^1.0.30000639:
-  version "1.0.30000700"
-  resolved "https://registry.yarnpkg.com/caniuse-db/-/caniuse-db-1.0.30000700.tgz#97cfc483865eea8577dc7a3674929b9abf553095"
+  version "1.0.30000701"
+  resolved "https://registry.yarnpkg.com/caniuse-db/-/caniuse-db-1.0.30000701.tgz#2e32b06993bf3dbd90b43d93f04e26d11afddcba"
 
 caniuse-lite@^1.0.30000669, caniuse-lite@^1.0.30000684:
-  version "1.0.30000700"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000700.tgz#6084871ec75c6fa62327de97622514f95d9db26a"
+  version "1.0.30000701"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000701.tgz#9d673cf6b74dcb3d5c21d213176b011ac6a45baa"
 
 capture-stack-trace@^1.0.0:
   version "1.0.0"
@@ -942,7 +942,7 @@ chartjs-color@^2.1.0:
     chartjs-color-string "^0.4.0"
     color-convert "^0.5.3"
 
-chokidar@^1.4.3, chokidar@^1.6.0, chokidar@^1.6.1:
+chokidar@^1.6.0, chokidar@^1.6.1, chokidar@^1.7.0:
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-1.7.0.tgz#798e689778151c8076b4b360e5edd28cda2bb468"
   dependencies:
@@ -983,8 +983,8 @@ classnames@^2.2.5:
   resolved "https://registry.yarnpkg.com/classnames/-/classnames-2.2.5.tgz#fb3801d453467649ef3603c7d61a02bd129bde6d"
 
 clean-css@4.1.x:
-  version "4.1.6"
-  resolved "https://registry.yarnpkg.com/clean-css/-/clean-css-4.1.6.tgz#5a47beb526994cb4f7bf36188a55ed3b45528f0b"
+  version "4.1.7"
+  resolved "https://registry.yarnpkg.com/clean-css/-/clean-css-4.1.7.tgz#b9aea4f85679889cf3eae8b40349ec4ebdfdd032"
   dependencies:
     source-map "0.5.x"
 
@@ -1066,8 +1066,8 @@ color-convert@^1.0.0, color-convert@^1.3.0:
     color-name "^1.1.1"
 
 color-name@^1.0.0, color-name@^1.1.1:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/color-name/-/color-name-1.1.2.tgz#5c8ab72b64bd2215d617ae9559ebb148475cf98d"
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/color-name/-/color-name-1.1.3.tgz#a7d0558bd89c42f795dd42328f740831ca53bc25"
 
 color-string@^0.3.0:
   version "0.3.0"
@@ -1095,7 +1095,7 @@ colors@0.6.2:
   version "0.6.2"
   resolved "https://registry.yarnpkg.com/colors/-/colors-0.6.2.tgz#2423fe6678ac0c5dae8852e5d0e5be08c997abcc"
 
-colors@^1.0.3, colors@^1.1.2, colors@~1.1.2:
+colors@^1.1.2, colors@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/colors/-/colors-1.1.2.tgz#168a4701756b6a7f51a12ce0c97bfa28c084ed63"
 
@@ -3884,12 +3884,12 @@ obuf@^1.0.0, obuf@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/obuf/-/obuf-1.1.1.tgz#104124b6c602c6796881a042541d36db43a5264e"
 
-office-ui-fabric-react@^4.18.0:
-  version "4.18.0"
-  resolved "https://registry.yarnpkg.com/office-ui-fabric-react/-/office-ui-fabric-react-4.18.0.tgz#cad5da215f4899a585143ad26c30793380a7db30"
+office-ui-fabric-react@^4.20.0:
+  version "4.20.0"
+  resolved "https://registry.yarnpkg.com/office-ui-fabric-react/-/office-ui-fabric-react-4.20.0.tgz#ef9f849bac1d3367206c170a7753b03516b55ba1"
   dependencies:
     "@microsoft/load-themed-styles" "^1.2.2"
-    "@uifabric/styling" ">=0.13.6 <1.0.0"
+    "@uifabric/styling" ">=0.13.9 <1.0.0"
     "@uifabric/utilities" ">=4.7.2 <5.0.0"
     prop-types "^15.5.10"
     tslib "^1.6.0"
@@ -4591,9 +4591,9 @@ rc@^1.0.1, rc@^1.1.6, rc@^1.1.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-chartjs-2@^2.4.1:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/react-chartjs-2/-/react-chartjs-2-2.4.1.tgz#549bf4df874d69d6f047279caf708040bbce92e5"
+react-chartjs-2@^2.5.1:
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/react-chartjs-2/-/react-chartjs-2-2.5.1.tgz#826213b84580f6aebfa7872dbe83b345d5b7fa87"
   dependencies:
     lodash.isequal "^4.4.0"
     prop-types "^15.5.8"
@@ -4669,7 +4669,7 @@ react-dom@^15.3.1, react-dom@^15.6.1:
     object-assign "^4.1.0"
     prop-types "^15.5.10"
 
-react-draggable@^2.1.1, react-draggable@^2.2.6:
+react-draggable@^2.2.6:
   version "2.2.6"
   resolved "https://registry.yarnpkg.com/react-draggable/-/react-draggable-2.2.6.tgz#3a806e10f2da6babfea4136be6510e89b0d76901"
   dependencies:
@@ -4686,14 +4686,14 @@ react-error-overlay@^1.0.6:
     settle-promise "1.0.0"
     source-map "0.5.6"
 
-react-grid-layout@^0.14.6:
-  version "0.14.6"
-  resolved "https://registry.yarnpkg.com/react-grid-layout/-/react-grid-layout-0.14.6.tgz#855e83297b0179f1a13b4ea3d4949420cacad735"
+react-grid-layout@^0.14.7:
+  version "0.14.7"
+  resolved "https://registry.yarnpkg.com/react-grid-layout/-/react-grid-layout-0.14.7.tgz#aaa0d090007a4d482d39a95bd63c8ef12901eab4"
   dependencies:
     classnames "^2.2.5"
     lodash.isequal "^4.0.0"
     prop-types "^15.5.8"
-    react-draggable "^2.1.1"
+    react-draggable "^2.2.6"
     react-resizable "^1.4.0"
 
 react-inspector@^2.1.1:
@@ -4884,8 +4884,8 @@ reduce-function-call@^1.0.1:
     balanced-match "^0.4.2"
 
 redux@^3.2.0:
-  version "3.7.1"
-  resolved "https://registry.yarnpkg.com/redux/-/redux-3.7.1.tgz#bfc535c757d3849562ead0af18ac52122cd7268e"
+  version "3.7.2"
+  resolved "https://registry.yarnpkg.com/redux/-/redux-3.7.2.tgz#06b73123215901d25d065be342eb026bc1c8537b"
   dependencies:
     lodash "^4.2.1"
     lodash-es "^4.2.1"
@@ -5052,6 +5052,10 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
   dependencies:
     hash-base "^2.0.0"
     inherits "^2.0.1"
+
+rrule@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/rrule/-/rrule-2.2.0.tgz#f346c523bf73707dafe562c222650467b49f6d5c"
 
 rtl-css-js@^1.1.1:
   version "1.1.1"
@@ -5723,10 +5727,10 @@ trim-right@^1.0.1:
   resolved "https://registry.yarnpkg.com/trim-right/-/trim-right-1.0.1.tgz#cb2e1203067e0c8de1f614094b9fe45704ea6003"
 
 ts-loader@^2.2.1:
-  version "2.2.2"
-  resolved "https://registry.yarnpkg.com/ts-loader/-/ts-loader-2.2.2.tgz#6ea98ebe384ee9ba4c891fea6de6d4e7d8134730"
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/ts-loader/-/ts-loader-2.3.0.tgz#99ff0615ecaea7d554dd0cba733caedf9a2715a0"
   dependencies:
-    colors "^1.0.3"
+    chalk "^2.0.1"
     enhanced-resolve "^3.0.0"
     loader-utils "^1.0.2"
     semver "^5.0.1"
@@ -5765,8 +5769,8 @@ tslint@^5.2.0:
     tsutils "^2.5.1"
 
 tsutils@^2.5.1:
-  version "2.6.1"
-  resolved "https://registry.yarnpkg.com/tsutils/-/tsutils-2.6.1.tgz#98ecf009594f4e4af884057be4cf41a450bc7637"
+  version "2.7.1"
+  resolved "https://registry.yarnpkg.com/tsutils/-/tsutils-2.7.1.tgz#411a0e9466525a2b2869260a55620d7292155e24"
   dependencies:
     tslib "^1.7.1"
 
@@ -6008,11 +6012,11 @@ watch@~0.10.0:
   resolved "https://registry.yarnpkg.com/watch/-/watch-0.10.0.tgz#77798b2da0f9910d595f1ace5b0c2258521f21dc"
 
 watchpack@^1.3.1:
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/watchpack/-/watchpack-1.3.1.tgz#7d8693907b28ce6013e7f3610aa2a1acf07dad87"
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/watchpack/-/watchpack-1.4.0.tgz#4a1472bcbb952bd0a9bb4036801f954dfb39faac"
   dependencies:
     async "^2.1.2"
-    chokidar "^1.4.3"
+    chokidar "^1.7.0"
     graceful-fs "^4.1.2"
 
 wbuf@^1.1.0, wbuf@^1.7.2:
