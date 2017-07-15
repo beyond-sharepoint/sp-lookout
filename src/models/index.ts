@@ -1,5 +1,5 @@
 export * from './SettingsStore';
-export * from './HostWebProxySettings';
+export * from './BaristaSettings';
 export * from './VisualSettings';
 
 export * from './FiddlesStore';

@@ -6,15 +6,17 @@ import {
     matchPath
 } from 'react-router-dom';
 import * as URI from 'urijs';
-import { action } from 'mobx';
+import { action, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import * as localforage from 'localforage';
 import { autobind } from 'office-ui-fabric-react/lib';
 import { CommandBar } from 'office-ui-fabric-react/lib/CommandBar';
 import { INavLinkGroup } from 'office-ui-fabric-react/lib/Nav';
 import SplitPane from '../split-pane/SplitPane';
+import { defaultsDeep } from 'lodash';
 
 import Barista from '../../services/barista';
+import { SPContextConfig, defaultSPContextConfig } from '../../services/spcontext';
 import Page from '../page';
 import Aside from '../workspace-aside';
 import { WorkspaceSettingsModal } from '../workspace-settings-modal';
@@ -41,13 +43,6 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
             sidebarSize: 215,
             sidebarPrevSize: 0
         };
-
-        this._barista = new Barista({
-            webFullUrl: 'https://baristalabs.sharepoint.com',
-            noProxyHandler: () => { console.log('no proxy!'); return { data: 'Error: Could not communicate with the proxy.' }; },
-            authenticationRequiredHandler: () => { console.log('auth required!'); return { data: 'Error: Authentication is required.' }; },
-            invalidOriginHandler: () => { console.log('invalid origin!'); return { data: 'Error: Proxy reported invalid origin.' }; }
-        });
 
         this._appBarItems = [
             {
@@ -148,10 +143,8 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
                 selectedPaths: selectedFiddlePath.params.fiddlePath
             });
         }
-    }
 
-    public componentWillReceiveProps(nextProps) {
-        console.dir(nextProps);
+        this.initializeBarista();
     }
 
     public render() {
@@ -184,7 +177,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
                                 }
                             }}
                             onWindowResize={(ev) => {
-                                this.setState({ sidebarSize: 215});
+                                this.setState({ sidebarSize: 215 });
                             }}
                         >
                             <Aside
@@ -213,6 +206,38 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
                     settingsStore={settingsStore}
                 />
             </div>
+        );
+    }
+
+    private initializeBarista() {
+        const { settingsStore } = this.props;
+        const { tenantUrl } = settingsStore.baristaSettings;
+        if (!tenantUrl || tenantUrl.length <= 0) {
+            return;
+        }
+
+        if (this._barista) {
+            this._barista.dispose();
+        }
+
+        const webFullUrl = URI(tenantUrl)
+            .protocol('https')
+            .normalize()
+            .href();
+
+        const contextConfig: SPContextConfig = defaultsDeep(
+            toJS(settingsStore.baristaSettings.spContextConfig),
+            defaultSPContextConfig
+        );
+
+        this._barista = new Barista(
+            {
+                webFullUrl: webFullUrl,
+                noProxyHandler: () => { console.log('no proxy!'); return { data: 'Error: Could not communicate with the proxy.' }; },
+                authenticationRequiredHandler: () => { console.log('auth required!'); return { data: 'Error: Authentication is required.' }; },
+                invalidOriginHandler: () => { console.log('invalid origin!'); return { data: 'Error: Proxy reported invalid origin.' }; }
+            },
+            contextConfig
         );
     }
 
@@ -253,7 +278,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
         this.setState({
             showSettingsModal: false
         });
-
+        this.initializeBarista();
         SettingsStore.saveToLocalStorage(this.props.settingsStore);
     }
 

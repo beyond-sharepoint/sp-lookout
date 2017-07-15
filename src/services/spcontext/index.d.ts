@@ -6,9 +6,9 @@ export interface SPProxyConfig {
 
 export interface SPContextConfig {
     /**
-     * The absolute URL to a host web proxy file.
+     * The server relative URL to a host web proxy file.
      */
-    proxyAbsoluteUrl: string;
+    proxyServerRelativeUrl: string;
     /**
      * Default Proxy Configuration
      */

@@ -2,23 +2,24 @@ import { action, observable, toJS } from 'mobx';
 import { debounce, throttle, defaultsDeep, find } from 'lodash';
 import * as localforage from 'localforage';
 
-import { HostWebProxySettings, defaultHostWebProxySettings} from './HostWebProxySettings';
+import { BaristaSettings, defaultBaristaSettings} from './BaristaSettings';
 import { VisualSettings, defaultVisualSettings } from './VisualSettings';
 
 export const SettingsLocalStorageKey = 'sp-lookout-settings';
 
 export class SettingsStore {
     @observable
-    private _hostWebProxySettings: HostWebProxySettings;
+    private _baristaSettings: BaristaSettings;
 
     @observable
     private _visualSettings: VisualSettings;
 
-    constructor(hostWebProxySettings?: HostWebProxySettings, visualSettings?: VisualSettings) {
-        if (!hostWebProxySettings) {
-            this._hostWebProxySettings = observable(defaultHostWebProxySettings);
+    constructor(baristaSettings?: BaristaSettings, visualSettings?: VisualSettings) {
+        console.dir(baristaSettings);
+        if (!baristaSettings) {
+            this._baristaSettings = observable(defaultBaristaSettings);
         } else {
-            this._hostWebProxySettings = observable(defaultsDeep(hostWebProxySettings, defaultHostWebProxySettings) as HostWebProxySettings);
+            this._baristaSettings = observable(defaultsDeep(baristaSettings, defaultBaristaSettings) as BaristaSettings);
         }
 
         if (!visualSettings) {
@@ -28,8 +29,8 @@ export class SettingsStore {
         }
     }
 
-    public get hostWebProxySettings() {
-        return this._hostWebProxySettings;
+    public get baristaSettings() {
+        return this._baristaSettings;
     }
 
     public get visualSettings() {
@@ -38,23 +39,23 @@ export class SettingsStore {
 
     static async loadFromLocalStorage(): Promise<SettingsStore> { 
         let settings: Settings = {
-            hostWebProxySettings: undefined,
+            baristaSettings: undefined,
             visualSettings: undefined
         };
 
-        const persistedSettings: any = await localforage.getItem(SettingsLocalStorageKey);
+        const persistedSettings: Settings = await localforage.getItem(SettingsLocalStorageKey);
 
         if (persistedSettings) {
-            settings.hostWebProxySettings = persistedSettings.hostWebProxySettings || undefined;
+            settings.baristaSettings = persistedSettings.baristaSettings || undefined;
             settings.visualSettings = persistedSettings.visualSettings || undefined;
         }
 
-        return new SettingsStore(settings.hostWebProxySettings, settings.visualSettings);
+        return new SettingsStore(settings.baristaSettings, settings.visualSettings);
     }
 
     @action static async saveToLocalStorage(settingsStore: SettingsStore) {
         const settingsToPersist = {
-            hostWebProxySettings: toJS(settingsStore._hostWebProxySettings),
+            baristaSettings: toJS(settingsStore._baristaSettings),
             visualSettings: toJS(settingsStore._visualSettings)
         };
 
@@ -63,6 +64,6 @@ export class SettingsStore {
 }
 
 type Settings = {
-    hostWebProxySettings?: HostWebProxySettings,
+    baristaSettings?: BaristaSettings,
     visualSettings?: VisualSettings
 };

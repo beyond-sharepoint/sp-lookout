@@ -178,11 +178,7 @@ export class SPProxy {
         config = defaultsDeep(
             {},
             config,
-            {
-                createProxyTimeout: 5 * 1000,
-                messagePrefix: 'SP.RequestExecutor',
-                messageResponseTimeout: 5 * 1000
-            } as SPProxyConfig
+            defaultSPProxyConfig
         ) as SPProxyConfig;
 
         let proxyUri: uri.URI = URI(proxyAbsoluteUrl).normalize();
@@ -215,20 +211,20 @@ export class SPProxy {
     }
 
     /**
-     * Removes the specified proxy.
+     * Removes the specified proxy using the specified SPProxy instance or a url whose origin will be used to determine the proxy instance.
      * @param proxy 
      */
     public static removeProxy(proxy: SPProxy | string): boolean {
 
-        if (proxy instanceof String) {
+        if (typeof proxy === 'string') {
             let proxyUri = URI(proxy).normalize();
             let origin = proxyUri.origin();
             proxy = this.$proxies[origin];
             if (!proxy) {
-                throw Error(`A proxy for the given url could not be found: ${proxy}`);
+                return false;
             }
         }
-
+        
         let proxyParent = proxy._iFrame.parentElement;
         if (proxyParent) {
             proxyParent.removeChild(proxy._iFrame);
@@ -238,3 +234,9 @@ export class SPProxy {
         return delete this.$proxies[proxy._origin];
     }
 }
+
+export const defaultSPProxyConfig = {
+    createProxyTimeout: 5 * 1000,
+    messagePrefix: 'SP.RequestExecutor',
+    messageResponseTimeout: 5 * 1000
+};

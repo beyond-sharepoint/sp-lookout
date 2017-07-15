@@ -4,7 +4,7 @@ import * as moment from 'moment';
 import * as URI from 'urijs';
 import { get, defaultsDeep, isError, omit } from 'lodash';
 import * as Bluebird from 'bluebird';
-import { SPProxy } from './SPProxy';
+import { SPProxy, defaultSPProxyConfig } from './SPProxy';
 import { SPContextConfig, SPContextAuthenticationConfig, SPContextInfo, SandFiddleConfig } from './index.d';
 import Utilities from './Utilities';
 
@@ -56,7 +56,8 @@ export class SPContext {
 
         //Ensure that a SharePoint proxy is open. If it times out, redirect to the SharePoint Authentication page.
         try {
-            proxy = await SPProxy.getOrCreateProxy(this._config.proxyAbsoluteUrl, this._config.proxyConfig);
+            const proxyAbsoluteUrl = URI(this._config.proxyServerRelativeUrl).absoluteTo(this._webFullUrl).href();
+            proxy = await SPProxy.getOrCreateProxy(proxyAbsoluteUrl, this._config.proxyConfig);
         } catch (ex) {
             const currentUri = URI();
             //If it's a timeout error, redirect to the login page.
@@ -359,19 +360,8 @@ export class SPContext {
         config = defaultsDeep(
             {},
             config,
-            {
-                proxyAbsoluteUrl: webUri.segment('/Shared%20Documents/HostWebProxy.aspx').normalize().toString(),
-                contextinfoEndpointWebRelativeUrl: '/_api/contextinfo',
-                authenticationConfig: {
-                    authenticationEndpointWebRelativeUrl: '/_layouts/15/authenticate.aspx',
-                    sourceUrl: undefined,
-                    query: undefined
-                } as SPContextAuthenticationConfig,
-                defaultHeaders: {
-                    'Accept': 'application/json;odata=verbose',
-                    'Content-Type': 'application/json;odata=verbose'
-                }
-            } as SPContextConfig
+            { proxyAbsoluteUrl: webUri.segment('/Shared%20Documents/HostWebProxy.aspx').normalize().toString() },
+            defaultSPContextConfig
         ) as SPContextConfig;
 
         let result = new SPContext(webFullUrl, config);
@@ -379,6 +369,28 @@ export class SPContext {
         return result;
     }
 
+    /**
+     * Removes the specified context using the specified SPContext instance or a url whose origin will be used to determine the context instance.
+     * @param proxy 
+     */
+    public static removeContext(context: SPContext | string): boolean {
+
+        if (typeof context === 'string') {
+            let webUri = URI(context)
+                .normalize();
+
+            if (!webUri.is('absolute')) {
+                throw Error('The context uri must be an absolute url to the target SharePoint web.');
+            }
+
+            context = this.$contexts[webUri.href()];
+            if (!context) {
+                return false;
+            }
+        }
+
+        return delete this.$contexts[context._webFullUrl];
+    }
 }
 
 export class SPContextError extends Error {
@@ -391,3 +403,18 @@ export class SPContextError extends Error {
 
     $$spcontext: 'noproxy' | 'authrequired' | 'invalidorigin' | 'unknown';
 }
+
+export const defaultSPContextConfig: SPContextConfig = {
+    proxyServerRelativeUrl: '/Shared%20Documents/HostWebProxy.aspx',
+    contextinfoEndpointWebRelativeUrl: '/_api/contextinfo',
+    authenticationConfig: {
+        authenticationEndpointWebRelativeUrl: '/_layouts/15/authenticate.aspx',
+        sourceUrl: undefined,
+        query: undefined
+    } as SPContextAuthenticationConfig,
+    defaultHeaders: {
+        'Accept': 'application/json;odata=verbose',
+        'Content-Type': 'application/json;odata=verbose'
+    },
+    proxyConfig: defaultSPProxyConfig
+};

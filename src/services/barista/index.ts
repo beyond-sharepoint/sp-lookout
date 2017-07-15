@@ -1,34 +1,33 @@
 /// <reference path='../../../node_modules/@types/requirejs/index.d.ts' />
 import * as ts from 'typescript';
+import * as URI from 'urijs';
+import { cloneDeep, defaultsDeep } from 'lodash';
 
 import { DebuggerTransformer } from './debuggerTransformer';
-import { SPContext, SPContextConfig, SPContextError } from '../spcontext';
+import { SPContext, SPContextConfig, SPProxy, SPContextError, defaultSPContextConfig } from '../spcontext';
 
 export default class Barista {
     private _config: BaristaConfig;
+    private _spContextConfig: SPContextConfig;
 
-    constructor(config: BaristaConfig) {
+    constructor(config: BaristaConfig, spContextConfig?: SPContextConfig) {
         if (!config) {
             throw Error('Barista configuration must be specified.');
         }
         this._config = config;
+        if (!spContextConfig) {
+            this._spContextConfig = cloneDeep(defaultSPContextConfig);
+        } else {
+            this._spContextConfig = defaultsDeep(spContextConfig, defaultSPContextConfig);
+        }
     }
 
     public get config(): BaristaConfig {
         return this._config;
     }
 
-    public async uploadModule(context: SPContext, code: string): Promise<Response> {
-        const { webFullUrl, fiddleScriptsPath } = this._config;
-        const spContext = await SPContext.getContext(webFullUrl);
-
-        const webUri = URI(webFullUrl).path(fiddleScriptsPath || '/Shared Documents');
-        const url = `/_api/web/getfolderbyserverrelativeurl('${URI.encode(webUri.path())}')/files/add(overwrite=true,url='splookout-fiddle.js')`;
-
-        return spContext.fetch(url, {
-            method: 'POST',
-            body: code
-        });
+    public get spContextConfig(): SPContextConfig {
+        return this._spContextConfig;
     }
 
     /**
@@ -36,7 +35,7 @@ export default class Barista {
      */
     public async brew(settings: BrewSettings): Promise<any> {
         const { filename, input, brewMode, allowDebuggerStatement, requireConfig, timeout } = settings;
-        const spContext = await SPContext.getContext(this._config.webFullUrl, this._config.spContextConfig);
+        const spContext = await SPContext.getContext(this._config.webFullUrl, this._spContextConfig);
 
         const transpileResult = this.transpile(filename, input, allowDebuggerStatement || false);
 
@@ -115,6 +114,24 @@ export default class Barista {
         return result;
     }
 
+    public dispose() {
+        SPContext.removeContext(this._config.webFullUrl);
+        SPProxy.removeProxy(this._config.webFullUrl);
+    }
+
+    public async uploadModule(context: SPContext, code: string): Promise<Response> {
+        const { webFullUrl, fiddleScriptsPath } = this._config;
+        const spContext = await SPContext.getContext(webFullUrl, this._spContextConfig);
+
+        const webUri = URI(webFullUrl).path(fiddleScriptsPath || '/Shared Documents');
+        const url = `/_api/web/getfolderbyserverrelativeurl('${URI.encode(webUri.path())}')/files/add(overwrite=true,url='splookout-fiddle.js')`;
+
+        return spContext.fetch(url, {
+            method: 'POST',
+            body: code
+        });
+    }
+
     private transpile(filename: string, input: string, allowDebuggerStatement: boolean): ts.TranspileOutput {
 
         let beforeTransformers: any = [];
@@ -142,7 +159,6 @@ export default class Barista {
 
 export interface BaristaConfig {
     webFullUrl: string;
-    spContextConfig?: SPContextConfig;
     fiddleScriptsPath?: string;
     noProxyHandler?: (barista: Barista) => any;
     invalidOriginHandler?: (barista: Barista) => any;

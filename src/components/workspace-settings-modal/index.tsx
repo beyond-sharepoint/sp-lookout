@@ -9,7 +9,7 @@ import { Pivot, PivotItem } from 'office-ui-fabric-react/lib/Pivot';
 import { Dropdown, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
 import { Toggle } from 'office-ui-fabric-react/lib/Toggle';
 
-import { SettingsStore, HostWebProxySettings, VisualSettings } from '../../models';
+import { SettingsStore, BaristaSettings, VisualSettings } from '../../models';
 import './index.css';
 
 @observer
@@ -36,14 +36,14 @@ export class WorkspaceSettingsModal extends React.Component<WorkspaceSettingsPro
                         <PivotItem linkText="Proxy Options">
                             <TextField
                                 addonString="https://"
-                                label="Tenant url"
-                                value={settingsStore.hostWebProxySettings.tenantBaseUrl}
+                                label="SharePoint Tenant Url"
+                                value={settingsStore.baristaSettings.tenantUrl}
                                 onChanged={this.updateTenantUrl}
                             />
                             <TextField
-                                label="HostWebProxy Server Relative Path"
-                                value={settingsStore.hostWebProxySettings.hostWebProxyServerRelativePath}
-                                onChanged={this.updateHostWebProxyPath}
+                                label="HostWebProxy Server Relative Url"
+                                value={settingsStore.baristaSettings.spContextConfig.proxyServerRelativeUrl}
+                                onChanged={this.updateHostWebProxyUrl}
                             />
                         </PivotItem>
                     </Pivot>
@@ -54,12 +54,12 @@ export class WorkspaceSettingsModal extends React.Component<WorkspaceSettingsPro
 
     @action.bound
     private updateTenantUrl(newValue: string) {
-        this.props.settingsStore.hostWebProxySettings.tenantBaseUrl = newValue;
+        this.props.settingsStore.baristaSettings.tenantUrl = newValue;
     }
 
     @action.bound
-    private updateHostWebProxyPath(newValue: string) {
-        this.props.settingsStore.hostWebProxySettings.hostWebProxyServerRelativePath = newValue;
+    private updateHostWebProxyUrl(newValue: string) {
+        this.props.settingsStore.baristaSettings.spContextConfig.proxyServerRelativeUrl = newValue;
     }
 }
 
