@@ -35,12 +35,33 @@ const FileSource = {
 }))
 @observer
 export class File extends React.Component<FileProps, FileState> {
+    private _input: HTMLInputElement | null;
+
+    public constructor(props: FileProps) {
+        super(props);
+
+        this.state = {
+            isSelected: this.getIsSelected(props),
+            isEditing: false,
+            nameInEdit: ''
+        };
+    }
+
+    public componentWillReceiveProps(nextProps: FileProps) {
+        const isSelected = this.getIsSelected(nextProps);
+        this.setState({
+            isSelected: isSelected
+        });
+    }
+
     public render() {
         const { parentFolder, path, file, isDragging, depth, selectedPaths } = this.props;
         const { connectDragSource } = this.props as any;
+        const { isEditing, isSelected } = this.state;
         const style: React.CSSProperties = {
             paddingLeft: depth * 10,
-            width: '100%'
+            width: '100%',
+            outline: 'none'
         };
 
         const fileStarStyle: React.CSSProperties = {
@@ -53,13 +74,6 @@ export class File extends React.Component<FileProps, FileState> {
             color: '#f4f4f4'
         };
 
-        let isSelected = false;
-        if (selectedPaths instanceof Array) {
-            isSelected = !!find(selectedPaths, path);
-        } else {
-            isSelected = (selectedPaths === path);
-        }
-
         if (isSelected) {
             style.color = 'white';
             style.backgroundColor = '#0078d7';
@@ -71,9 +85,37 @@ export class File extends React.Component<FileProps, FileState> {
             fileStarStyle.color = 'yellow';
         }
 
+        const inputStyle: React.CSSProperties = {
+            outline: 'none',
+            border: 'none',
+            padding: '0',
+            fontSize: '14px',
+            height: '21px',
+            width: (this.state.nameInEdit.length + 2) + 'ex'
+        }
+
         return connectDragSource(
-            <div className="file" style={style} onClick={(ev) => this.onClick(ev, path)} title={file.description || file.name}>
-                {file.name}
+            <div
+                className="file"
+                title={file.description || file.name}
+                style={style}
+                tabIndex={0}
+                onClick={this.onClick}
+                onDoubleClick={this.onDoubleClick}
+                onKeyUp={this.onKeyUp}
+            >
+                {isEditing
+                    ? <input
+                        ref={(node) => this._input = node}
+                        type="text"
+                        style={inputStyle}
+                        value={this.state.nameInEdit}
+                        onChange={this.onFileRename}
+                        onBlur={() => this.stopEditing(true)}
+                        onSubmit={() => this.stopEditing(true)}
+                    />
+                    : <span>{file.name}</span>
+                }
                 {isSelected ?
                     <span className="file-star" style={fileStarStyle} onClick={this.onStarChanged}>
                         <i className={'fa ' + (file.starred ? 'fa-star' : 'fa-star-o')} aria-hidden="true" />
@@ -91,11 +133,100 @@ export class File extends React.Component<FileProps, FileState> {
     }
 
     @autobind
-    private onClick(ev: React.MouseEvent<HTMLDivElement>, currentPath: string) {
+    private getIsSelected(props: FileProps): boolean {
+        const { path, selectedPaths } = props;
+
+        let isSelected = false;
+        if (selectedPaths instanceof Array) {
+            isSelected = !!find(selectedPaths, path);
+        } else {
+            isSelected = (selectedPaths === path);
+        }
+        return isSelected;
+    }
+
+    @autobind
+    private onDoubleClick(ev: React.MouseEvent<HTMLDivElement>) {
+        if (!this.state.isSelected) {
+            return;
+        }
+
+        ev.preventDefault();
+        this.startEditing();
+    }
+
+    @autobind
+    private onKeyUp(ev: React.KeyboardEvent<HTMLDivElement>) {
+        if (!this.state.isSelected) {
+            return;
+        }
+
+        if (ev.keyCode === 13) {
+            if (!this.state.isEditing) {
+                this.startEditing();
+            } else {
+                this.stopEditing(true);
+            }
+        } else if (ev.keyCode === 27) {
+            this.stopEditing(false);
+        }
+    }
+
+    @autobind
+    private onFileRename(ev: React.ChangeEvent<HTMLInputElement>) {
+        this.setState({
+            nameInEdit: ev.target.value
+        });
+    }
+
+    private startEditing() {
+        if (this.props.file.locked) {
+            return;
+        }
+
+        this.setState({
+            isEditing: true,
+            nameInEdit: this.props.file.name
+        });
+
+        setTimeout(() => {
+            if (this._input) {
+                this._input.focus();
+                this._input.setSelectionRange(0, this._input.value.lastIndexOf('.'));
+            }
+        }, 1);
+    }
+
+    private stopEditing(shouldRename: boolean) {
+        const newName = this.state.nameInEdit;
+
+        if (
+            !newName ||
+            newName.length <= 0 ||
+            newName.startsWith('.') ||
+            newName.indexOf('/') > -1 ||
+            find(this.props.parentFolder.files, { name: newName })
+        ) {
+            return;
+        }
+
+        this.setState({
+            isEditing: false,
+            nameInEdit: ''
+        });
+
+        if (shouldRename && typeof this.props.onFileNameChanged === 'function') {
+            const { file, path } = this.props;
+            this.props.onFileNameChanged(file, path, newName);
+        }
+    }
+
+    @autobind
+    private onClick(ev: React.MouseEvent<HTMLDivElement>) {
         ev.stopPropagation();
-        const { file, onClick } = this.props;
+        const { path, file, onClick } = this.props;
         if (typeof onClick === 'function') {
-            onClick(file, currentPath);
+            onClick(file, path);
         }
     }
 
@@ -119,15 +250,19 @@ export class File extends React.Component<FileProps, FileState> {
 }
 
 export interface FileState {
+    isSelected: boolean;
+    isEditing: boolean;
+    nameInEdit: string;
 }
 
 export interface FileProps {
-    parentFolder: IFolder | null;
+    parentFolder: IFolder;
     path: string;
     file: IFile;
     isDragging?: boolean;
     depth: number;
     onClick?: (file: IFile, filePath: string) => void;
+    onFileNameChanged?: (file: IFile, filePath: string, newName: string) => void;
     onStarChanged?: (file: IFile, starred: boolean) => void;
     onLockChanged?: (file: IFile, locked: boolean) => void;
     selectedPaths?: string | string[];

@@ -32,6 +32,8 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
                     onDelete={this.onDelete}
                     onFileSelected={onFileSelected}
                     onFolderSelected={onFolderSelected}
+                    onFileNameChanged={this.onFileNameChanged}
+                    onFolderNameChanged={this.onFolderNameChanged}
                     onFileLockChanged={this.onFileLockChanged}
                     onFileStarChanged={this.onFileStarChanged}
                     selectedPaths={selectedPaths}
@@ -212,6 +214,28 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
                     return;
                 }
             }
+        }
+    }
+
+    @action.bound
+    private onFileNameChanged(file: IFile, currentPath, newName) {
+        const oldName = file.name;
+        file.name = newName;
+        this.props.onChange(this.props.folder);
+
+        if (typeof this.props.onFileSelected === 'function') {
+            this.props.onFileSelected(file, currentPath.replace(new RegExp(`/${oldName}$`), `/${newName}`));
+        }
+    }
+
+    @action.bound
+    private onFolderNameChanged(folder: IFolder, currentPath, newName) {
+        const oldName = folder.name;
+        folder.name = newName;
+        this.props.onChange(this.props.folder);
+
+        if (typeof this.props.onFolderSelected === 'function') {
+            this.props.onFolderSelected(folder, currentPath.replace(new RegExp(`/${oldName}$`), `/${newName}`));
         }
     }
 

@@ -99,6 +99,24 @@ const folderTarget = {
 }))
 @observer
 export class Folder extends React.Component<FolderProps, FolderState> {
+    private _input: HTMLInputElement | null;
+
+    public constructor(props: FolderProps) {
+        super(props);
+
+        this.state = {
+            isSelected: this.getIsSelected(props),
+            isEditing: false,
+            nameInEdit: ''
+        };
+    }
+
+    public componentWillReceiveProps(nextProps: FolderProps) {
+        const isSelected = this.getIsSelected(nextProps);
+        this.setState({
+            isSelected: isSelected
+        });
+    }
 
     public render() {
         const {
@@ -111,56 +129,48 @@ export class Folder extends React.Component<FolderProps, FolderState> {
             onMovedToFolder,
             onFileSelected,
             onFolderSelected,
+            onFileNameChanged,
+            onFolderNameChanged,
             onFileLockChanged,
             onFileStarChanged,
             selectedPaths
         } = this.props;
         const { connectDragSource, connectDropTarget } = this.props as any;
+        const { isEditing, isSelected } = this.state;
 
         if (!folder) {
             return null;
         }
 
-        let isSelected = false;
-        if (selectedPaths instanceof Array) {
-            isSelected = !!find(selectedPaths, path);
-        } else {
-            isSelected = (selectedPaths === path);
-        }
-
-        const rootNodeStyle: any = {
+        const rootNodeStyle: React.CSSProperties = {
             paddingLeft: depth * 10,
             backgroundColor: !depth ? '#f4f4f4' : null,
+            outline: 'none'
         };
 
-        if (!parentFolder) {
-            rootNodeStyle.cursor = 'pointer';
-            rootNodeStyle.paddingLeft = '3px';
-            rootNodeStyle.display = 'flex';
-            rootNodeStyle.overflow = 'hidden';
-        }
-
-        const nodeStyle: any = {
+        const nodeStyle: React.CSSProperties = {
             userSelect: 'none',
         };
-
-        if (parentFolder) {
-            nodeStyle.cursor = 'pointer';
-            nodeStyle.display = 'flex';
-            nodeStyle.flexDirection = 'column';
-        } else {
-            nodeStyle.display = 'flex';
-            nodeStyle.flexDirection = 'column';
-            nodeStyle.height = '100%';
-        }
 
         const folderLockStyle: React.CSSProperties = {
             paddingLeft: '5px',
             color: '#f4f4f4'
         };
 
-        if (!parentFolder) {
-            folderLockStyle.color = '#0078d7';
+        const addIconStyle: React.CSSProperties = {
+            padding: '0 5px',
+            cursor: 'pointer'
+        };
+
+        const rootSubFolderStyles: React.CSSProperties = {};
+
+        const inputStyle: React.CSSProperties = {
+            outline: 'none',
+            border: 'none',
+            padding: '0',
+            fontSize: '14px',
+            height: '21px',
+            width: (this.props.folder.name.length + 2) + 'ex'
         }
 
         let collapseClassName = 'collapse';
@@ -170,13 +180,22 @@ export class Folder extends React.Component<FolderProps, FolderState> {
             collapseClassName += ' fa fa-caret-down';
         }
 
-        let addIconStyle: React.CSSProperties = {
-            padding: '0 5px',
-            cursor: 'pointer'
-        };
+        if (parentFolder) {
+            nodeStyle.cursor = 'pointer';
+            nodeStyle.display = 'flex';
+            nodeStyle.flexDirection = 'column';
+        } else {
+            rootNodeStyle.cursor = 'pointer';
+            rootNodeStyle.paddingLeft = '3px';
+            rootNodeStyle.display = 'flex';
+            rootNodeStyle.overflow = 'hidden';
 
-        const rootSubFolderStyles: any = {};
-        if (!parentFolder) {
+            nodeStyle.display = 'flex';
+            nodeStyle.flexDirection = 'column';
+            nodeStyle.height = '100%';
+
+            folderLockStyle.color = '#0078d7';
+
             rootSubFolderStyles.overflow = 'auto';
             rootSubFolderStyles.flex = '1';
         }
@@ -189,11 +208,29 @@ export class Folder extends React.Component<FolderProps, FolderState> {
         }
 
         return connectDragSource(connectDropTarget(
-            <div className="folder" style={nodeStyle}>
-                <div style={rootNodeStyle} onClick={(ev) => this.onFolderSelected(ev, path)} title={folder.description}>
+            <div className="folder" style={nodeStyle} tabIndex={0} onKeyUp={this.onKeyUp}>
+                <div
+                    title={folder.description}
+                    style={rootNodeStyle}
+                    onClick={this.onFolderSelected}
+                    tabIndex={0}
+                    onDoubleClick={this.onDoubleClick}
+                    onKeyUp={this.onKeyUp}
+                >
                     <span className={collapseClassName} style={{ paddingRight: '5px', width: '0.5em' }} aria-hidden="true" />
                     {folder.iconClassName ? (<span className={folder.iconClassName} style={{ paddingRight: '3px' }} />) : null}
-                    <span>{folder.name}</span>
+                    {isEditing
+                        ? <input
+                            ref={(node) => this._input = node}
+                            type="text"
+                            style={inputStyle}
+                            value={this.state.nameInEdit}
+                            onChange={this.onFolderRename}
+                            onBlur={() => this.stopEditing(true)}
+                            onSubmit={() => this.stopEditing(true)}
+                        />
+                        : <span>{folder.name}</span>
+                    }
                     <span className="file-lock" style={folderLockStyle} onClick={this.onLockChanged}>
                         <i className={'fa ' + (folder.locked ? 'fa-lock' : 'fa-unlock')} aria-hidden="true" />
                     </span>
@@ -229,6 +266,8 @@ export class Folder extends React.Component<FolderProps, FolderState> {
                                     onMovedToFolder={onMovedToFolder}
                                     onFileSelected={onFileSelected}
                                     onFolderSelected={onFolderSelected}
+                                    onFileNameChanged={onFileNameChanged}
+                                    onFolderNameChanged={onFolderNameChanged}
                                     onFileLockChanged={onFileLockChanged}
                                     onFileStarChanged={onFileStarChanged}
                                     selectedPaths={selectedPaths}
@@ -246,6 +285,7 @@ export class Folder extends React.Component<FolderProps, FolderState> {
                                     file={file}
                                     depth={depth + 1}
                                     onClick={onFileSelected}
+                                    onFileNameChanged={onFileNameChanged}
                                     onLockChanged={onFileLockChanged}
                                     onStarChanged={onFileStarChanged}
                                     selectedPaths={selectedPaths}
@@ -259,15 +299,112 @@ export class Folder extends React.Component<FolderProps, FolderState> {
     }
 
     @autobind
-    private onFolderSelected(ev: React.MouseEvent<HTMLDivElement>, currentPath: string) {
+    private getIsSelected(props: FolderProps): boolean {
+        const { path, selectedPaths } = props;
+
+        let isSelected = false;
+        if (selectedPaths instanceof Array) {
+            isSelected = !!find(selectedPaths, path);
+        } else {
+            isSelected = (selectedPaths === path);
+        }
+        return isSelected;
+    }
+
+    @autobind
+    private onDoubleClick(ev: React.MouseEvent<HTMLDivElement>) {
+        if (!this.state.isSelected) {
+            return;
+        }
+
+        ev.preventDefault();
+        this.startEditing();
+    }
+
+    @autobind
+    private onKeyUp(ev: React.KeyboardEvent<HTMLDivElement>) {
+        if (!this.state.isSelected) {
+            return;
+        }
+
+        if (ev.keyCode === 13) {
+            if (!this.state.isEditing) {
+                this.startEditing();
+            } else {
+                this.stopEditing(true);
+            }
+        } else if (ev.keyCode === 27) {
+            this.stopEditing(false);
+        }
+    }
+
+    @autobind
+    private onFolderRename(ev: React.ChangeEvent<HTMLInputElement>) {
+        this.setState({
+            nameInEdit: ev.target.value
+        });
+    }
+
+    private startEditing() {
+        if (this.props.folder.locked) {
+            return;
+        }
+
+        if (!this.state.isSelected) {
+            return;
+        }
+
+        if (!this.props.parentFolder) {
+            return;
+        }
+
+        this.setState({
+            isEditing: true,
+            nameInEdit: this.props.folder.name
+        });
+
+        setTimeout(() => {
+            if (this._input) {
+                this._input.focus();
+                this._input.setSelectionRange(0, this._input.value.lastIndexOf('.'));
+            }
+        }, 1);
+    }
+
+    private stopEditing(shouldRename: boolean) {
+        const newName = this.state.nameInEdit;
+        if (
+            !newName ||
+            newName.length <= 0 ||
+            newName.startsWith('.') ||
+            newName.indexOf('/') > -1 ||
+            !this.props.parentFolder ||
+            find(this.props.parentFolder.folders, { name: newName })
+        ) {
+            return;
+        }
+
+        this.setState({
+            isEditing: false,
+            nameInEdit: ''
+        });
+
+        if (shouldRename && typeof this.props.onFolderNameChanged === 'function') {
+            const { folder, path } = this.props;
+            this.props.onFolderNameChanged(folder, path, newName);
+        }
+    }
+
+    @autobind
+    private onFolderSelected(ev: React.MouseEvent<HTMLDivElement>) {
         ev.stopPropagation();
-        const { folder, parentFolder, onCollapseChange, onFolderSelected } = this.props;
+        const { path, folder, parentFolder, onCollapseChange, onFolderSelected } = this.props;
         if (typeof onCollapseChange === 'function') {
             onCollapseChange(folder, parentFolder);
         }
 
         if (typeof onFolderSelected === 'function') {
-            onFolderSelected(folder, currentPath);
+            onFolderSelected(folder, path);
         }
     }
 
@@ -317,6 +454,9 @@ export class Folder extends React.Component<FolderProps, FolderState> {
 }
 
 export interface FolderState {
+    isSelected: boolean;
+    isEditing: boolean;
+    nameInEdit: string;
 }
 
 export interface FolderProps {
@@ -332,6 +472,8 @@ export interface FolderProps {
     onLockChanged?: (folder: IFolder, locked: boolean) => void;
     onFileSelected?: (file: IFile, filePath: string) => void;
     onFolderSelected?: (folder: IFolder, folderPath: string | null) => void;
+    onFileNameChanged?: (file: IFile, filePath: string, newName: string) => void;
+    onFolderNameChanged?: (folder: IFolder, folderPath: string, newName: string) => void;
     onFileLockChanged?: (file: IFile, locked: boolean) => void;
     onFileStarChanged?: (file: IFile, starred: boolean) => void;
     selectedPaths?: string | string[];
