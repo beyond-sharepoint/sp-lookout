@@ -17,6 +17,11 @@ const FileSource = {
             return false;
         }
 
+        //Prevent files being edited from dragging.
+        if ((props.file as any).isEditing) {
+            return false;
+        }
+
         return true;
     },
     beginDrag(props: FileProps) {
@@ -151,6 +156,10 @@ export class File extends React.Component<FileProps, FileState> {
             return;
         }
 
+        if (this.state.isEditing) {
+            return;
+        }
+        
         ev.preventDefault();
         this.startEditing();
     }
@@ -189,6 +198,8 @@ export class File extends React.Component<FileProps, FileState> {
             nameInEdit: this.props.file.name
         });
 
+        (this.props.file as any).isEditing = true;
+
         setTimeout(() => {
             if (this._input) {
                 this._input.focus();
@@ -208,6 +219,7 @@ export class File extends React.Component<FileProps, FileState> {
             find(this.props.parentFolder.files, { name: newName })
         ) {
             if (!shouldRename || revertOnError) {
+                delete (this.props.file as any).isEditing;
                 this.setState({
                     isEditing: false,
                     nameInEdit: ''
@@ -215,6 +227,8 @@ export class File extends React.Component<FileProps, FileState> {
             }
             return false;
         }
+
+        delete (this.props.file as any).isEditing;
 
         this.setState({
             isEditing: false,

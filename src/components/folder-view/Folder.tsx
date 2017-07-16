@@ -18,6 +18,11 @@ const folderSource = {
             return false;
         }
 
+        //Prevent folders being edited from dragging.
+        if ((props.folder as any).isEditing) {
+            return false;
+        }
+
         return true;
     },
     beginDrag(props: FolderProps) {
@@ -150,6 +155,7 @@ export class Folder extends React.Component<FolderProps, FolderState> {
 
         const nodeStyle: React.CSSProperties = {
             userSelect: 'none',
+            outline: 'none'
         };
 
         const folderLockStyle: React.CSSProperties = {
@@ -317,6 +323,10 @@ export class Folder extends React.Component<FolderProps, FolderState> {
             return;
         }
 
+        if (this.state.isEditing) {
+            return;
+        }
+
         ev.preventDefault();
         this.startEditing();
     }
@@ -363,6 +373,8 @@ export class Folder extends React.Component<FolderProps, FolderState> {
             nameInEdit: this.props.folder.name
         });
 
+        (this.props.folder as any).isEditing = true;
+
         setTimeout(() => {
             if (this._input) {
                 this._input.focus();
@@ -382,6 +394,7 @@ export class Folder extends React.Component<FolderProps, FolderState> {
             find(this.props.parentFolder.folders, { name: newName })
         ) {
              if (!shouldRename || revertOnError) {
+                 delete (this.props.folder as any).isEditing;
                 this.setState({
                     isEditing: false,
                     nameInEdit: ''
@@ -390,6 +403,7 @@ export class Folder extends React.Component<FolderProps, FolderState> {
             return false;
         }
 
+        delete (this.props.folder as any).isEditing;
         this.setState({
             isEditing: false,
             nameInEdit: ''
