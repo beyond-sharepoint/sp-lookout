@@ -13,7 +13,7 @@ import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
 import { ObjectInspector } from 'react-inspector';
 import SplitPane from '../split-pane/SplitPane';
 import MonacoEditor from '../monaco-editor';
-import { get, set, cloneDeep, defaultsDeep } from 'lodash';
+import { get, set, cloneDeep, defaultsDeep, debounce } from 'lodash';
 import { FiddleSettingsModal } from '../fiddle-settings-modal';
 
 import Barista, { BrewSettings } from '../../services/barista';
@@ -68,6 +68,9 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
             showEditor: true,
         };
 
+        //Ensure that the fiddle store isn't updated more than once every second.
+        this.persistFiddleStoreToLocalStorage = debounce(this.persistFiddleStoreToLocalStorage, 1000)
+            .bind(this);
     }
 
     private async loadTypescriptDefinitions() {
@@ -306,6 +309,10 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
     @action.bound
     private updateCode(code: string) {
         this.props.currentFiddle.code = code;
+        this.persistFiddleStoreToLocalStorage();
+    }
+
+    private persistFiddleStoreToLocalStorage() {
         FiddlesStore.saveToLocalStorage(this.props.fiddlesStore);
     }
 

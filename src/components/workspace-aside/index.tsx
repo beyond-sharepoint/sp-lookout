@@ -36,7 +36,7 @@ export default class Aside extends React.Component<AsideProps, any> {
                 name: page.name,
                 icon: page.iconClassName,
                 url: '#/pages/' + page.id,
-                onClick: () => { /*Without a click handler, the icon isn't rendered. nice, guys. */ }
+                onClick: () => { /* Without a click handler, the icon isn't rendered. nice, guys. */ }
             });
         }
         const navGroups: Array<INavLinkGroup> = [

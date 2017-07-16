@@ -38,10 +38,6 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
         window.addEventListener('resize', this.handleWindowResize);
     }
 
-    public componentWillReceiveProps(nextProps) {
-        console.dir(nextProps);
-    }
-
     public componentWillUnmount() {
         window.removeEventListener('resize', this.handleWindowResize);
         document.removeEventListener('mouseup', this.handleMouseUp);

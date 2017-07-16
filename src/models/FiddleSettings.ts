@@ -32,7 +32,8 @@ export const defaultPaths = {
     'react': 'https://cdnjs.cloudflare.com/ajax/libs/react/15.6.1/react',
     'react-dom': 'https://cdnjs.cloudflare.com/ajax/libs/react/15.6.1/react-dom',
     'react-dom-server': 'https://cdnjs.cloudflare.com/ajax/libs/react/15.6.1/react-dom-server',
-    'Chartjs': 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min'
+    'Chartjs': 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min',
+    'rrule': require('file-loader!rrule')
 };
 
 export const defaultFiddleSettings: FiddleSettings = {

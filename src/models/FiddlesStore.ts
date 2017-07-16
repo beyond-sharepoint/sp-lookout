@@ -14,6 +14,11 @@ export class FiddlesStore {
         if (!fiddleRootFolder) {
             this._fiddleRootFolder = observable(defaultFiddleRootFolder);
         } else {
+            // Make Built-Ins evergreen
+                    
+            const builtInFolder = find(fiddleRootFolder.folders, { name: 'built-in' });
+            assign(builtInFolder, find(defaultFiddleRootFolder.folders, {name: 'built-in'}));
+
             this._fiddleRootFolder = observable(defaultsDeep(fiddleRootFolder, defaultFiddleRootFolder) as FiddleFolder);
         }
     }
@@ -45,10 +50,6 @@ export class FiddlesStore {
 
     static async loadFromLocalStorage(): Promise<FiddlesStore> {
         const fiddleRootFolder = await localforage.getItem(FiddlesLocalStorageKey) as FiddleFolder;
-        
-        const builtInFolder = find(fiddleRootFolder.folders, { name: 'built-in' });
-        assign(builtInFolder, find(defaultFiddleRootFolder.folders, {name: 'built-in'}));
-
         return new FiddlesStore(fiddleRootFolder);
     }
 
