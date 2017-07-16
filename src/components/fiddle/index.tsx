@@ -252,6 +252,21 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
         //override the readOnly value with the lock status.
         editorOptionsJS.readOnly = currentFiddle.locked;
 
+        //Determine language from file extension.
+        let language = 'typescript';
+        let fileExtension = currentFiddle.name
+            .substring(currentFiddle.name.lastIndexOf('.'), currentFiddle.name.length)
+            .toLowerCase();
+
+        switch (fileExtension) {
+            case '.json':
+                language = 'json';
+                break;
+            default:
+                language = 'typescript';
+                break;
+        }
+
         return (
             <SplitPane
                 split="vertical"
@@ -274,7 +289,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
                             <MonacoEditor
                                 value={code}
                                 theme={theme}
-                                language="typescript"
+                                language={language}
                                 filename={currentFiddle.name}
                                 onChange={this.updateCode}
                                 editorWillMount={this.editorWillMount}

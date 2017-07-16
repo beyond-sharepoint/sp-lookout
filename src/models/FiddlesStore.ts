@@ -24,7 +24,7 @@ export class FiddlesStore {
 
             //Ensure all files have default properties
             const fileMap = FiddlesStore.getFileMap(fiddleRootFolder);
-            for(const fileName in Object.keys(fileMap)) {
+            for(const fileName of Object.keys(fileMap)) {
                 const file = fileMap[fileName];
                 defaultsDeep(file, defaultFiddleSettings);
             }

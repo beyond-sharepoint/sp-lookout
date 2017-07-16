@@ -177,7 +177,7 @@ export class Folder extends React.Component<FolderProps, FolderState> {
             fontSize: '14px',
             height: '21px',
             width: (this.props.folder.name.length + 2) + 'ex'
-        }
+        };
 
         let collapseClassName = 'collapse';
         if (folder.collapsed === true) {
@@ -375,12 +375,15 @@ export class Folder extends React.Component<FolderProps, FolderState> {
 
         (this.props.folder as any).isEditing = true;
 
-        setTimeout(() => {
-            if (this._input) {
-                this._input.focus();
-                this._input.setSelectionRange(0, this._input.value.lastIndexOf('.'));
-            }
-        }, 1);
+        setTimeout(
+            () => {
+                if (this._input) {
+                    this._input.focus();
+                    this._input.setSelectionRange(0, this._input.value.lastIndexOf('.'));
+                }
+            },
+            1
+        );
     }
 
     private stopEditing(shouldRename: boolean, revertOnError?: boolean) {
@@ -393,8 +396,8 @@ export class Folder extends React.Component<FolderProps, FolderState> {
             !this.props.parentFolder ||
             find(this.props.parentFolder.folders, { name: newName })
         ) {
-             if (!shouldRename || revertOnError) {
-                 delete (this.props.folder as any).isEditing;
+            if (!shouldRename || revertOnError) {
+                delete (this.props.folder as any).isEditing;
                 this.setState({
                     isEditing: false,
                     nameInEdit: ''

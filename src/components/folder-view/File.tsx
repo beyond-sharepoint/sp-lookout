@@ -97,7 +97,7 @@ export class File extends React.Component<FileProps, FileState> {
             fontSize: '14px',
             height: '21px',
             width: (this.state.nameInEdit.length + 2) + 'ex'
-        }
+        };
 
         return connectDragSource(
             <div
@@ -159,7 +159,7 @@ export class File extends React.Component<FileProps, FileState> {
         if (this.state.isEditing) {
             return;
         }
-        
+
         ev.preventDefault();
         this.startEditing();
     }
@@ -200,12 +200,15 @@ export class File extends React.Component<FileProps, FileState> {
 
         (this.props.file as any).isEditing = true;
 
-        setTimeout(() => {
-            if (this._input) {
-                this._input.focus();
-                this._input.setSelectionRange(0, this._input.value.lastIndexOf('.'));
-            }
-        }, 1);
+        setTimeout(
+            () => {
+                if (this._input) {
+                    this._input.focus();
+                    this._input.setSelectionRange(0, this._input.value.lastIndexOf('.'));
+                }
+            },
+            1
+        );
     }
 
     private stopEditing(shouldRename: boolean, revertOnError?: boolean) {

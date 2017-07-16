@@ -218,7 +218,7 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
     }
 
     @action.bound
-    private onFileNameChanged(file: IFile, currentPath, newName) {
+    private onFileNameChanged(file: IFile, currentPath: string, newName: string) {
         const oldName = file.name;
         file.name = newName;
         this.props.onChange(this.props.folder);
@@ -229,7 +229,7 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
     }
 
     @action.bound
-    private onFolderNameChanged(folder: IFolder, currentPath, newName) {
+    private onFolderNameChanged(folder: IFolder, currentPath: string, newName: string) {
         const oldName = folder.name;
         folder.name = newName;
         this.props.onChange(this.props.folder);
