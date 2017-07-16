@@ -65,6 +65,37 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, an
                                 onText="On"
                                 offText="Off"
                             />
+                            <Dropdown
+                                label="Wordwrap:"
+                                id="fiddle-wordwrap"
+                                ariaLabel="Select wordwrap"
+                                selectedKey={currentFiddle.editorOptions.wordWrap || defaultFiddleSettings.editorOptions.wordWrap}
+                                onChanged={this.updateWordWrap}
+                                options={
+                                    [
+                                        { key: 'off', text: 'Off - Never Wrap Lines' },
+                                        { key: 'on', text: 'On - Wrap at viewport width' },
+                                        { key: 'wordWrapColumn', text: 'Column - Wrap at 80 characters' },
+                                        { key: 'bounded', text: 'Bounded - Wrap at min(viewportwidth, 80)' }
+                                    ]
+                                }
+                            />
+                            <Dropdown
+                                label="Cursor Animation Style:"
+                                id="fiddle-cursor"
+                                ariaLabel="Select Cursor Animation Style"
+                                selectedKey={currentFiddle.editorOptions.cursorBlinking || defaultFiddleSettings.editorOptions.cursorBlinking}
+                                onChanged={this.updateCursorAnimationStyle}
+                                options={
+                                    [
+                                        { key: 'blink', text: 'Blink' },
+                                        { key: 'smooth', text: 'Smooth' },
+                                        { key: 'phase', text: 'Phase' },
+                                        { key: 'expand', text: 'Expand' },
+                                        { key: 'solid', text: 'Solid' }
+                                    ]
+                                }
+                            />
                         </PivotItem>
                         <PivotItem linkText="Import Options">
                             TODO
@@ -91,6 +122,16 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, an
     @action.bound
     private updateMinimap(ev: any) {
         set(this.props, 'currentFiddle.editorOptions.minimap.enabled', ev);
+    }
+
+    @action.bound
+    private updateCursorAnimationStyle(ev: any) {
+        this.props.currentFiddle.editorOptions.cursorBlinking = ev.key;
+    }
+
+    @action.bound
+    private updateWordWrap(ev: any) {
+        this.props.currentFiddle.editorOptions.wordWrap = ev.key;
     }
 }
 

@@ -17,11 +17,14 @@ export interface FiddleSettings {
 
 export const defaultEditorOptions: monaco.editor.IEditorOptions = {
     automaticLayout: true,
-    scrollBeyondLastLine: false,
+    cursorBlinking: 'blink',
     folding: true,
     minimap: {
         enabled: true
-    }
+    },
+    readOnly: false,
+    scrollBeyondLastLine: false,
+    wordWrap: 'off'
 };
 
 export const defaultPaths = {

@@ -180,7 +180,7 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps, {}>
             },
             options
         );
-        
+
         this.editor = context.monaco.editor.create(containerElement, editorOptions);
 
         // After initializing monaco editor
@@ -198,7 +198,7 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps, {}>
             if (typeof this.props.editorWillDispose === 'function') {
                 this.props.editorWillDispose(this.editor);
             }
-            
+
             this.editor.dispose();
         }
     }

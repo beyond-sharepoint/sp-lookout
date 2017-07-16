@@ -78,6 +78,9 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
         //Import typedefs to feed the grue
         //the grue is ancient, it must be done this way.
         const typeDefs = {
+            'react': require('file-loader!@types/react/index.d.ts'),
+            'react-dom': require('file-loader!@types/react-dom/index.d.ts'),
+            'react-dom-server': require('file-loader!@types/react-dom/server/index.d.ts'),
             'lodash': require('file-loader!@types/lodash/index.d.ts'),
             'moment': require('file-loader!moment/moment.d.ts'),
             'sp-pnp-js': require('file-loader!./types/sp-pnp-js.d.html'),
@@ -245,10 +248,9 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
         }
 
         const editorOptionsJS = toJS(editorOptions) as monaco.editor.IEditorOptions;
-        //TODO: need to force a editor re-render when locked changes.
-        // if (currentFiddle.locked) {
-        //     editorOptions.readOnly = true;
-        // }
+
+        //override the readOnly value with the lock status.
+        editorOptionsJS.readOnly = currentFiddle.locked;
 
         return (
             <SplitPane

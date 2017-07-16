@@ -1,5 +1,5 @@
 import { autorun, observable, extendObservable, observe, action, computed, runInAction, toJS, IObservableObject } from 'mobx';
-import { FiddleSettings } from './FiddleSettings';
+import { FiddleSettings, defaultFiddleSettings } from './FiddleSettings';
 import { FiddleFolder, defaultFiddleRootFolder } from './FiddleFolder';
 import * as localforage from 'localforage';
 import { assign, defaultsDeep, find, filter, values, findKey } from 'lodash';
@@ -15,11 +15,21 @@ export class FiddlesStore {
             this._fiddleRootFolder = observable(defaultFiddleRootFolder);
         } else {
             // Make Built-Ins evergreen
-                    
-            const builtInFolder = find(fiddleRootFolder.folders, { name: 'built-in' });
-            assign(builtInFolder, find(defaultFiddleRootFolder.folders, {name: 'built-in'}));
 
-            this._fiddleRootFolder = observable(defaultsDeep(fiddleRootFolder, defaultFiddleRootFolder) as FiddleFolder);
+            const builtInFolder = find(fiddleRootFolder.folders, { name: 'built-in' });
+            assign(builtInFolder, find(defaultFiddleRootFolder.folders, { name: 'built-in' }));
+
+            //Set defaults
+            defaultsDeep(fiddleRootFolder, defaultFiddleRootFolder);
+
+            //Ensure all files have default properties
+            const fileMap = FiddlesStore.getFileMap(fiddleRootFolder);
+            for(const fileName in Object.keys(fileMap)) {
+                const file = fileMap[fileName];
+                defaultsDeep(file, defaultFiddleSettings);
+            }
+
+            this._fiddleRootFolder = observable(fiddleRootFolder);
         }
     }
 

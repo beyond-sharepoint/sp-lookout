@@ -63,8 +63,26 @@ export default web.get();`,
                 },
                 {
                     ...defaultFiddleSettings,
-                    name: '12-customComponents-ts',
-                    code: `import * as ReactDOMServer from 'react-dom-server'`,
+                    name: '12-customComponents.tsx',
+                    code: `import * as React from 'react';
+import * as ReactDOMServer from 'react-dom-server';
+
+class MyComponent {
+    
+    
+    render() {
+        const foo = "Hello, world!";
+        const styles = {
+            backgroundColor: 'blue'
+        };
+        return (
+            <div style={styles}>{foo}</div>
+        )
+    }
+}
+
+export default ReactDOMServer.renderToStaticMarkup((new MyComponent()).render());
+`,
                 }
             ]
         },
