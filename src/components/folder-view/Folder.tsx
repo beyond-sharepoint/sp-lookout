@@ -226,7 +226,7 @@ export class Folder extends React.Component<FolderProps, FolderState> {
                             style={inputStyle}
                             value={this.state.nameInEdit}
                             onChange={this.onFolderRename}
-                            onBlur={() => this.stopEditing(true)}
+                            onBlur={() => this.stopEditing(true, true)}
                             onSubmit={() => this.stopEditing(true)}
                         />
                         : <span>{folder.name}</span>
@@ -371,7 +371,7 @@ export class Folder extends React.Component<FolderProps, FolderState> {
         }, 1);
     }
 
-    private stopEditing(shouldRename: boolean) {
+    private stopEditing(shouldRename: boolean, revertOnError?: boolean) {
         const newName = this.state.nameInEdit;
         if (
             !newName ||
@@ -381,7 +381,13 @@ export class Folder extends React.Component<FolderProps, FolderState> {
             !this.props.parentFolder ||
             find(this.props.parentFolder.folders, { name: newName })
         ) {
-            return;
+             if (!shouldRename || revertOnError) {
+                this.setState({
+                    isEditing: false,
+                    nameInEdit: ''
+                });
+            }
+            return false;
         }
 
         this.setState({
@@ -393,6 +399,8 @@ export class Folder extends React.Component<FolderProps, FolderState> {
             const { folder, path } = this.props;
             this.props.onFolderNameChanged(folder, path, newName);
         }
+
+        return true;
     }
 
     @autobind

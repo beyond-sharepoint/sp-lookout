@@ -111,7 +111,7 @@ export class File extends React.Component<FileProps, FileState> {
                         style={inputStyle}
                         value={this.state.nameInEdit}
                         onChange={this.onFileRename}
-                        onBlur={() => this.stopEditing(true)}
+                        onBlur={() => this.stopEditing(true, true)}
                         onSubmit={() => this.stopEditing(true)}
                     />
                     : <span>{file.name}</span>
@@ -197,7 +197,7 @@ export class File extends React.Component<FileProps, FileState> {
         }, 1);
     }
 
-    private stopEditing(shouldRename: boolean) {
+    private stopEditing(shouldRename: boolean, revertOnError?: boolean) {
         const newName = this.state.nameInEdit;
 
         if (
@@ -207,7 +207,13 @@ export class File extends React.Component<FileProps, FileState> {
             newName.indexOf('/') > -1 ||
             find(this.props.parentFolder.files, { name: newName })
         ) {
-            return;
+            if (!shouldRename || revertOnError) {
+                this.setState({
+                    isEditing: false,
+                    nameInEdit: ''
+                });
+            }
+            return false;
         }
 
         this.setState({
@@ -219,6 +225,8 @@ export class File extends React.Component<FileProps, FileState> {
             const { file, path } = this.props;
             this.props.onFileNameChanged(file, path, newName);
         }
+
+        return true;
     }
 
     @autobind
