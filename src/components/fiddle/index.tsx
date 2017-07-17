@@ -46,7 +46,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
                 title: 'Debug the current script. Ensure developer tools are open before running this command.',
                 iconProps: {
                     className: 'fa fa-bug',
-                    style: { fontSize: '1.25em', lineHeight: '0.75em', verticalAlign: '-15%' }
+                    style: { fontSize: '1.25em', lineHeight: '0.75em', verticalAlign: '-15%', fontFamily: 'FontAwesome' }
                 },
                 ariaLabel: 'Debug the current script. Ensure developer tools are open before running this command.',
                 onClick: () => { this.debug(); },
