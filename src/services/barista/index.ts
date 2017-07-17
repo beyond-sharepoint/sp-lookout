@@ -91,17 +91,17 @@ export default class Barista {
                 switch (ex.$$spcontext) {
                     case 'authrequired':
                         if (authenticationRequiredHandler) {
-                            return authenticationRequiredHandler(this);
+                            return authenticationRequiredHandler(ex.message, this);
                         }
                         break;
                     case 'invalidorigin':
                         if (invalidOriginHandler) {
-                            return invalidOriginHandler(this);
+                            return invalidOriginHandler(ex.message, this);
                         }
                         break;
                     case 'noproxy':
                         if (noProxyHandler) {
-                            return noProxyHandler(this);
+                            return noProxyHandler(ex.message, this);
                         }
                         break;
                     default:
@@ -160,9 +160,9 @@ export default class Barista {
 export interface BaristaConfig {
     webFullUrl: string;
     fiddleScriptsPath?: string;
-    noProxyHandler?: (barista: Barista) => any;
-    invalidOriginHandler?: (barista: Barista) => any;
-    authenticationRequiredHandler?: (barista: Barista) => any;
+    noProxyHandler?: (errorMessage: string, barista: Barista) => any;
+    invalidOriginHandler?: (errorMessage: string, barista: Barista) => any;
+    authenticationRequiredHandler?: (errorMessage: string, barista: Barista) => any;
 }
 
 export interface BrewSettings {

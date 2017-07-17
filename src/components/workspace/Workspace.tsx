@@ -11,6 +11,7 @@ import { observer } from 'mobx-react';
 import * as localforage from 'localforage';
 import { autobind } from 'office-ui-fabric-react/lib';
 import { CommandBar } from 'office-ui-fabric-react/lib/CommandBar';
+import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { INavLinkGroup } from 'office-ui-fabric-react/lib/Nav';
 import SplitPane from '../split-pane/SplitPane';
 import { defaultsDeep } from 'lodash';
@@ -43,6 +44,9 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
             welcomeSkipped: false,
             showWelcomeModal: false,
             showSettingsModal: false,
+            showAuthenticationRequiredModal: false,
+            showInvalidOriginModal: false,
+            showNoProxyModal: false,
             sidebarSize: 215,
             sidebarPrevSize: 0
         };
@@ -170,6 +174,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
 
     public render() {
         const { settingsStore, pagesStore, fiddlesStore } = this.props;
+        const { showAuthenticationRequiredModal, showInvalidOriginModal, showNoProxyModal } = this.state;
 
         return (
             <div id="main">
@@ -232,6 +237,60 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
                     onFinish={this.onWelcomeFinished}
                     settingsStore={settingsStore}
                 />
+                <Modal
+                    isOpen={showAuthenticationRequiredModal}
+                    onDismiss={() => this.setState({ showAuthenticationRequiredModal: false })}
+                    isBlocking={false}
+                    containerClassName="barista-error-authentication-modal-container"
+                >
+                    <div className="barista-error-authentication-modal-header">
+                        <span>Authentication Error</span>
+                    </div>
+                    <div className="barista-error-authentication-modal-body">
+                        <p>
+                            Authentication is required with your SharePoint Tenant. Please authenticate with your SharePoint site by visiting it and returning to SP Lookout!
+                        </p>
+                        <p>
+                            Details: {this.state.error}
+                        </p>
+                    </div>
+                </Modal>
+                <Modal
+                    isOpen={showInvalidOriginModal}
+                    onDismiss={() => this.setState({ showInvalidOriginModal: false })}
+                    isBlocking={false}
+                    containerClassName="barista-error-invalid-origin-modal-container"
+                >
+                    <div className="barista-error-invalid-origin-modal-header">
+                        <span>Invalid Origin</span>
+                    </div>
+                    <div className="barista-error-invalid-origin-modal-body">
+                        <p>
+                            The HostWebProxy reported that the current location is not trusted. Please modify your HostWebProxy to trust the current location. ({URI().origin()})
+                        </p>
+                        <p>
+                            Details: {this.state.error}
+                        </p>
+                    </div>
+                </Modal>
+                <Modal
+                    isOpen={showNoProxyModal}
+                    onDismiss={() => this.setState({ showNoProxyModal: false })}
+                    isBlocking={false}
+                    containerClassName="barista-error-no-proxy-modal-container"
+                >
+                    <div className="barista-error-no-proxy-modal-header">
+                        <span>HostWebProxy Not Found</span>
+                    </div>
+                    <div className="barista-error-no-proxy-modal-body">
+                        <p>
+                            SharePoint authentication succeeded, however, a proxy could not be located. Please check your settings and verify the HostWebProxy.aspx file is in the target location.
+                        </p>
+                        <p>
+                            Details: {this.state.error}
+                        </p>
+                    </div>
+                </Modal>
             </div>
         );
     }
@@ -260,9 +319,9 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
         this._barista = new Barista(
             {
                 webFullUrl: webFullUrl,
-                noProxyHandler: () => { console.log('no proxy!'); return { data: 'Error: Could not communicate with the proxy.' }; },
-                authenticationRequiredHandler: () => { console.log('auth required!'); return { data: 'Error: Authentication is required.' }; },
-                invalidOriginHandler: () => { console.log('invalid origin!'); return { data: 'Error: Proxy reported invalid origin.' }; }
+                noProxyHandler: (error) => { this.setState({ showNoProxyModal: true, error }); return { data: 'Error: Could not communicate with the proxy.' }; },
+                authenticationRequiredHandler: (error) => { this.setState({ showAuthenticationRequiredModal: true, error }); return { data: 'Error: Authentication is required.' }; },
+                invalidOriginHandler: (error) => { this.setState({ showInvalidOriginModal: true, error }); return { data: 'Error: Proxy reported invalid origin.' }; }
             },
             contextConfig
         );
@@ -347,10 +406,14 @@ export interface WorkspaceState {
     welcomeSkipped: boolean;
     showWelcomeModal: boolean;
     showSettingsModal: boolean;
+    showNoProxyModal: boolean;
+    showAuthenticationRequiredModal: boolean;
+    showInvalidOriginModal: boolean;
     sidebarSize: number;
     sidebarPrevSize: number;
     selectedPageId?: string;
     selectedPaths?: string | string[];
+    error?: string;
 }
 
 export interface WorkspaceProps {
