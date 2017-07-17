@@ -4,11 +4,11 @@
   "description": "SharePoint Host Web Proxy",
   "private": true,
   "scripts": {
-    "build": "rimraf build && webpack -p --bail --progress --profile --config webpack.config.js && rimraf build/HostWebProxy.js && cpr build/HostWebProxy.aspx ../../public/HostWebProxy.aspx -o"
+    "build": "rimraf build && webpack -p --bail --progress --profile --config webpack.config.js && rimraf build/HostWebProxy.js && cpr build/HostWebProxy.aspx ../../public/HostWebProxy.aspx -o && cpr build/HostWebProxy.aspx ../../public/HostWebProxy.txt -o"
   },
   "dependencies": {
     "promise-polyfill": "^6.0.2",
-    "ts-loader": "^2.2.2",
+    "ts-loader": "^2.3.0",
     "typescript": "^2.4.1",
     "whatwg-fetch": "^2.0.3"
   },
@@ -23,7 +23,7 @@
     "html-webpack-plugin": "^2.29.0",
     "raw-loader": "^0.5.1",
     "rimraf": "^2.6.1",
-    "webpack": "^3.1.0",
+    "webpack": "^3.3.0",
     "worker-loader": "^0.8.1"
   }
 }

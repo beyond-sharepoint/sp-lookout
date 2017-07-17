@@ -19,6 +19,7 @@ import Barista from '../../services/barista';
 import { SPContextConfig, defaultSPContextConfig } from '../../services/spcontext';
 import Page from '../page';
 import Aside from '../workspace-aside';
+import { WelcomeModal } from '../welcome-modal';
 import { WorkspaceSettingsModal } from '../workspace-settings-modal';
 import Fiddle from '../fiddle';
 
@@ -39,6 +40,8 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
         const { settingsStore } = this.props;
 
         this.state = {
+            welcomeSkipped: false,
+            showWelcomeModal: false,
             showSettingsModal: false,
             sidebarSize: 215,
             sidebarPrevSize: 0
@@ -67,23 +70,29 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
             }
         ];
 
+        const dashy = () => {
+            const currentPage = this.props.pagesStore.getPageSettings('dashboard');
+            if (!currentPage) {
+                return <span>Dashboard not found...</span>;
+            }
+
+            return (
+                <Page
+                    pagesStore={this.props.pagesStore}
+                    currentPage={currentPage}
+                />
+            );
+        };
+
         this._routes = [
             {
                 path: '/',
                 exact: true,
-                main: () => {
-                    const currentPage = this.props.pagesStore.getPageSettings('dashboard');
-                    if (!currentPage) {
-                        return <span>Dashboard not found...</span>;
-                    }
-
-                    return (
-                        <Page
-                            pagesStore={this.props.pagesStore}
-                            currentPage={currentPage}
-                        />
-                    );
-                }
+                main: dashy
+            },
+            {
+                path: '/welcome*',
+                main: dashy
             },
             {
                 path: '/pages/:pageId',
@@ -123,11 +132,23 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
     }
 
     public componentWillMount() {
+
+        //If there's a splauth query string value present, navigate to the fragment
+        //SPO Authentication drops URL hash values.
         const currentUri = URI();
         if (currentUri.hasQuery('splauth')) {
             const targetRoute = currentUri.query(true)['splauth'];
             currentUri.fragment(targetRoute);
             window.location.href = currentUri.href();
+        }
+
+        //If the settings store doesn't have a tenant url configured, show the welcome modal
+        if (!this.props.settingsStore.baristaSettings.tenantUrl || this.props.settingsStore.baristaSettings.tenantUrl.length < 1) {
+            if (!this.state.welcomeSkipped) {
+                this.setState({
+                    showWelcomeModal: true
+                });
+            }
         }
 
         const selectedPagePath = matchPath(location.hash.replace('#', ''), { path: '/pages/:pageId' });
@@ -203,6 +224,12 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
                 <WorkspaceSettingsModal
                     showWorkspaceSettingsModal={this.state.showSettingsModal}
                     onDismiss={this.hideSettings}
+                    settingsStore={settingsStore}
+                />
+                <WelcomeModal
+                    showWelcomeModal={this.state.showWelcomeModal}
+                    onSkip={this.onWelcomeSkipped}
+                    onFinish={this.onWelcomeFinished}
                     settingsStore={settingsStore}
                 />
             </div>
@@ -283,6 +310,25 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
     }
 
     @autobind
+    private onWelcomeSkipped() {
+        this.setState({
+            showWelcomeModal: false,
+            welcomeSkipped: true
+        });
+    }
+
+    @autobind
+    private onWelcomeFinished() {
+        this.setState({
+            showWelcomeModal: false
+        });
+        this.initializeBarista();
+        SettingsStore.saveToLocalStorage(this.props.settingsStore);
+
+        location.href = URI().removeQuery('splauth').hash('/').href();
+    }
+
+    @autobind
     private toggleSidebar() {
         if (this.state.sidebarSize) {
             this.setState({
@@ -298,6 +344,8 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
 }
 
 export interface WorkspaceState {
+    welcomeSkipped: boolean;
+    showWelcomeModal: boolean;
     showSettingsModal: boolean;
     sidebarSize: number;
     sidebarPrevSize: number;
