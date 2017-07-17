@@ -30,7 +30,7 @@ export class WelcomeModal extends React.Component<WorkspaceSettingsProps, any> {
         //Authenticate.aspx on SPO and 2016 won't redirect to a non-localhost url.
         const currentUri: uri.URI = URI();
         let shouldValidate = true;
-        if (!currentUri.origin().startsWith("localhost")) {
+        if (!currentUri.origin().startsWith('localhost')) {
             shouldValidate = false;
         }
 
