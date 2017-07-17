@@ -18,6 +18,12 @@ export class Step3 extends React.Component<Step3Props, any> {
             onPrev,
             onNext
         } = this.props;
+
+        const targetDocumentLibrary = URI('https://' + settingsStore.baristaSettings.testTenantUrl)
+            .pathname(settingsStore.baristaSettings.spContextConfig.proxyServerRelativeUrl)
+            .filename('')
+            .href();
+
         return (
             <div className="welcome-modal-container">
                 <div className="welcome-modal-step-header">
@@ -41,6 +47,7 @@ export class Step3 extends React.Component<Step3Props, any> {
                         value={settingsStore.baristaSettings.spContextConfig.proxyServerRelativeUrl}
                         onChanged={this.updateHostWebProxyUrl}
                     />
+                    <a href={targetDocumentLibrary} target="_blank" style={{color: 'white'}}>Open HostWebProxy target library in new window.</a>
                     <p>
                         When you're finished uploading the file to the above location, click next to continue.
                     </p>

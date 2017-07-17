@@ -55,14 +55,15 @@
     "cpr": "^2.2.0",
     "gh-pages": "^1.0.0",
     "npm-run-all": "^4.0.2",
-    "react-scripts-ts": "2.4.0"
+    "react-scripts-ts": "2.4.0",
+    "rimraf": "^2.6.1"
   },
   "scripts": {
     "postinstall": "cd packages/hostwebproxy && npm install && cd ../.. && cpr node_modules/monaco-editor/min/vs public/vs -o",
     "build-proxy": "cd packages/hostwebproxy && npm run build && cd ../..",
     "build-css": "node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/",
     "watch-css": "npm run build-css && node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/ --watch --recursive",
-    "start": "npm-run-all -p watch-css start-js",
+    "start": "rimraf build && npm-run-all -p watch-css start-js",
     "start-js": "react-scripts-ts start",
     "build": "npm run build-proxy && npm run build-css && react-scripts-ts build",
     "deploy": "npm run build && gh-pages -d build",

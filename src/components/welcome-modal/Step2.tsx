@@ -128,7 +128,7 @@ export interface Step2State {
 }
 
 export interface Step2Props {
-    onPrev: (ev: React.MouseEvent<HTMLButtonElement>) => any;
+    onPrev: () => void;
     onNext: () => void;
     settingsStore: SettingsStore;
 }

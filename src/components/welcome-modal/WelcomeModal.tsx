@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
 import { HashRouter as Router, Route, Switch } from 'react-router-dom';
+import * as URI from 'urijs';
 
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { PrimaryButton, DefaultButton, IButtonProps } from 'office-ui-fabric-react/lib/Button';
@@ -26,6 +27,13 @@ export class WelcomeModal extends React.Component<WorkspaceSettingsProps, any> {
             settingsStore,
         } = this.props;
 
+        //Authenticate.aspx on SPO and 2016 won't redirect to a non-localhost url.
+        const currentUri: uri.URI = URI();
+        let shouldValidate = true;
+        if (!currentUri.origin().startsWith("localhost")) {
+            shouldValidate = false;
+        }
+
         this._routes = [
             {
                 path: '/welcome/step1',
@@ -34,7 +42,7 @@ export class WelcomeModal extends React.Component<WorkspaceSettingsProps, any> {
                     return (
                         <Step1
                             onPrev={() => { innerProps.history.push('/welcome'); }}
-                            onNext={() => { innerProps.history.push('/welcome/step2'); }}
+                            onNext={() => { shouldValidate ? innerProps.history.push('/welcome/step2') : innerProps.history.push('/welcome/step3'); }}
                             settingsStore={settingsStore}
                         />
                     );
@@ -59,7 +67,7 @@ export class WelcomeModal extends React.Component<WorkspaceSettingsProps, any> {
                 main: (innerProps) => {
                     return (
                         <Step3
-                            onPrev={() => { innerProps.history.push('/welcome/step2'); }}
+                            onPrev={() => { shouldValidate ? innerProps.history.push('/welcome/step2') : innerProps.history.push('/welcome/step1'); }}
                             onNext={() => { innerProps.history.push('/welcome/step4'); }}
                             settingsStore={settingsStore}
                         />
