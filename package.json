@@ -2,6 +2,7 @@
   "name": "sp-lookout",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://beyond-sharepoint.github.io/sp-lookout/",
   "dependencies": {
     "@microsoft/microsoft-graph-client": "^1.0.0",
     "@microsoft/sp-client-base": "^1.0.0",
@@ -52,6 +53,7 @@
   },
   "devDependencies": {
     "cpr": "^2.2.0",
+    "gh-pages": "^1.0.0",
     "npm-run-all": "^4.0.2",
     "react-scripts-ts": "2.4.0"
   },
@@ -63,6 +65,7 @@
     "start": "npm-run-all -p watch-css start-js",
     "start-js": "react-scripts-ts start",
     "build": "npm run build-proxy && npm run build-css && react-scripts-ts build",
+    "deploy": "npm run build && gh-pages -d build",
     "test": "react-scripts-ts test --env=jsdom",
     "eject": "react-scripts-ts eject"
   }
