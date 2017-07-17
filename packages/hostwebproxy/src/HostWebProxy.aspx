@@ -18,6 +18,7 @@
                 "responseOrigin": "*",
                 "trustedOriginAuthorities": [
                     "https://baristalabs.sharepoint.com",
+                    "https://beyond-sharepoint.github.io",
                     "http://localhost:8080",
                     "http://localhost:3000"
                 ]
