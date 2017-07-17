@@ -17,13 +17,16 @@ export class Step4 extends React.Component<Step4Props, Step4State> {
             isRetrievingContext: true,
             didSucceed: false,
             error: ''
-        }
+        };
     }
 
     public componentDidMount() {
-        setTimeout(() => {
-            this.ensureSPContext();
-        }, 2000);
+        setTimeout(
+            () => {
+                this.ensureSPContext();
+            },
+            2000
+        );
     }
 
     public render() {
@@ -38,7 +41,7 @@ export class Step4 extends React.Component<Step4Props, Step4State> {
         } = this.state;
         return (
             <div className="welcome-modal-container">
-                <div className='welcome-modal-step-header'>
+                <div className="welcome-modal-step-header">
                     Validate SP Lookout! Connection
                 </div>
                 <div className="welcome-modal-body">
@@ -51,7 +54,7 @@ export class Step4 extends React.Component<Step4Props, Step4State> {
                             : null
                         }
                         {!isRetrievingContext && didSucceed === true
-                            ? <div style={{ color: '#107c10', fontSize: '72px', paddingTop: '15px' }}><i className="fa fa-check-circle fa-2x" aria-hidden="true"></i></div>
+                            ? <div style={{ color: '#107c10', fontSize: '72px', paddingTop: '15px' }}><i className="fa fa-check-circle fa-2x" aria-hidden="true" /></div>
                             : null
                         }
                         {!isRetrievingContext && didSucceed === true
@@ -59,7 +62,7 @@ export class Step4 extends React.Component<Step4Props, Step4State> {
                             : null
                         }
                         {!isRetrievingContext && !didSucceed
-                            ? <div style={{ color: '#a80000', fontSize: '72px', paddingTop: '15px' }}><i className="fa fa-times-circle fa-2x" aria-hidden="true"></i></div>
+                            ? <div style={{ color: '#a80000', fontSize: '72px', paddingTop: '15px' }}><i className="fa fa-times-circle fa-2x" aria-hidden="true" /></div>
                             : null
                         }
                         {!isRetrievingContext && !didSucceed
@@ -73,8 +76,8 @@ export class Step4 extends React.Component<Step4Props, Step4State> {
                     </div>
                 </div>
                 <div className="welcome-modal-footer">
-                    <DefaultButton text='Prev' onClick={onPrev} />
-                    <PrimaryButton text='Finish' disabled={!didSucceed} onClick={this.completeConfiguration} />
+                    <DefaultButton text="Prev" onClick={onPrev} />
+                    <PrimaryButton text="Finish" disabled={!didSucceed} onClick={this.completeConfiguration} />
                 </div>
             </div>
         );
@@ -86,8 +89,7 @@ export class Step4 extends React.Component<Step4Props, Step4State> {
             const sharepointBaseUrl = 'https://' + this.props.settingsStore.baristaSettings.testTenantUrl;
             const context = await SPContext.getContext(sharepointBaseUrl, this.props.settingsStore.baristaSettings.spContextConfig);
             await context.ensureContext();
-        }
-        catch (ex) {
+        } catch (ex) {
             this.setState({
                 isRetrievingContext: false,
                 didSucceed: false,
@@ -115,7 +117,7 @@ export class Step4 extends React.Component<Step4Props, Step4State> {
 export interface Step4State {
     isRetrievingContext: boolean;
     didSucceed: boolean;
-    error: string
+    error: string;
 }
 
 export interface Step4Props {

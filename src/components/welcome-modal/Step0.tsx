@@ -12,7 +12,7 @@ export class Step0 extends React.Component<Step0Props, any> {
         } = this.props;
         return (
             <div className="welcome-modal-container">
-                <div className='welcome-modal-header'>
+                <div className="welcome-modal-header">
                     Welcome to SP Lookout!
                 </div>
                 <div className="welcome-modal-body">
@@ -34,8 +34,8 @@ export class Step0 extends React.Component<Step0Props, any> {
                     <h5>(If you're already a pro at this, you can skip setup and configure SP Lookout! yourself.)</h5>
                 </div>
                 <div className="welcome-modal-footer">
-                    <DefaultButton text='Skip' onClick={onSkip} />
-                    <PrimaryButton text='Next' onClick={onNext} />
+                    <DefaultButton text="Skip" onClick={onSkip} />
+                    <PrimaryButton text="Next" onClick={onNext} />
                 </div>
             </div>
         );

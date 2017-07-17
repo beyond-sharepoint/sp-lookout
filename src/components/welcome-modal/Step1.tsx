@@ -17,7 +17,7 @@ export class Step1 extends React.Component<Step1Props, any> {
         } = this.props;
         return (
             <div className="welcome-modal-container">
-                <div className='welcome-modal-step-header'>
+                <div className="welcome-modal-step-header">
                     Specify SharePoint Location
                 </div>
                 <div className="welcome-modal-body">
@@ -33,8 +33,8 @@ export class Step1 extends React.Component<Step1Props, any> {
                     />
                 </div>
                 <div className="welcome-modal-footer">
-                    <DefaultButton text='Prev' onClick={onPrev} />
-                    <PrimaryButton text='Next' disabled={!this.isTenantUrlValid()} onClick={onNext} />
+                    <DefaultButton text="Prev" onClick={onPrev} />
+                    <PrimaryButton text="Next" disabled={!this.isTenantUrlValid()} onClick={onNext} />
                 </div>
             </div>
         );

@@ -16,7 +16,7 @@ export class Step2 extends React.Component<Step2Props, Step2State> {
         this.state = {
             isNavigatingToSharePoint: false,
             sharePointValidated: false
-        }
+        };
     }
 
     public componentWillMount() {
@@ -45,7 +45,7 @@ export class Step2 extends React.Component<Step2Props, Step2State> {
 
         return (
             <div className="welcome-modal-container">
-                <div className='welcome-modal-step-header'>
+                <div className="welcome-modal-step-header">
                     Verifying SharePoint location
                 </div>
                 <div className="welcome-modal-body">
@@ -70,7 +70,7 @@ export class Step2 extends React.Component<Step2Props, Step2State> {
                             : null
                         }
                         {sharePointValidated === true
-                            ? <div style={{ color: '#107c10', fontSize: '72px', paddingTop: '15px' }}><i className="fa fa-check-circle fa-2x" aria-hidden="true"></i></div>
+                            ? <div style={{ color: '#107c10', fontSize: '72px', paddingTop: '15px' }}><i className="fa fa-check-circle fa-2x" aria-hidden="true" /></div>
                             : null
                         }
                         {sharePointValidated === true
@@ -80,8 +80,8 @@ export class Step2 extends React.Component<Step2Props, Step2State> {
                     </div>
                 </div>
                 <div className="welcome-modal-footer">
-                    <DefaultButton text='Prev' onClick={onPrev} />
-                    <PrimaryButton text='Next' onClick={this.navigateToSharePoint} />
+                    <DefaultButton text="Prev" onClick={onPrev} />
+                    <PrimaryButton text="Next" onClick={this.navigateToSharePoint} />
                 </div>
             </div>
         );
@@ -113,9 +113,12 @@ export class Step2 extends React.Component<Step2Props, Step2State> {
             .normalize()
             .toString();
 
-        setTimeout(() => {
-            location.href = authUri;
-        }, 1500);
+        setTimeout(
+            () => {
+                location.href = authUri;
+            },
+            1500
+        );
     }
 }
 

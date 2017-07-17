@@ -30,11 +30,11 @@ export class WelcomeModal extends React.Component<WorkspaceSettingsProps, any> {
             {
                 path: '/welcome/step1',
                 exact: true,
-                main: (props) => {
+                main: (innerProps) => {
                     return (
                         <Step1
-                            onPrev={() => { props.history.push('/welcome'); }}
-                            onNext={() => { props.history.push('/welcome/step2'); }}
+                            onPrev={() => { innerProps.history.push('/welcome'); }}
+                            onNext={() => { innerProps.history.push('/welcome/step2'); }}
                             settingsStore={settingsStore}
                         />
                     );
@@ -43,11 +43,11 @@ export class WelcomeModal extends React.Component<WorkspaceSettingsProps, any> {
             {
                 path: '/welcome/step2',
                 exact: true,
-                main: (props) => {
+                main: (innerProps) => {
                     return (
                         <Step2
-                            onPrev={() => { props.history.push('/welcome/step1'); }}
-                            onNext={() => { props.history.push('/welcome/step3'); }}
+                            onPrev={() => { innerProps.history.push('/welcome/step1'); }}
+                            onNext={() => { innerProps.history.push('/welcome/step3'); }}
                             settingsStore={settingsStore}
                         />
                     );
@@ -56,11 +56,11 @@ export class WelcomeModal extends React.Component<WorkspaceSettingsProps, any> {
             {
                 path: '/welcome/step3',
                 exact: true,
-                main: (props) => {
+                main: (innerProps) => {
                     return (
                         <Step3
-                            onPrev={() => { props.history.push('/welcome/step2'); }}
-                            onNext={() => { props.history.push('/welcome/step4'); }}
+                            onPrev={() => { innerProps.history.push('/welcome/step2'); }}
+                            onNext={() => { innerProps.history.push('/welcome/step4'); }}
                             settingsStore={settingsStore}
                         />
                     );
@@ -69,10 +69,10 @@ export class WelcomeModal extends React.Component<WorkspaceSettingsProps, any> {
             {
                 path: '/welcome/step4',
                 exact: true,
-                main: (props) => {
+                main: (innerProps) => {
                     return (
                         <Step4
-                            onPrev={() => { props.history.push('/welcome/step3'); }}
+                            onPrev={() => { innerProps.history.push('/welcome/step3'); }}
                             onFinish={onFinish}
                             settingsStore={settingsStore}
                         />
@@ -80,11 +80,11 @@ export class WelcomeModal extends React.Component<WorkspaceSettingsProps, any> {
                 }
             },
             {
-                main: (props) => {
+                main: (innerProps) => {
                     return (
                         <Step0
                             onSkip={onSkip}
-                            onNext={() => { props.history.push('/welcome/step1'); }}
+                            onNext={() => { innerProps.history.push('/welcome/step1'); }}
                         />
                     );
                 }
@@ -119,7 +119,7 @@ export class WelcomeModal extends React.Component<WorkspaceSettingsProps, any> {
                     </Switch>
                 </Modal>
             </Router>
-        )
+        );
     }
 }
 

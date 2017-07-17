@@ -1,1 +1,1 @@
-export * from './WelcomeModal'
+export * from './WelcomeModal';

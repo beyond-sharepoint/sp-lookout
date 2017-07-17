@@ -20,7 +20,7 @@ export class Step3 extends React.Component<Step3Props, any> {
         } = this.props;
         return (
             <div className="welcome-modal-container">
-                <div className='welcome-modal-step-header'>
+                <div className="welcome-modal-step-header">
                     Upload HostWebProxy
                 </div>
                 <div className="welcome-modal-body">
@@ -31,7 +31,7 @@ export class Step3 extends React.Component<Step3Props, any> {
                     <p style={{ paddingTop: '15px' }}>
                         Click the button below to download the SP Lookout! Proxy file, then, upload this file to the server relative location listed below.
                     </p>
-                    <PrimaryButton text='Click to Download' onClick={this.downloadHostWebProxy} />
+                    <PrimaryButton text="Click to Download" onClick={this.downloadHostWebProxy} />
                     <p>
                         This file can be located anywhere within your SharePoint tenant so if you'd like to change the location, simply upload
                         the file to the location you desire and then update the URL below.
@@ -46,8 +46,8 @@ export class Step3 extends React.Component<Step3Props, any> {
                     </p>
                 </div>
                 <div className="welcome-modal-footer">
-                    <DefaultButton text='Prev' onClick={onPrev} />
-                    <PrimaryButton text='Next' onClick={onNext} />
+                    <DefaultButton text="Prev" onClick={onPrev} />
+                    <PrimaryButton text="Next" onClick={onNext} />
                 </div>
             </div>
         );
@@ -68,8 +68,8 @@ export class Step3 extends React.Component<Step3Props, any> {
             }`;
 
         const trustedHostWebProxyData = hostWebProxyData.replace(/(\/\/ @\}-,--`--> Start HostWebProxyConfig)([\s\S]*)(\/\/ @\}-,--`--> End HostWebProxyConfig)/, `$1\n${expression}\n$3`);
-        const blob = new Blob([trustedHostWebProxyData], { type: "text/plain;charset=utf-8" });
-        FileSaver.saveAs(blob, "HostWebProxy.aspx");
+        const blob = new Blob([trustedHostWebProxyData], { type: 'text/plain;charset=utf-8' });
+        FileSaver.saveAs(blob, 'HostWebProxy.aspx');
     }
 
     @action.bound
