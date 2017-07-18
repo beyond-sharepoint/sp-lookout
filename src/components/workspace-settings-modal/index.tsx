@@ -46,6 +46,8 @@ export class WorkspaceSettingsModal extends React.Component<WorkspaceSettingsPro
                                 onChanged={this.updateHostWebProxyUrl}
                             />
                         </PivotItem>
+                        <PivotItem linkText="Import/Export">
+                        </PivotItem>
                     </Pivot>
                 </div>
             </Modal>
