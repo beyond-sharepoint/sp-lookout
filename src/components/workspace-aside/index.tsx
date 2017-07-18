@@ -72,8 +72,7 @@ export default class Aside extends React.Component<AsideProps, any> {
             backgroundColor: '#f4f4f4',
             outline: 'none',
             display: 'flex',
-            alignItems: 'center',
-            overflow: 'hidden'
+            alignItems: 'center'
         };
 
         const pagesIconStyle: React.CSSProperties = {
@@ -96,13 +95,15 @@ export default class Aside extends React.Component<AsideProps, any> {
                 }}
             >
                 <div className="pages ms-fontColor-themePrimary">
-                    <div className="pagesHeader" style={pagesHeaderStyle}>
-                        <span className="fa fa-th" aria-hidden="true" style={{ paddingRight: '3px' }} />
-                        <span>Pages</span>
-                        <div style={{ marginLeft: 'auto' }}>
-                            <span style={pagesIconStyle} onClick={this.onAddPage}>
-                                <i className="fa fa-plus-circle" aria-hidden="true" />
-                            </span>
+                    <div>
+                        <div className="pagesHeader" style={pagesHeaderStyle}>
+                            <span className="fa fa-th" aria-hidden="true" style={{ paddingRight: '3px' }} />
+                            <span>Pages</span>
+                            <div style={{ marginLeft: 'auto' }}>
+                                <span style={pagesIconStyle} onClick={this.onAddPage}>
+                                    <i className="fa fa-plus-circle" aria-hidden="true" />
+                                </span>
+                            </div>
                         </div>
                     </div>
                     <div style={{ flex: 1, overflow: 'auto' }}>
@@ -117,18 +118,21 @@ export default class Aside extends React.Component<AsideProps, any> {
                     </div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                    <div style={starredDivStyle}>
-                        {fiddlesStore.starred.map((fiddleSettings, index) => {
-                            return (
-                                <div key={index} style={{ cursor: 'pointer', whiteSpace: 'nowrap' }} onClick={() => onFiddleSelected(fiddleSettings, this.props.fiddlesStore.getPathForFiddleSettings(fiddleSettings) || '')}>
-                                    <span style={{ color: 'orange', paddingLeft: '5px', paddingRight: '5px' }}>
-                                        <i className="fa fa-star" aria-hidden="true" />
-                                    </span>{fiddleSettings.name}
-                                </div>
-                            );
-                        })
-                        }
-                    </div>
+                    {fiddlesStore.starred.length > 0 ?
+                        <div style={starredDivStyle}>
+                            {fiddlesStore.starred.map((fiddleSettings, index) => {
+                                return (
+                                    <div key={index} style={{ cursor: 'pointer', whiteSpace: 'nowrap' }} onClick={() => onFiddleSelected(fiddleSettings, this.props.fiddlesStore.getPathForFiddleSettings(fiddleSettings) || '')}>
+                                        <span style={{ color: 'orange', paddingLeft: '5px', paddingRight: '5px' }}>
+                                            <i className="fa fa-star" aria-hidden="true" />
+                                        </span>{fiddleSettings.name}
+                                    </div>
+                                );
+                            })
+                            }
+                        </div>
+                        : null
+                    }
                     <FolderView
                         folder={fiddlesStore.fiddleRootFolder as IFolder}
                         onFileSelected={onFiddleSelected}

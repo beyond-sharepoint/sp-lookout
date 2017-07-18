@@ -74,12 +74,12 @@ export class PageSettingsModal extends React.Component<PageSettingsProps, any> {
 
     @action.bound
     private updateColumns(newValue: string) {
-        this.props.currentPage.columns = parseInt(newValue);
+        this.props.currentPage.columns = parseInt(newValue, 10);
     }
 
     @action.bound
     private updateRowHeight(newValue: string) {
-        this.props.currentPage.rowHeight = parseInt(newValue);
+        this.props.currentPage.rowHeight = parseInt(newValue, 10);
     }
 }
 

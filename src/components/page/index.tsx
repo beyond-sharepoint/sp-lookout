@@ -54,7 +54,7 @@ export default class Page extends React.Component<PageProps, PageState> {
             });
         }
         return (
-            <div>
+            <div style={{flex: 1}}>
                 <Layout
                     className="dashboard"
                     layout={layout}

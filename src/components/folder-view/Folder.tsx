@@ -197,9 +197,9 @@ export class Folder extends React.Component<FolderProps, FolderState> {
             rootNodeStyle.alignItems = 'center';
             rootNodeStyle.overflow = 'hidden';
 
+            nodeStyle.flex = 1;
             nodeStyle.display = 'flex';
             nodeStyle.flexDirection = 'column';
-            nodeStyle.height = '100%';
 
             folderLockStyle.color = '#0078d7';
 

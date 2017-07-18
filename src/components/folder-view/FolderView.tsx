@@ -18,7 +18,7 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
         const { folder, onFileSelected, onFolderSelected, selectedPaths } = this.props;
 
         return (
-            <div className="folder-view ms-fontColor-themePrimary" style={{ flex: '1', overflow: 'auto' }}>
+            <div className="folder-view ms-fontColor-themePrimary" style={{ flex: '1', display: 'flex' }}>
                 <Folder
                     folder={folder}
                     parentFolder={null}

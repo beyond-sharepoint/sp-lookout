@@ -6,7 +6,9 @@ export default class Pane extends React.Component<PaneProps, any> {
         const { id, style, split, className } = this.props;
         let paneStyle: React.CSSProperties = {
             ...{
-                overflow: 'hidden'
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: split === 'horizontal' ? 'column' : 'row'
             },
             ...style
         };

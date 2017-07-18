@@ -212,7 +212,8 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps, {}>
         const fixedHeight = height.toString().indexOf('%') !== -1 ? height : `${height}px`;
         const style = {
             width: fixedWidth,
-            height: fixedHeight,
+            //height: fixedHeight,
+            flex: 1
         };
         return (
             <div ref={el => this._containerElement = el} style={style} className="react-monaco-editor-container" />

@@ -278,13 +278,13 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
                 onResizerDoubleClick={() => { this.setState({ fiddlePaneSize: '50%' }); }}
                 onWindowResize={() => { this.setState({ fiddlePaneSize: '50%' }); }}
             >
-                <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
                     <CommandBar
                         isSearchBoxVisible={false}
                         items={this.commandBarItems}
                         farItems={this.commandBarFarItems}
                     />
-                    <div style={{ flex: '1' }}>
+                    <div style={{ flex: '1', display: 'flex' }}>
                         {showEditor ?
                             <MonacoEditor
                                 value={code}
