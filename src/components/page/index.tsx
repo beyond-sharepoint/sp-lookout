@@ -5,6 +5,7 @@ import { observer } from 'mobx-react';
 import { Menu, MainButton, ChildButton } from 'react-mfb';
 import { find } from 'lodash';
 
+import { PageSettingsModal } from '../page-settings-modal';
 import * as WebParts from '../webpart';
 
 import { PagesStore, PageSettings, WebPartSettings, WebPartType, defaultWebPartSettings, Util } from '../../models';
@@ -25,7 +26,16 @@ const WebPartMapping = {
 };
 
 @observer
-export default class Page extends React.Component<PageProps, {}> {
+export default class Page extends React.Component<PageProps, PageState> {
+    public constructor(props: PageProps) {
+        super(props);
+
+        this.state = {
+            showPageSettingsModal: false
+        };
+
+    }
+
     public render() {
         const { currentPage } = this.props;
         const { columns, rowHeight, locked } = currentPage;
@@ -84,12 +94,23 @@ export default class Page extends React.Component<PageProps, {}> {
                             label="Add WebPart"
                         />
                         <ChildButton
+                            onClick={() => { this.setState({ showPageSettingsModal: true}); }}
+                            icon="ms-Icon ms-Icon--Settings"
+                            label="Page Settings"
+                        />
+                        <ChildButton
                             onClick={this.lockPage}
                             icon="ms-Icon ms-Icon--Lock"
                             label="Lock Page"
                         />
                     </Menu>
                 }
+                <PageSettingsModal
+                    showPageSettingsModal={this.state.showPageSettingsModal}
+                    onDismiss={() => { this.setState({ showPageSettingsModal: false }); PagesStore.saveToLocalStorage(this.props.pagesStore); }}
+                    pagesStore={this.props.pagesStore}
+                    currentPage={this.props.currentPage}
+                />
             </div>
         );
     }
@@ -177,6 +198,10 @@ export default class Page extends React.Component<PageProps, {}> {
     private onWebPartSettingsChanged(settings: WebPartSettings) {
         PagesStore.saveToLocalStorage(this.props.pagesStore);
     }
+}
+
+export interface PageState {
+    showPageSettingsModal: boolean;
 }
 
 export interface PageProps {

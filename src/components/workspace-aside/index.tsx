@@ -5,11 +5,22 @@ import { observer } from 'mobx-react';
 import { Nav, INavLinkGroup, INavLink } from 'office-ui-fabric-react/lib/Nav';
 import { autobind } from 'office-ui-fabric-react/lib';
 import { IContextualMenuItem } from 'office-ui-fabric-react';
-import { find } from 'lodash';
+import { find, defaultsDeep } from 'lodash';
 import SplitPane from '../split-pane/SplitPane';
 import { FolderView, IFolder, IFile } from '../folder-view';
 
-import { SettingsStore, PagesStore, FiddlesStore, FiddleSettings, FiddleFolder, defaultFiddleSettings, defaultFiddleFolder } from '../../models';
+import {
+    SettingsStore,
+    PagesStore,
+    PageSettings,
+    defaultPageSettings,
+    FiddlesStore,
+    FiddleSettings,
+    FiddleFolder,
+    defaultFiddleSettings,
+    defaultFiddleFolder,
+    Util
+} from '../../models';
 
 import './index.css';
 
@@ -31,13 +42,15 @@ export default class Aside extends React.Component<AsideProps, any> {
 
         let navLinks: Array<INavLink> = [];
         for (let page of pagesStore.pages) {
-            navLinks.push({
+            const newNavLink: INavLink = {
                 key: page.id,
                 name: page.name,
                 icon: page.iconClassName,
                 url: '#/pages/' + page.id,
-                onClick: () => { /* Without a click handler, the icon isn't rendered. nice, guys. */ }
-            });
+                onClick: this.props.onPageSelected
+            };
+
+            navLinks.push(newNavLink);
         }
         const navGroups: Array<INavLinkGroup> = [
             {
@@ -54,6 +67,20 @@ export default class Aside extends React.Component<AsideProps, any> {
             starredDivStyle.overflowX = 'auto';
         }
 
+        const pagesHeaderStyle: React.CSSProperties = {
+            paddingLeft: 10,
+            backgroundColor: '#f4f4f4',
+            outline: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            overflow: 'hidden'
+        };
+
+        const pagesIconStyle: React.CSSProperties = {
+            padding: '0 5px',
+            cursor: 'pointer'
+        };
+
         return (
             <SplitPane
                 split="horizontal"
@@ -68,14 +95,25 @@ export default class Aside extends React.Component<AsideProps, any> {
                     }
                 }}
             >
-                <Nav
-                    className="aside"
-                    groups={navGroups}
-                    expandedStateText={'expanded'}
-                    collapsedStateText={'collapsed'}
-                    selectedKey={selectedPageId}
-                //onRenderLink={this.renderNavLink} 
-                />
+                <div className="pages ms-fontColor-themePrimary">
+                    <div className="pagesHeader" style={pagesHeaderStyle}>
+                        <span className="fa fa-th" aria-hidden="true" style={{ paddingRight: '3px' }} />
+                        <span>Pages</span>
+                        <div style={{ marginLeft: 'auto' }}>
+                            <span style={pagesIconStyle} onClick={this.onAddPage}>
+                                <i className="fa fa-plus-circle" aria-hidden="true" />
+                            </span>
+                        </div>
+                    </div>
+                    <Nav
+                        className="aside"
+                        groups={navGroups}
+                        expandedStateText={'expanded'}
+                        collapsedStateText={'collapsed'}
+                        selectedKey={selectedPageId}
+                    //onRenderLink={this.renderNavLink} 
+                    />
+                </div>
                 <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                     <div style={starredDivStyle}>
                         {fiddlesStore.starred.map((fiddleSettings, index) => {
@@ -108,6 +146,20 @@ export default class Aside extends React.Component<AsideProps, any> {
     @autobind
     private onPaneResized(newSize: number | string) {
         this.props.settingsStore.visualSettings.asidePrimaryPaneHeight = newSize;
+    }
+
+    @autobind
+    private onAddPage() {
+        const newPageSettings: PageSettings = defaultsDeep(
+            {
+                id: Util.makeId(8),
+                name: 'New Page',
+                iconClassName: 'fa fa-square'
+            },
+            defaultPageSettings
+        );
+        this.props.pagesStore.pages.push(observable(newPageSettings));
+        PagesStore.saveToLocalStorage(this.props.pagesStore);
     }
 
     @autobind
@@ -178,6 +230,7 @@ export interface AsideProps {
     settingsStore: SettingsStore;
     pagesStore: PagesStore;
     fiddlesStore: FiddlesStore;
+    onPageSelected: (ev?: React.MouseEvent<HTMLElement>, item?: INavLink) => void;
     onFolderSelected: (folder: FiddleFolder, path: string) => void;
     onFiddleSelected: (settings: FiddleSettings, path: string) => void;
     selectedPageId?: string;

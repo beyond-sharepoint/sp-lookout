@@ -12,7 +12,7 @@ import * as localforage from 'localforage';
 import { autobind } from 'office-ui-fabric-react/lib';
 import { CommandBar } from 'office-ui-fabric-react/lib/CommandBar';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
-import { INavLinkGroup } from 'office-ui-fabric-react/lib/Nav';
+import { INavLink, INavLinkGroup } from 'office-ui-fabric-react/lib/Nav';
 import SplitPane from '../split-pane/SplitPane';
 import { defaultsDeep } from 'lodash';
 
@@ -210,6 +210,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
                                 settingsStore={settingsStore}
                                 pagesStore={pagesStore}
                                 fiddlesStore={fiddlesStore}
+                                onPageSelected={this.onPageSelected}
                                 onFolderSelected={this.onFolderSelected}
                                 onFiddleSelected={this.onFiddleSelected}
                                 selectedPageId={this.state.selectedPageId}
@@ -328,18 +329,25 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
     }
 
     @action.bound
-    private onPageSelected(ev, nav) {
-        this.setState({
-            selectedPageId: nav.key,
-            selectedPaths: undefined
-        });
+    private onPageSelected(ev?: React.MouseEvent<HTMLElement>, item?: INavLink) {
+        if (item) {
+            this.setState({
+                selectedPageId: item.key,
+                selectedPaths: undefined
+            });
+        } else {
+            this.setState({
+                selectedPageId: undefined,
+                selectedPaths: undefined
+            });
+        }
     }
 
     @action.bound
     private onFiddleSelected(fiddleSettings: FiddleSettings, path: string) {
         location.hash = '/fiddle/' + path;
         this.setState({
-            selectedPageId: undefined,
+            selectedPageId: '',
             selectedPaths: path
         });
     }
@@ -347,7 +355,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
     @action.bound
     private onFolderSelected(folder: FiddleFolder, path: string) {
         this.setState({
-            selectedPageId: undefined,
+            selectedPageId: '',
             selectedPaths: path
         });
     }

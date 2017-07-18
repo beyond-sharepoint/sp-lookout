@@ -1,7 +1,7 @@
 import { autorun, observable, extendObservable, observe, action, computed, runInAction, toJS, IObservableObject } from 'mobx';
 import * as localforage from 'localforage';
 import { defaultsDeep, find, filter } from 'lodash';
-import { PageSettings, defaultPages } from './PageSettings';
+import { PageSettings, defaultPageSettings } from './PageSettings';
 
 export const PagesLocalStorageKey = 'sp-lookout-pages';
 
@@ -10,9 +10,9 @@ export class PagesStore {
 
     public constructor(pages?: Array<PageSettings>) {
         if (!pages) {
-            this._pages = observable(defaultPages);
+            this._pages = observable([defaultPageSettings]);
         } else {
-            this._pages = observable(defaultsDeep(pages, defaultPages) as Array<PageSettings>);
+            this._pages = observable(defaultsDeep(pages, defaultPageSettings) as Array<PageSettings>);
         }
     }
 

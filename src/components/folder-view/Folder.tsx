@@ -194,6 +194,7 @@ export class Folder extends React.Component<FolderProps, FolderState> {
             rootNodeStyle.cursor = 'pointer';
             rootNodeStyle.paddingLeft = '3px';
             rootNodeStyle.display = 'flex';
+            rootNodeStyle.alignItems = 'center';
             rootNodeStyle.overflow = 'hidden';
 
             nodeStyle.display = 'flex';
