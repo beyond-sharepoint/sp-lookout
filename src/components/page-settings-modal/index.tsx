@@ -45,6 +45,16 @@ export class PageSettingsModal extends React.Component<PageSettingsProps, any> {
                                 value={currentPage.iconClassName}
                                 onChanged={this.updateIconClassName}
                             />
+                            <TextField
+                                label="Columns"
+                                value={currentPage.columns.toString()}
+                                onChanged={this.updateColumns}
+                            />
+                            <TextField
+                                label="Row Height"
+                                value={currentPage.rowHeight.toString()}
+                                onChanged={this.updateRowHeight}
+                            />
                         </PivotItem>
                     </Pivot>
                 </div>
@@ -60,6 +70,16 @@ export class PageSettingsModal extends React.Component<PageSettingsProps, any> {
     @action.bound
     private updateIconClassName(newValue: string) {
         this.props.currentPage.iconClassName = newValue;
+    }
+
+    @action.bound
+    private updateColumns(newValue: string) {
+        this.props.currentPage.columns = parseInt(newValue);
+    }
+
+    @action.bound
+    private updateRowHeight(newValue: string) {
+        this.props.currentPage.rowHeight = parseInt(newValue);
     }
 }
 
