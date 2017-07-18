@@ -105,14 +105,16 @@ export default class Aside extends React.Component<AsideProps, any> {
                             </span>
                         </div>
                     </div>
-                    <Nav
-                        className="aside"
-                        groups={navGroups}
-                        expandedStateText={'expanded'}
-                        collapsedStateText={'collapsed'}
-                        selectedKey={selectedPageId}
-                    //onRenderLink={this.renderNavLink} 
-                    />
+                    <div style={{ flex: 1, overflow: 'auto' }}>
+                        <Nav
+                            className="aside"
+                            groups={navGroups}
+                            expandedStateText={'expanded'}
+                            collapsedStateText={'collapsed'}
+                            selectedKey={selectedPageId}
+                        //onRenderLink={this.renderNavLink} 
+                        />
+                    </div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                     <div style={starredDivStyle}>
