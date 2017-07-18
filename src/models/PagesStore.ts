@@ -33,4 +33,9 @@ export class PagesStore {
     static async saveToLocalStorage(pagesStore: PagesStore): Promise<Array<PageSettings>> {
         return localforage.setItem(PagesLocalStorageKey, toJS(pagesStore._pages));
     }
+
+    @action
+    static async removeSettings() {
+        return localforage.removeItem(PagesLocalStorageKey);
+    }
 }

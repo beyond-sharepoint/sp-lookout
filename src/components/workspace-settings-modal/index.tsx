@@ -7,9 +7,10 @@ import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import { Pivot, PivotItem } from 'office-ui-fabric-react/lib/Pivot';
 import { Dropdown, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
+import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react/lib/Button';
 import { Toggle } from 'office-ui-fabric-react/lib/Toggle';
 
-import { SettingsStore, BaristaSettings, VisualSettings } from '../../models';
+import { SettingsStore, PagesStore, FiddlesStore, BaristaSettings, VisualSettings } from '../../models';
 import './index.css';
 
 @observer
@@ -47,7 +48,7 @@ export class WorkspaceSettingsModal extends React.Component<WorkspaceSettingsPro
                             />
                         </PivotItem>
                         <PivotItem linkText="Import/Export">
-                            TODO
+                            <DefaultButton text="Reset All Settings to Defaults" onClick={this.resetSettingsToDefaults} />
                         </PivotItem>
                     </Pivot>
                 </div>
@@ -63,6 +64,15 @@ export class WorkspaceSettingsModal extends React.Component<WorkspaceSettingsPro
     @action.bound
     private updateHostWebProxyUrl(newValue: string) {
         this.props.settingsStore.baristaSettings.spContextConfig.proxyServerRelativeUrl = newValue;
+    }
+
+    @action.bound
+    private async resetSettingsToDefaults() {
+        await FiddlesStore.removeSettings();
+        await PagesStore.removeSettings();
+        await SettingsStore.removeSettings();
+
+        location.reload();
     }
 }
 

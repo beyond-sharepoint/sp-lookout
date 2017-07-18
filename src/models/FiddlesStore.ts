@@ -24,7 +24,7 @@ export class FiddlesStore {
 
             //Ensure all files have default properties
             const fileMap = FiddlesStore.getFileMap(fiddleRootFolder);
-            for(const fileName of Object.keys(fileMap)) {
+            for (const fileName of Object.keys(fileMap)) {
                 const file = fileMap[fileName];
                 defaultsDeep(file, defaultFiddleSettings);
             }
@@ -66,6 +66,10 @@ export class FiddlesStore {
     @action
     static async saveToLocalStorage(fiddlesStore: FiddlesStore): Promise<FiddleFolder> {
         return localforage.setItem(FiddlesLocalStorageKey, toJS(fiddlesStore._fiddleRootFolder));
+    }
+
+    static async removeSettings() {
+        return localforage.removeItem(FiddlesLocalStorageKey);
     }
 
     public static getFolderMap(folder: FiddleFolder, path?: string): { [path: string]: FiddleFolder } {

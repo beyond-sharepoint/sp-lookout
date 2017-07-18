@@ -60,6 +60,10 @@ export class SettingsStore {
 
         return localforage.setItem(SettingsLocalStorageKey, settingsToPersist);
     }
+
+    static async removeSettings() {
+        return localforage.removeItem(SettingsLocalStorageKey);
+    }
 }
 
 type Settings = {

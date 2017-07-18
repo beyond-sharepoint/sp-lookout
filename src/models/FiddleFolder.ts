@@ -49,7 +49,20 @@ export default _.kebabCase('Hello, World!');`,
                 {
                     ...defaultFiddleSettings,
                     name: '03-getRootWeb-fetch.ts',
-                    code: '',
+                    code: `const runner = async () => {
+    const response = await fetch(location.origin + "/_api/web", {
+        method: "GET",
+        headers: {
+            "accept": "application/json",
+            "content-type": "application/json;odata=verbose;charset=utf-8"
+        },
+        credentials: 'same-origin'
+    });
+
+    return await response.json();
+}
+
+export default runner();`,
                 },
                 {
                     ...defaultFiddleSettings,
