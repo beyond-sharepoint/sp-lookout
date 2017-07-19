@@ -249,8 +249,11 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
                     </div>
                     <div className="barista-error-authentication-modal-body">
                         <p>
-                            Authentication is required with your SharePoint Tenant. Please authenticate with your SharePoint site by visiting it and returning to SP Lookout!
+                            Authentication is required with your SharePoint Tenant.
                         </p>
+                        <p>
+                            You will be redirected to your SharePoint Tenant in a few moments for authentication. If a problem occurs, please visit your SharePoint Tenant and return back to SP Lookout.
+                        </p> 
                         <p>
                             Details: {this.state.error}
                         </p>

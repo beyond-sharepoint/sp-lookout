@@ -18,7 +18,7 @@ export const webPartTypeNames: { [key: string]: string } = {
     'clock': 'Clock',
     'note': 'Note',
     'text': 'Text'
-}
+};
 
 /**
  * Represents a component that renders a dynamic component on a Page
