@@ -53,7 +53,6 @@ export default class Page extends React.Component<PageProps, PageState> {
                     onLayoutChange={this.onLayoutChange}
                     isDraggable={!locked}
                     isResizable={!locked}
-                    style={{ height: '100%' }}
                     {...this.props}
                 >
                     {layout.map((webPart, ix) => {
