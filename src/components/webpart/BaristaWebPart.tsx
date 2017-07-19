@@ -7,11 +7,18 @@ import { WebPartBase } from './WebPartBase'
 import { Util } from '../../models';
 
 @observer
-export class BaristaWebPart extends WebPartBase {
+export class BaristaWebPart extends WebPartBase<BaristaWebPartProps, any> {
+
+    getDefaultWebPartProps() {
+        return {};
+    }
 
     renderWebPartContent(props) {
         return (
             <span></span>
         )
     }
+}
+
+export interface BaristaWebPartProps {
 }

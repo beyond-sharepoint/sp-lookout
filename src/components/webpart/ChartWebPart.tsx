@@ -8,7 +8,7 @@ import { WebPartBase } from './WebPartBase';
 import { Util } from '../../models';
 
 @observer
-export class ChartWebPart extends WebPartBase {
+export class ChartWebPart extends WebPartBase<ChartWebPartProps, any> {
     private _data: any;
     constructor(props: any) {
         super(props);
@@ -38,7 +38,11 @@ export class ChartWebPart extends WebPartBase {
             }]
         };
     }
-    
+
+    getDefaultWebPartProps() {
+        return {};
+    }
+
     renderWebPartContent(props: any) {
         return (
             <Line
@@ -49,4 +53,7 @@ export class ChartWebPart extends WebPartBase {
             />
         );
     }
+}
+
+export interface ChartWebPartProps {
 }

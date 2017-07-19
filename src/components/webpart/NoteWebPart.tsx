@@ -7,12 +7,16 @@ import { WebPartBase } from './WebPartBase';
 import { Util } from '../../models';
 
 @observer
-export class NoteWebPart extends WebPartBase {
+export class NoteWebPart extends WebPartBase<NoteWebPartProps, any> {
+
+    getDefaultWebPartProps() {
+        return defaultNoteWebPartProps;
+    }
 
     renderWebPartContent(props: any) {
         return (
-            <textarea 
-                value={props.text}
+            <textarea
+                value={this.webPartProps.text}
                 onChange={this.onNoteChanged}
                 style={{
                     flex: '1',
@@ -26,11 +30,15 @@ export class NoteWebPart extends WebPartBase {
 
     @action.bound
     private onNoteChanged(newValue: any) {
-        if (!isObservable(this.props.settings.props.text)) {
-            extendObservable(this.props.settings.props, {
-                text: newValue.target.value
-            });
-        }
+        this.webPartProps.text = newValue.target.value;
         super.onWebPartSettingsChanged();
     }
 }
+
+export interface NoteWebPartProps {
+    text: string;
+}
+
+export const defaultNoteWebPartProps: NoteWebPartProps = {
+    text: ''
+};

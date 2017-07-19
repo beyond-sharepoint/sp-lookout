@@ -6,24 +6,13 @@ import { Menu, MainButton, ChildButton } from 'react-mfb';
 import { find } from 'lodash';
 
 import { PageSettingsModal } from '../page-settings-modal';
-import * as WebParts from '../webpart';
+import { webPartTypes } from '../webpart';
 
 import { PagesStore, PageSettings, WebPartSettings, WebPartType, defaultWebPartSettings, Util } from '../../models';
 
 import './index.css';
 
 const Layout = ReactGridLayout.WidthProvider(ReactGridLayout);
-
-/**
- * Defines the mapping between WebPartType and the WebPart instance.
- * Note that the keys are unable to be enum values until TS 2.5+
- */
-const WebPartMapping = {
-    'chart': WebParts.ChartWebPart,
-    'clock': WebParts.ClockWebPart,
-    'note': WebParts.NoteWebPart,
-    'text': WebParts.WebPartBase
-};
 
 @observer
 export default class Page extends React.Component<PageProps, PageState> {
@@ -125,11 +114,13 @@ export default class Page extends React.Component<PageProps, PageState> {
             onDeleteWebPart: () => { this.onDeleteWebPart(webPartSettings.id); }
         };
 
-        let WebPart = WebPartMapping[webPartSettings.type];
-        if (!WebPart) {
+        const webPartDef = webPartTypes[webPartSettings.type];
+        if (!webPartDef) {
             throw Error(`A WebPart did not correspond to the specified type: ${webPartSettings.type}. Please check the web part mapping.`);
         }
 
+        const WebPart = webPartDef.type;
+        
         return (
             <WebPart
                 {...webPartProps}

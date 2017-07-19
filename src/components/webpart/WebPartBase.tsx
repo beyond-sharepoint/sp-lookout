@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { action } from 'mobx';
+import { action, observable, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import { autobind } from 'office-ui-fabric-react/lib';
 import { Panel, PanelType, IPanelProps } from 'office-ui-fabric-react/lib/Panel';
@@ -7,35 +7,52 @@ import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react/lib/Button'
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import { Dropdown, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
 import { IRenderFunction } from 'office-ui-fabric-react/lib/Utilities';
+import { defaultsDeep, cloneDeep } from 'lodash';
 
 import { WebPartSettings, WebPartType } from '../../models';
 
 import './index.css';
 
-const webPartOptions = [
-    { key: 'chart', text: 'Chart' },
-    { key: 'clock', text: 'Clock' },
-    { key: 'note', text: 'Note' },
-    { key: 'text', text: 'Text' },
-];
+export const webPartTypeNames: { [key: string]: string } = {
+    'chart': 'Chart',
+    'clock': 'Clock',
+    'note': 'Note',
+    'text': 'Text'
+}
 
 /**
  * Represents a component that renders a dynamic component on a Page
  */
-@observer
-export class WebPartBase extends React.Component<WebPartProps, any> {
-    public constructor(props: any) {
+export abstract class WebPartBase<P extends object, S extends WebPartState> extends React.Component<WebPartProps, S> {
+    public constructor(props: WebPartProps) {
         super(props);
 
-        this.state = {
-            showPanel: false
-        };
+        if (!this.state) {
+            (this.state as WebPartState) = {
+                showPanel: false
+            };
+        }
+    }
+
+    public get webPartProps(): P {
+        return this.props.settings.props;
+    }
+
+    public componentWillMount() {
+        this.initializeWebPartProperties(this.props);
+    }
+
+    public componentWillReceiveProps(nextProps: WebPartProps) {
+        this.initializeWebPartProperties(nextProps);
     }
 
     public render() {
         const { locked, settings, children } = this.props;
 
-        const containerStyle = this.getWebPartContainerStyle();
+        let containerStyle: React.CSSProperties | undefined = undefined;
+        if (typeof this.getWebPartContainerStyle === 'function') {
+            containerStyle = this.getWebPartContainerStyle();
+        }
 
         return (
             <div className="webpart-main">
@@ -80,14 +97,12 @@ export class WebPartBase extends React.Component<WebPartProps, any> {
         );
     }
 
-    @autobind
-    public renderWebPartContent(webPartProps: any): JSX.Element {
-        return (
-            <span>{webPartProps.text}</span>
-        );
-    }
+    protected abstract getDefaultWebPartProps(): P;
 
-    public renderWebPartSettings() {
+    protected abstract renderWebPartContent?(webPartProps: P): JSX.Element;
+
+    @autobind
+    protected renderWebPartSettings(): JSX.Element {
         return (
             <div>
                 <TextField label="WebPart Title" value={this.props.settings.title} onChanged={this.onWebPartTitleChanged} />
@@ -95,14 +110,14 @@ export class WebPartBase extends React.Component<WebPartProps, any> {
                     label="WebPart Type"
                     selectedKey={WebPartType[this.props.settings.type]}
                     onChanged={this.onWebPartTypeChanged}
-                    options={webPartOptions}
+                    options={webPartTypeNames}
                 />
             </div>
         );
     }
 
     @autobind
-    public renderWebPartSettingsFooter(props: IPanelProps) {
+    protected renderWebPartSettingsFooter(props: IPanelProps): JSX.Element {
         return (
             <div>
                 <PrimaryButton
@@ -120,23 +135,48 @@ export class WebPartBase extends React.Component<WebPartProps, any> {
         );
     }
 
-    @autobind
-    public getWebPartContainerStyle(): React.CSSProperties | undefined {
-        return undefined;
-    }
+    protected getWebPartContainerStyle?(): React.CSSProperties | undefined;
 
     @autobind
-    public showWebPartSettings() {
+    protected showWebPartSettings() {
         this.setState({
             showPanel: true
         });
     }
 
     @autobind
-    public hideWebPartSettings() {
+    protected hideWebPartSettings() {
         this.setState({
             showPanel: false
         });
+    }
+
+    @autobind
+    private initializeWebPartProperties(props: WebPartProps) {
+        if (typeof this.getDefaultWebPartProps !== 'function') {
+            return;
+        }
+
+        const defaultProps = cloneDeep(this.getDefaultWebPartProps());
+
+        if (typeof props.settings.props === 'undefined') {
+            props.settings.props = observable(defaultProps);
+        } else {
+            props.settings.props = observable(defaultsDeep(props.settings.props, defaultProps));
+        }
+    }
+
+    @autobind
+    private onDeleteWebPart() {
+        if (typeof this.props.onDeleteWebPart === 'function') {
+            this.props.onDeleteWebPart();
+        }
+    }
+
+    @action.bound
+    private onToggleLock() {
+        this.props.settings.locked = !this.props.settings.locked;
+        this.onWebPartSettingsChanged();
     }
 
     @action.bound
@@ -148,26 +188,14 @@ export class WebPartBase extends React.Component<WebPartProps, any> {
     @action.bound
     private onWebPartTypeChanged(dropDownOption: IDropdownOption) {
         this.props.settings.type = WebPartType[dropDownOption.key];
-        this.onWebPartSettingsChanged();
-    }
-
-    @action.bound
-    private onToggleLock() {
-        this.props.settings.locked = !this.props.settings.locked;
+        this.props.settings.props = this.initializeWebPartProperties(this.props);
         this.onWebPartSettingsChanged();
     }
 
     @autobind
-    public onWebPartSettingsChanged() {
+    protected onWebPartSettingsChanged() {
         if (typeof this.props.onWebPartSettingsChanged === 'function') {
             this.props.onWebPartSettingsChanged();
-        }
-    }
-
-    @autobind
-    private onDeleteWebPart() {
-        if (typeof this.props.onDeleteWebPart === 'function') {
-            this.props.onDeleteWebPart();
         }
     }
 }

@@ -28,5 +28,5 @@ export const defaultWebPartSettings: WebPartSettings = {
     title: 'New WebPart',
     type: WebPartType.text,
     locked: false,
-    props: {}
+    props: undefined
 };

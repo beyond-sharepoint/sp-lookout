@@ -1,20 +1,18 @@
 import * as React from 'react';
-import { action, observable, isObservable, extendObservable, toJS } from 'mobx';
+import { action } from 'mobx';
+import { observer } from 'mobx-react';
 import { autobind } from 'office-ui-fabric-react/lib';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import * as moment from 'moment';
 import { WebPartBase, WebPartState } from './WebPartBase';
 
-export class ClockWebPart extends WebPartBase {
+@observer
+export class ClockWebPart extends WebPartBase<ClockWebPartProps, ClockWebPartState> {
     private _timer;
 
     public componentWillMount() {
+        super.componentWillMount();
         this._timer = setInterval(this.tick, 500);
-        if (!isObservable(this.props.settings.props.format)) {
-            extendObservable(this.props.settings.props, {
-                format: 'MMMM Do YYYY, h:mm:ss a'
-            });
-        }
     }
 
     public componentWillUnmount() {
@@ -22,6 +20,12 @@ export class ClockWebPart extends WebPartBase {
             clearTimeout(this._timer);
             this._timer = null;
         }
+    }
+
+    getDefaultWebPartProps() {
+        return {
+            format: 'MMMM Do YYYY, h:mm:ss a'
+        };
     }
 
     public getWebPartContainerStyle(): React.CSSProperties | undefined {
@@ -32,7 +36,7 @@ export class ClockWebPart extends WebPartBase {
 
     public renderWebPartContent(props: any) {
         return (
-            <div style={{ alignItems: 'center' }}>{this.state.time}</div>
+            <div>{this.state.time}</div>
         );
     }
 
@@ -40,29 +44,29 @@ export class ClockWebPart extends WebPartBase {
         return (
             <div>
                 {super.renderWebPartSettings()}
-                <TextField label="Date Format" value={this.props.settings.props.format} onChanged={this.onFormatChanged} />
+                <TextField label="Date Format" value={this.webPartProps.format} onChanged={this.onFormatChanged} />
             </div>
         );
     }
 
-    @autobind
+    @action.bound
     private tick() {
         this.setState({
-            time: moment().format(this.props.settings.props.format || undefined)
+            time: moment().format(this.webPartProps.format || undefined)
         });
     }
 
     @action.bound
     private onFormatChanged(newFormat: string) {
-        if (!isObservable(this.props.settings.props.format)) {
-            extendObservable(this.props.settings.props, {
-                format: newFormat
-            });
-        }
+        this.webPartProps.format = newFormat;
         super.onWebPartSettingsChanged();
     }
 }
 
 export interface ClockWebPartState extends WebPartState {
     time: string;
+}
+
+export interface ClockWebPartProps {
+    format: string;
 }
