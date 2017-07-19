@@ -43,7 +43,7 @@ export default class Page extends React.Component<PageProps, PageState> {
             });
         }
         return (
-            <div style={{flex: 1}}>
+            <div style={{ flex: 1, backgroundColor: '#eee' }}>
                 <Layout
                     className="dashboard"
                     layout={layout}
@@ -82,7 +82,7 @@ export default class Page extends React.Component<PageProps, PageState> {
                             label="Add WebPart"
                         />
                         <ChildButton
-                            onClick={() => { this.setState({ showPageSettingsModal: true}); }}
+                            onClick={() => { this.setState({ showPageSettingsModal: true }); }}
                             icon="ms-Icon ms-Icon--Settings"
                             label="Page Settings"
                         />
@@ -119,7 +119,7 @@ export default class Page extends React.Component<PageProps, PageState> {
         }
 
         const WebPart = webPartDef.type;
-        
+
         return (
             <WebPart
                 {...webPartProps}

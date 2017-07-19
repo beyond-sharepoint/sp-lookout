@@ -142,8 +142,11 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
         const currentUri = URI();
         if (currentUri.hasQuery('splauth')) {
             const targetRoute = currentUri.query(true)['splauth'];
+            currentUri.query({ splauth: '' });
             currentUri.fragment(targetRoute);
-            window.location.href = currentUri.href();
+            if (targetRoute.length > 0) {
+                window.location.href = currentUri.href();
+            }
         }
 
         //If the settings store doesn't have a tenant url configured, show the welcome modal
@@ -253,7 +256,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
                         </p>
                         <p>
                             You will be redirected to your SharePoint Tenant in a few moments for authentication. If a problem occurs, please visit your SharePoint Tenant and return back to SP Lookout.
-                        </p> 
+                        </p>
                         <p>
                             Details: {this.state.error}
                         </p>
