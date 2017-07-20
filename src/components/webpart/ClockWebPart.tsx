@@ -12,6 +12,7 @@ export class ClockWebPart extends WebPartBase<ClockWebPartProps, ClockWebPartSta
 
     public componentWillMount() {
         super.componentWillMount();
+        this.tick();
         this._timer = setInterval(this.tick, 500);
     }
 
