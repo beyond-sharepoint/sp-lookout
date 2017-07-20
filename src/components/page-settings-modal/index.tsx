@@ -10,6 +10,7 @@ import { ComboBox, IComboBoxOption } from 'office-ui-fabric-react/lib/ComboBox';
 import { Pivot, PivotItem } from 'office-ui-fabric-react/lib/Pivot';
 import { Dropdown, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
 import { Toggle } from 'office-ui-fabric-react/lib/Toggle';
+import { PrimaryButton } from 'office-ui-fabric-react/lib/Button';
 import { ISelectableOption, SelectableOptionMenuItemType } from 'office-ui-fabric-react/lib/utilities/selectableOption/SelectableOption.Props';
 
 import { startCase, sortBy } from 'lodash';
@@ -62,7 +63,7 @@ export class PageSettingsModal extends React.Component<PageSettingsProps, any> {
                                 autoComplete={true}
                                 options={iconOptions}
                                 onChanged={this.updateIconClassName}
-                                onRenderOption={ this.renderIconOption }
+                                onRenderOption={this.renderIconOption}
                             />
                             <TextField
                                 label="Columns"
@@ -76,6 +77,12 @@ export class PageSettingsModal extends React.Component<PageSettingsProps, any> {
                             />
                         </PivotItem>
                     </Pivot>
+                </div>
+                <div className="page-settings-modal-footer">
+                    {currentPage.id !== 'dashboard'
+                        ? <PrimaryButton text="Delete Page" onClick={this.deletePage} style={{ backgroundColor: '#a80000' }} />
+                        : null
+                    }
                 </div>
             </Modal>
         );
@@ -107,11 +114,18 @@ export class PageSettingsModal extends React.Component<PageSettingsProps, any> {
     private updateRowHeight(newValue: string) {
         this.props.currentPage.rowHeight = parseInt(newValue, 10);
     }
+
+    @action.bound
+    private deletePage(ev) {
+        this.props.onDismiss(ev);
+        this.props.onDeletePage(this.props.currentPage);
+    }
 }
 
 export interface PageSettingsProps {
     showPageSettingsModal: boolean;
     onDismiss: (ev?: React.MouseEvent<HTMLButtonElement>) => any;
+    onDeletePage: (currentPage: PageSettings) => void;
     pagesStore: PagesStore;
     currentPage: PageSettings;
 }

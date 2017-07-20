@@ -26,7 +26,7 @@ export default class Page extends React.Component<PageProps, PageState> {
     }
 
     public render() {
-        const { currentPage } = this.props;
+        const { currentPage, pagesStore } = this.props;
         const { columns, rowHeight, locked } = currentPage;
         let layout: Array<any> = [];
         for (let webPart of currentPage.webParts) {
@@ -96,6 +96,7 @@ export default class Page extends React.Component<PageProps, PageState> {
                 <PageSettingsModal
                     showPageSettingsModal={this.state.showPageSettingsModal}
                     onDismiss={() => { this.setState({ showPageSettingsModal: false }); PagesStore.saveToLocalStorage(this.props.pagesStore); }}
+                    onDeletePage={(page) => { pagesStore.deletePage(page.id); PagesStore.saveToLocalStorage(this.props.pagesStore); }}
                     pagesStore={this.props.pagesStore}
                     currentPage={this.props.currentPage}
                 />

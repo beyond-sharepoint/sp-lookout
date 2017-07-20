@@ -19,12 +19,22 @@ export class PagesStore {
         }
     }
 
-    public get pages(): Array<PageSettings>  {
+    public get pages(): Array<PageSettings> {
         return this._pages;
     }
 
     public getPageSettings(pageId: string): PageSettings | undefined {
         return find(this._pages, { id: pageId });
+    }
+
+    @action
+    public deletePage(pageId: string): boolean {
+        const page = find(this._pages, { id: pageId });
+        if (!page) {
+            return false;
+        }
+
+        return (this._pages as any).remove(page);
     }
 
     static async loadFromLocalStorage(): Promise<PagesStore> {

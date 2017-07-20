@@ -22,3 +22,10 @@
     padding: 5px 28px;
     overflow-y: auto;
 }
+
+.page-settings-modal-footer {
+    display: flex;
+    padding: 5px 28px;
+    min-height: 40px;
+    justify-content: flex-end;
+}
