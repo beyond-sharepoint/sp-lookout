@@ -10,9 +10,11 @@ export interface PageSettings {
     id: string;
     name: string;
     iconClassName?: string;
+    isExpanded: boolean;
+    locked: boolean;
     columns: number;
     rowHeight: number;
-    locked: boolean;
+    subPages: Array<PageSettings>;
     webParts: Array<WebPartSettings>;
 }
 
@@ -20,9 +22,11 @@ export const defaultPageSettings: PageSettings = {
     id: 'dashboard',
     name: 'Dashboard',
     iconClassName: 'PanoIndicator',
+    isExpanded: true,
+    locked: false,
     columns: 12,
     rowHeight: 30,
-    locked: false,
+    subPages: [],
     webParts: [
         { 'title': 'SP Lookout!', 'type': WebPartType.chart, 'locked': true, 'id': '0', 'x': 0, 'y': 0, 'w': 4, 'h': 8, 'props': {} },
         { 'title': 'Current Time', 'type': WebPartType.clock, 'locked': true, 'props': {}, 'id': 'YUPghotc', 'x': 8, 'y': 0, 'w': 3, 'h': 2 },

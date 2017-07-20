@@ -12,7 +12,10 @@ export class PagesStore {
         if (!pages) {
             this._pages = observable([defaultPageSettings]);
         } else {
-            this._pages = observable(defaultsDeep(pages, defaultPageSettings) as Array<PageSettings>);
+            for (const page of pages) {
+                defaultsDeep(page, defaultPageSettings);
+            }
+            this._pages = observable(pages);
         }
     }
 

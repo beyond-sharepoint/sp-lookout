@@ -42,16 +42,10 @@ export default class Aside extends React.Component<AsideProps, any> {
 
         let navLinks: Array<INavLink> = [];
         for (let page of pagesStore.pages) {
-            const newNavLink: INavLink = {
-                key: page.id,
-                name: page.name,
-                icon: page.iconClassName,
-                url: '#/pages/' + page.id,
-                onClick: this.props.onPageSelected
-            };
-
+            const newNavLink: INavLink = this.createNavLinkFromPageSettings(page);
             navLinks.push(newNavLink);
         }
+
         const navGroups: Array<INavLinkGroup> = [
             {
                 links: navLinks
@@ -100,9 +94,12 @@ export default class Aside extends React.Component<AsideProps, any> {
                             <span className="fa fa-th" aria-hidden="true" style={{ paddingRight: '3px' }} />
                             <span>Pages</span>
                             <div style={{ marginLeft: 'auto' }}>
-                                <span style={pagesIconStyle} onClick={this.onAddPage}>
+                                <span style={pagesIconStyle} onClick={this.onAddPage} title="Add Page">
                                     <i className="fa fa-plus-circle" aria-hidden="true" />
                                 </span>
+                                {/* <span style={pagesIconStyle} onClick={this.onAddSubPage} title="Add Sub Page">
+                                    <i className="fa fa-level-down" aria-hidden="true" />
+                                </span> */}
                             </div>
                         </div>
                     </div>
@@ -149,22 +146,63 @@ export default class Aside extends React.Component<AsideProps, any> {
         );
     }
 
+    private createNavLinkFromPageSettings(page: PageSettings): INavLink {
+        let newNavLink: INavLink = {
+            key: page.id,
+            name: page.name,
+            isExpanded: page.isExpanded,
+            icon: page.iconClassName,
+            url: '#/pages/' + page.id,
+            onClick: this.props.onPageSelected
+        };
+
+        newNavLink.links = [];
+        for (let subPage of page.subPages) {
+            newNavLink.links.push(this.createNavLinkFromPageSettings(subPage));
+        }
+
+        return newNavLink;
+    }
+
     @autobind
     private onPaneResized(newSize: number | string) {
         this.props.settingsStore.visualSettings.asidePrimaryPaneHeight = newSize;
     }
 
-    @autobind
+    @action.bound
     private onAddPage() {
         const newPageSettings: PageSettings = defaultsDeep(
             {
                 id: Util.makeId(8),
                 name: 'New Page',
-                iconClassName: 'fa fa-square'
+                iconClassName: ''
             },
             defaultPageSettings
         );
         this.props.pagesStore.pages.push(observable(newPageSettings));
+        PagesStore.saveToLocalStorage(this.props.pagesStore);
+    }
+
+    @action.bound
+    private onAddSubPage() {
+        if (!this.props.selectedPageId) {
+            return;
+        }
+
+        const newPageSettings: PageSettings = defaultsDeep(
+            {
+                id: Util.makeId(8),
+                name: 'New Sub Page',
+                iconClassName: ''
+            },
+            defaultPageSettings
+        );
+
+        let selectedPage = this.props.pagesStore.getPageSettings(this.props.selectedPageId);
+        if (!selectedPage) {
+            return;
+        }
+        selectedPage.subPages.push(observable(newPageSettings));
         PagesStore.saveToLocalStorage(this.props.pagesStore);
     }
 
