@@ -4,13 +4,26 @@ import { observer } from 'mobx-react';
 import { get, set } from 'lodash';
 
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
+import { IconCodes } from '@uifabric/styling';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
+import { ComboBox, IComboBoxOption } from 'office-ui-fabric-react/lib/ComboBox';
 import { Pivot, PivotItem } from 'office-ui-fabric-react/lib/Pivot';
 import { Dropdown, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
 import { Toggle } from 'office-ui-fabric-react/lib/Toggle';
+import { ISelectableOption, SelectableOptionMenuItemType } from 'office-ui-fabric-react/lib/utilities/selectableOption/SelectableOption.Props';
+
+import { startCase, sortBy } from 'lodash';
 
 import { PagesStore, PageSettings } from '../../models';
 import './index.css';
+
+const iconOptions = sortBy(Object.keys(IconCodes).map((iconCode) => {
+    return {
+        key: iconCode,
+        iconClass: startCase(iconCode).replace(/\s/g, ''),
+        text: startCase(iconCode)
+    };
+}), ['text']);
 
 @observer
 export class PageSettingsModal extends React.Component<PageSettingsProps, any> {
@@ -40,10 +53,16 @@ export class PageSettingsModal extends React.Component<PageSettingsProps, any> {
                                 value={currentPage.name}
                                 onChanged={this.updatePageName}
                             />
-                            <TextField
-                                label="Icon Class Name"
-                                value={currentPage.iconClassName}
+                            <ComboBox
+                                defaultSelectedKey={currentPage.iconClassName}
+                                label='Icon Class Name:'
+                                selectedKey={currentPage.iconClassName}
+                                ariaLabel='Icon Class Name'
+                                allowFreeform={true}
+                                autoComplete={true}
+                                options={iconOptions}
                                 onChanged={this.updateIconClassName}
+                                onRenderOption={ this.renderIconOption }
                             />
                             <TextField
                                 label="Columns"
@@ -63,13 +82,20 @@ export class PageSettingsModal extends React.Component<PageSettingsProps, any> {
     }
 
     @action.bound
+    private renderIconOption(item: ISelectableOption): JSX.Element {
+        return (
+            <span><i className={'ms-Icon ms-Icon--' + (item as any).iconClass}>&nbsp;{item.text}</i></span>
+        );
+    }
+
+    @action.bound
     private updatePageName(newValue: string) {
         this.props.currentPage.name = newValue;
     }
 
     @action.bound
-    private updateIconClassName(newValue: string) {
-        this.props.currentPage.iconClassName = newValue;
+    private updateIconClassName(newValue: IComboBoxOption) {
+        this.props.currentPage.iconClassName = newValue.key.toString() || '';
     }
 
     @action.bound
