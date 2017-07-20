@@ -4,11 +4,11 @@ import { observer } from 'mobx-react';
 import { autobind } from 'office-ui-fabric-react/lib';
 
 import { Line } from 'react-chartjs-2';
-import { WebPartBase } from './WebPartBase';
+import { BaseWebPart } from './BaseWebPart';
 import { Util } from '../../models';
 
 @observer
-export class ChartWebPart extends WebPartBase<ChartWebPartProps, any> {
+export class ChartWebPart extends BaseWebPart<ChartWebPartProps, any> {
     private _data: any;
     constructor(props: any) {
         super(props);

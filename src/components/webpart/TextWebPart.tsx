@@ -4,11 +4,11 @@ import { observer } from 'mobx-react';
 import { autobind } from 'office-ui-fabric-react/lib';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
 
-import { WebPartBase } from './WebPartBase';
+import { BaseWebPart } from './BaseWebPart';
 import { Util } from '../../models';
 
 @observer
-export class TextWebPart extends WebPartBase<TextWebPartProps, any> {
+export class TextWebPart extends BaseWebPart<TextWebPartProps, any> {
 
     getDefaultWebPartProps() {
         return defaultTextWebPartProps;

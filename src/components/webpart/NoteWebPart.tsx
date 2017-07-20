@@ -3,11 +3,11 @@ import { action, observable, isObservable, extendObservable, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import { autobind } from 'office-ui-fabric-react/lib';
 
-import { WebPartBase } from './WebPartBase';
+import { BaseWebPart } from './BaseWebPart';
 import { Util } from '../../models';
 
 @observer
-export class NoteWebPart extends WebPartBase<NoteWebPartProps, any> {
+export class NoteWebPart extends BaseWebPart<NoteWebPartProps, any> {
 
     getDefaultWebPartProps() {
         return defaultNoteWebPartProps;

@@ -23,7 +23,7 @@ export const webPartTypeNames = [
 /**
  * Represents a component that renders a dynamic component on a Page
  */
-export abstract class WebPartBase<P extends object, S extends WebPartState> extends React.Component<WebPartProps, S> {
+export abstract class BaseWebPart<P extends object, S extends WebPartState> extends React.Component<WebPartProps, S> {
     public constructor(props: WebPartProps) {
         super(props);
 

@@ -4,10 +4,10 @@ import { observer } from 'mobx-react';
 import { autobind } from 'office-ui-fabric-react/lib';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import * as moment from 'moment';
-import { WebPartBase, WebPartState } from './WebPartBase';
+import { BaseWebPart, WebPartState } from './BaseWebPart';
 
 @observer
-export class ClockWebPart extends WebPartBase<ClockWebPartProps, ClockWebPartState> {
+export class ClockWebPart extends BaseWebPart<ClockWebPartProps, ClockWebPartState> {
     private _timer;
 
     public componentWillMount() {
