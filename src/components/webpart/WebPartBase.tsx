@@ -13,12 +13,12 @@ import { WebPartSettings, WebPartType } from '../../models';
 
 import './index.css';
 
-export const webPartTypeNames: { [key: string]: string } = {
-    'chart': 'Chart',
-    'clock': 'Clock',
-    'note': 'Note',
-    'text': 'Text'
-};
+export const webPartTypeNames = [
+    { key: 'chart', text: 'Chart' },
+    { key: 'clock', text: 'Clock' },
+    { key: 'note', text: 'Note' },
+    { key: 'text', text: 'Text' }
+];
 
 /**
  * Represents a component that renders a dynamic component on a Page
