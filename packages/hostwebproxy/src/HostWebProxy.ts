@@ -400,7 +400,6 @@ class HostWebProxy {
                 throw Error('Unable to find Require.js script element. This is highly unusual and it probably means someone edited the HostWebProxy.aspx or a hole has been torn in the fabric of the universe. That, or something just went wrong.');
             }
             request.requirejs = requireScriptElement.innerText;
-            console.log(tslib);
             request.tslib = tslib;
             worker.postMessage(request, request.data ? [request.data] : undefined);
             let resolveWorker, rejectWorker;
