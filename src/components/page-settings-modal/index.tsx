@@ -60,7 +60,7 @@ export class PageSettingsModal extends React.Component<PageSettingsProps, any> {
                                 selectedKey={currentPage.iconClassName}
                                 ariaLabel='Icon Class Name'
                                 allowFreeform={true}
-                                autoComplete={true}
+                                autoComplete="on"
                                 options={iconOptions}
                                 onChanged={this.updateIconClassName}
                                 onRenderOption={this.renderIconOption}

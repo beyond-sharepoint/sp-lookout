@@ -28,7 +28,6 @@ export const defaultEditorOptions: monaco.editor.IEditorOptions = {
 };
 
 export const defaultPaths = {
-    'tslib': 'https://unpkg.co/tslib/tslib',
     'lodash': 'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min',
     'sp-pnp-js': 'https://cdnjs.cloudflare.com/ajax/libs/sp-pnp-js/2.0.6/pnp.min',
     'moment': 'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min',

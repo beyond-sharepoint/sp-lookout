@@ -154,19 +154,19 @@
   version "3.16.20-alpha"
   resolved "https://registry.yarnpkg.com/@types/z-schema/-/z-schema-3.16.20-alpha.tgz#36f588ccca27d8e86dd6bb595a973aede8803766"
 
-"@uifabric/styling@>=0.13.11 <1.0.0":
-  version "0.13.11"
-  resolved "https://registry.yarnpkg.com/@uifabric/styling/-/styling-0.13.11.tgz#8b3e4b9176b2d96ac6fa28838301ab396f3df41d"
+"@uifabric/styling@>=0.13.14 <1.0.0":
+  version "0.13.14"
+  resolved "https://registry.yarnpkg.com/@uifabric/styling/-/styling-0.13.14.tgz#459fd283060fd06b05f972935980b090936a0154"
   dependencies:
     "@microsoft/load-themed-styles" "^1.2.2"
-    "@uifabric/utilities" ">=4.7.2 <5.0.0"
+    "@uifabric/utilities" ">=4.8.0 <5.0.0"
     glamor "^2.20.24"
     rtl-css-js "^1.1.1"
     tslib "^1.6.0"
 
-"@uifabric/utilities@>=4.7.2 <5.0.0":
-  version "4.7.2"
-  resolved "https://registry.yarnpkg.com/@uifabric/utilities/-/utilities-4.7.2.tgz#191e6df7e9d2175bab6150c644ab87629f333f27"
+"@uifabric/utilities@>=4.8.0 <5.0.0":
+  version "4.8.1"
+  resolved "https://registry.yarnpkg.com/@uifabric/utilities/-/utilities-4.8.1.tgz#a35b010c8c54a3d42cf19486735fb973d9b67030"
   dependencies:
     prop-types "^15.5.10"
     tslib "^1.6.0"
@@ -3430,6 +3430,10 @@ lodash.defaults@^4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/lodash.defaults/-/lodash.defaults-4.2.0.tgz#d09178716ffea4dde9e5fb7b37f6f0802274580c"
 
+lodash.find@^4.6.0:
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/lodash.find/-/lodash.find-4.6.0.tgz#cb0704d47ab71789ffa0de8b97dd926fb88b13b1"
+
 lodash.get@^4.1.2:
   version "4.4.2"
   resolved "https://registry.yarnpkg.com/lodash.get/-/lodash.get-4.4.2.tgz#2d177f652fa31e939b4438d5341499dfa3825e99"
@@ -3943,13 +3947,13 @@ obuf@^1.0.0, obuf@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/obuf/-/obuf-1.1.1.tgz#104124b6c602c6796881a042541d36db43a5264e"
 
-office-ui-fabric-react@^4.21.1:
-  version "4.21.1"
-  resolved "https://registry.yarnpkg.com/office-ui-fabric-react/-/office-ui-fabric-react-4.21.1.tgz#bda28d31a91e99285393f8dde22ad6cf6c320d40"
+office-ui-fabric-react@^4.21.4:
+  version "4.21.4"
+  resolved "https://registry.yarnpkg.com/office-ui-fabric-react/-/office-ui-fabric-react-4.21.4.tgz#01c303c7b0faf9fddb4ffe2fb5b171b700c86810"
   dependencies:
     "@microsoft/load-themed-styles" "^1.2.2"
-    "@uifabric/styling" ">=0.13.11 <1.0.0"
-    "@uifabric/utilities" ">=4.7.2 <5.0.0"
+    "@uifabric/styling" ">=0.13.14 <1.0.0"
+    "@uifabric/utilities" ">=4.8.0 <5.0.0"
     prop-types "^15.5.10"
     tslib "^1.6.0"
 
@@ -4650,10 +4654,11 @@ rc@^1.0.1, rc@^1.1.6, rc@^1.1.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-chartjs-2@^2.5.1:
-  version "2.5.1"
-  resolved "https://registry.yarnpkg.com/react-chartjs-2/-/react-chartjs-2-2.5.1.tgz#826213b84580f6aebfa7872dbe83b345d5b7fa87"
+react-chartjs-2@^2.5.4:
+  version "2.5.4"
+  resolved "https://registry.yarnpkg.com/react-chartjs-2/-/react-chartjs-2-2.5.4.tgz#ced89581996537de1899d4f58594ffc322a1b16d"
   dependencies:
+    lodash.find "^4.6.0"
     lodash.isequal "^4.4.0"
     prop-types "^15.5.8"
 
@@ -5876,7 +5881,11 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
 
-typescript@^2.4.1, typescript@~2.4.0:
+typescript@^2.4.2:
+  version "2.4.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.4.2.tgz#f8395f85d459276067c988aa41837a8f82870844"
+
+typescript@~2.4.0:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.4.1.tgz#c3ccb16ddaa0b2314de031e7e6fee89e5ba346bc"
 

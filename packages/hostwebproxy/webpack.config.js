@@ -24,6 +24,7 @@ module.exports = {
                 }
             },
             { test: /\.tsx?$/, loader: 'ts-loader' },
+            { test: /tslib\/tslib.js$/, loader: 'raw-loader' },
             {
                 test: /\.aspx$/,
                 loader: 'raw-loader'

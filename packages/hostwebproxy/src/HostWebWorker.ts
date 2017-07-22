@@ -17,6 +17,10 @@ class SandFiddleProcessor {
             //Define the requirejs errorhandler.
             (<any>self).requirejs.onError = this.postMessageError;
         }
+
+        if (this._request.tslib) {
+            (<any>this._context).eval(this._request.tslib);
+        }
     }
 
     public loadDefines() {
