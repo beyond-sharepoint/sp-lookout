@@ -160,7 +160,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
     }
 
     private async brew(allowDebugger?: boolean, timeout?: number) {
-        const { barista, fiddlesStore, currentFiddle } = this.props;
+        const { barista, fiddlesStore, currentFiddle, currentFiddleFullPath } = this.props;
         const { isBrewing } = this.state;
 
         if (isBrewing) {
@@ -170,7 +170,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
         if (!currentFiddle || !currentFiddle.code) {
             return;
         }
-
+        
         let lastBrewResult: any = undefined;
         let lastBrewResultIsError = false;
 
@@ -184,7 +184,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
 
             const brewSettings: BrewSettings = defaultsDeep(
                 {
-                    filename: currentFiddle.name,
+                    fullPath: currentFiddleFullPath,
                     input: currentFiddle.code,
                     brewMode: currentFiddle.brewMode,
                     allowDebuggerStatement: allowDebugger,
@@ -353,10 +353,11 @@ export interface FiddleProps {
     fiddlesStore: FiddlesStore;
     barista: Barista;
     currentFiddle: FiddleSettings;
+    currentFiddleFullPath: string;
 }
 
 export const defaultBrewSettings: BrewSettings = {
-    filename: '',
+    fullPath: '',
     input: '',
     brewMode: 'sandfiddle',
     timeout: 5000,

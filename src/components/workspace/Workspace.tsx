@@ -125,6 +125,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
                                 fiddlesStore={this.props.fiddlesStore}
                                 barista={this._barista}
                                 currentFiddle={currentFiddle}
+                                currentFiddleFullPath={stateProps.match.params.fiddlePath}
                             />
                         );
                     }
@@ -330,6 +331,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
                 authenticationRequiredHandler: (error) => { this.setState({ showAuthenticationRequiredModal: true, error }); return { data: 'Error: Authentication is required.' }; },
                 invalidOriginHandler: (error) => { this.setState({ showInvalidOriginModal: true, error }); return { data: 'Error: Proxy reported invalid origin.' }; }
             },
+            this.props.fiddlesStore,
             contextConfig
         );
     }

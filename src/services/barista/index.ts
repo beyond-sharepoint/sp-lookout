@@ -6,16 +6,25 @@ import { cloneDeep, defaultsDeep } from 'lodash';
 import { DebuggerTransformer } from './debuggerTransformer';
 import { RelativeImportsLocator } from './relativeImportsLocator';
 import { SPContext, SPContextConfig, SPProxy, SPContextError, defaultSPContextConfig } from '../spcontext';
+import { FiddlesStore } from '../../models/FiddlesStore';
 
 export default class Barista {
     private _config: BaristaConfig;
+    private _fiddlesStore: FiddlesStore;
     private _spContextConfig: SPContextConfig;
 
-    constructor(config: BaristaConfig, spContextConfig?: SPContextConfig) {
+    constructor(config: BaristaConfig, fiddlesStore: FiddlesStore, spContextConfig?: SPContextConfig) {
         if (!config) {
             throw Error('Barista configuration must be specified.');
         }
+
+        if (!fiddlesStore) {
+            throw Error('FiddleStore must be specified.');
+        }
+
         this._config = config;
+        this._fiddlesStore = fiddlesStore;
+
         if (!spContextConfig) {
             this._spContextConfig = cloneDeep(defaultSPContextConfig);
         } else {
@@ -27,6 +36,10 @@ export default class Barista {
         return this._config;
     }
 
+    public get fiddlesStore(): FiddlesStore {
+        return this._fiddlesStore;
+    }
+
     public get spContextConfig(): SPContextConfig {
         return this._spContextConfig;
     }
@@ -35,30 +48,43 @@ export default class Barista {
      * Brews the specified typescript code.
      */
     public async brew(settings: BrewSettings): Promise<any> {
-        const { filename, input, brewMode, allowDebuggerStatement, requireConfig, timeout } = settings;
+        const { fullPath, input, brewMode, allowDebuggerStatement, requireConfig, timeout } = settings;
         const spContext = await SPContext.getContext(this._config.webFullUrl, this._spContextConfig);
+
+        const filename: string = URI(fullPath).filename();
 
         //Transpile the main module.
         const transpileResult = this.transpile(filename, input, allowDebuggerStatement || false);
 
         //TODO: determine any dependent modules that have a spl prefix and get them.
 
-        const defines: { [id: string]: string } = {
-            filename: transpileResult.outputText
-        };
+        const defines: { [path: string]: string } = {};
+        defines[fullPath] = transpileResult.outputText;
 
         const relativeImports: Array<string> = (<any>transpileResult).relativeImports;
-        console.log(relativeImports);
+        for(const relativePath of relativeImports) {
+            const dependencyAbsolutePath = URI(relativePath).absoluteTo(fullPath).href();
+            const dependentFiddleSettings = this._fiddlesStore.getFiddleSettingsByPath(dependencyAbsolutePath);
+
+            if (dependentFiddleSettings) {
+                const dependencyFileName = URI(dependencyAbsolutePath).filename();
+                const dependencyResult = this.transpile(dependencyFileName, dependentFiddleSettings.code, allowDebuggerStatement || false);
+                defines[dependencyAbsolutePath] = dependencyResult.outputText;
+            }
+        }
+
+        console.dir(defines);
+        
 
         //Ensure a unique define. Mostly for 'require' mode.
         //TODO: This probably needs to be done for all defines, not just our entry point.
         //However, that will mess things up for all requires. So we might need to do
         //this at a step before.
-        let brewName = `${filename}-${(new Date()).getTime()}`;
-        for (let id of Object.keys(defines)) {
-            const define = defines[id];
+        const brewName = `${filename}-${(new Date()).getTime()}`;
+        for (const path of Object.keys(defines)) {
+            const define = defines[path];
             if (define.startsWith(`define('${filename}',[`)) {
-                defines[id] = define.replace(`define('${filename}',[`, `define('${brewName}',[`);
+                defines[path] = define.replace(`define('${filename}',[`, `define('${brewName}',[`);
             }
         }
 
@@ -173,7 +199,7 @@ export interface BaristaConfig {
 }
 
 export interface BrewSettings {
-    filename: string;
+    fullPath: string;
     input: string;
     brewMode?: 'require' | 'sandfiddle';
     moduleLocator?: (moduleId: string) => string;

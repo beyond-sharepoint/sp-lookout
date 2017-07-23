@@ -2,6 +2,7 @@ import { autorun, observable, extendObservable, observe, action, computed, runIn
 import { FiddleSettings, defaultFiddleSettings } from './FiddleSettings';
 import { FiddleFolder, defaultFiddleRootFolder } from './FiddleFolder';
 import * as localforage from 'localforage';
+import * as URI from 'urijs';
 import { assign, defaultsDeep, find, filter, values, findKey } from 'lodash';
 
 export const FiddlesLocalStorageKey = 'sp-lookout-fiddles';
@@ -46,6 +47,12 @@ export class FiddlesStore {
     public getFiddleSettingsByPath(path: string): FiddleSettings | undefined {
         const fileMap = FiddlesStore.getFileMap(this._fiddleRootFolder);
         return fileMap[path];
+    }
+
+    public getFiddleSettingsRelativeToPath(path: string, relativePath: string): FiddleSettings | undefined {
+        const targetPath = URI(relativePath).absoluteTo(path);
+        console.log(targetPath);
+        return this.getFiddleSettingsByPath(targetPath.href());
     }
 
     public getPathForFiddleSettings(settings: FiddleSettings): string | undefined {
