@@ -59,7 +59,7 @@ export default class Barista {
 
         //Transpile dependencies
         const relativeImports: Array<string> = (<any>transpileResult).relativeImports;
-        for(const relativePath of relativeImports) {
+        for (const relativePath of relativeImports) {
             const dependencyAbsolutePath = URI(relativePath).absoluteTo(fullPath).href();
             const dependentFiddleSettings = this._fiddlesStore.getFiddleSettingsByPath(dependencyAbsolutePath);
 
@@ -69,46 +69,16 @@ export default class Barista {
             }
         }
 
-        //Ensure a unique define - this is only for 'require' mode, where required scripts will pollute the global namespace.
-        //TODO: This probably needs to be done for all defines, not just our entry point.
-        //However, that will mess things up for all requires. So we might need to do
-        //this at a step before.
-        const brewName = `${fullPath}-${(new Date()).getTime()}`;
-        for (const path of Object.keys(defines)) {
-            const define = defines[path];
-            if (define.startsWith(`define('${fullPath}',[`)) {
-                defines[path] = define.replace(`define('${fullPath}',[`, `define('${brewName}',[`);
-            }
-        }
-
-        let result: any;
         try {
-            switch (brewMode) {
-                case 'require':
-                    if (requireConfig) {
-                        await spContext.requireConfig(requireConfig);
-                    }
-
-                    for (let id of Object.keys(defines)) {
-                        const define = defines[id];
-                        await spContext.injectScript({ id: define, type: 'text/javascript', text: define });
-                    }
-
-                    result = await spContext.require(brewName, timeout);
-                    break;
-                default:
-                case 'sandfiddle':
-                    result = await spContext.sandFiddle(
-                        {
-                            requireConfig: requireConfig,
-                            defines: defines,
-                            entryPointId: brewName,
-                            timeout
-                        },
-                        timeout
-                    );
-                    break;
-            }
+            return await spContext.brew(
+                {
+                    requireConfig: requireConfig,
+                    defines: defines,
+                    entryPointId: fullPath,
+                    timeout
+                },
+                timeout
+            );
         } catch (ex) {
             if (ex instanceof SPContextError) {
                 const { noProxyHandler, invalidOriginHandler, authenticationRequiredHandler } = this._config;
@@ -134,8 +104,6 @@ export default class Barista {
             }
             throw ex;
         }
-
-        return result;
     }
 
     public dispose() {

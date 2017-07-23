@@ -59,14 +59,8 @@ class HostWebProxy {
 
     private processCommand(command: string, postMessageId: string, request: any) {
         switch (command) {
-            case "Eval":
-                this.eval(command, postMessageId, request.code);
-                break;
             case "Fetch":
                 this.fetch(command, postMessageId, request);
-                break;
-            case "InjectScript":
-                this.injectScript(command, postMessageId, request);
                 break;
             case "Ping":
                 this.postMessage({
@@ -75,17 +69,8 @@ class HostWebProxy {
                     transferrableData: this.str2ab("Pong")
                 });
                 break;
-            case "Require":
-                this.require(command, postMessageId, request.id);
-                break;
-            case "Require.Config":
-                this.requireConfig(command, postMessageId, request);
-                break;
-            case "Require.Undef":
-                this.requireUndef(command, postMessageId, request.id);
-                break;
-            case "SandFiddle":
-                this.sandFiddle(command, postMessageId, request);
+            case "Brew":
+                this.brew(command, postMessageId, request);
                 break;
             default:
                 this.postMessage({
@@ -185,27 +170,6 @@ class HostWebProxy {
         this.postMessage(progressMessage);
     }
 
-    private async eval(command: string, postMessageId: string, code: string): Promise<void> {
-        try {
-            let evalPromise = new Promise((resolve, reject) => {
-                let evalResult = eval(code).bind({ postProgress: this.postProgress });
-                resolve(evalResult);
-            });
-
-            let evalResult = await evalPromise;
-            this.postMessage({
-                $$command: command,
-                $$postMessageId: postMessageId,
-                $$result: 'success',
-                data: evalResult,
-                transferrableData: (<any>evalResult).transferrableData
-            });
-        } catch (err) {
-            this.postMessageError(command, postMessageId, err);
-            throw err;
-        }
-    }
-
     private async fetch(command: string, postMessageId: string, request: any): Promise<void> {
         let fetchRequestInit: RequestInit = {
             cache: request.cache,
@@ -261,137 +225,7 @@ class HostWebProxy {
         }
     }
 
-    private injectScript(command: string, postMessageId: string, request: any) {
-        let script = document.createElement('script');
-        for (let key of ['id', 'type', 'src', 'charset', 'async', 'defer', 'text']) {
-            if (typeof request[key] !== 'undefined') {
-                script[key] = request[key];
-            }
-        }
-
-        let clearScriptElement = (el: HTMLScriptElement) => {
-            el.onload = (ev) => { };
-            el.onerror = (ev) => { };
-            (<any>el).onreadystatechange = null;
-            if (el.parentNode) {
-                el.parentNode.removeChild(el);
-            }
-            this._currentErrorHandler = (err: ErrorEvent) => { };
-        };
-
-        let success = () => {
-            clearScriptElement(script);
-            this.postMessage({
-                $$command: command,
-                $$postMessageId: postMessageId,
-                $$result: 'success',
-                data: request.src
-            });
-        };
-
-        let failure = (ev: ErrorEvent) => {
-            clearScriptElement(script);
-            this.postMessage({
-                $$command: command,
-                $$postMessageId: postMessageId,
-                $$result: 'error',
-                data: {
-                    src: request.src,
-                    message: ev.message,
-                    filename: ev.filename,
-                    lineno: ev.lineno,
-                    colno: ev.colno
-                }
-            });
-        };
-
-        script.onerror = failure;
-
-        //Inline scripts don't raise these events.
-        if (script.src) {
-            script.onload = success;
-
-            //IE
-            (<any>script).onreadystatechange = function () {
-                let state = (<any>script).readyState;
-                if (state === 'loaded' || state === 'complete') {
-                    success();
-                }
-            }
-        }
-
-        this._currentErrorHandler = failure;
-        document.body.appendChild(script);
-
-        if (!script.src) {
-            clearScriptElement(script);
-            this.postMessage({
-                $$command: command,
-                $$postMessageId: postMessageId,
-                $$result: 'success'
-            });
-        }
-    }
-
-    private async require(command: string, postMessageId: string, moduleId: string): Promise<void> {
-        try {
-            let requirePromise = new Promise((resolve, reject) => {
-                try {
-                    (<any>window).requirejs([moduleId], resolve, err => {
-                        if (err instanceof Error) {
-                            reject(err);
-                        } else {
-                            reject(new Error(err));
-                        }
-                    });
-                } catch (ex) {
-                    reject(ex);
-                }
-            });
-
-            let requireResult = await requirePromise;
-
-            //Resolve any promises defined on exported properties of the module.
-            for (let key in requireResult) {
-                if (requireResult.hasOwnProperty(key)) {
-                    requireResult[key] = await Promise.resolve(requireResult[key]);
-                }
-            }
-
-            this.postMessage({
-                $$command: command,
-                $$postMessageId: postMessageId,
-                $$result: 'success',
-                data: requireResult
-            });
-        } catch (err) {
-            this.postMessageError(command, postMessageId, err);
-        }
-    }
-
-    private requireConfig(command: string, postMessageId: string, request: any) {
-        if (request.config) {
-            (<any>window).requirejs.config(request.config);
-        } else if (request.bustCache) {
-            (<any>window).requirejs.config({ urlArgs: 'v=' + (new Date()).getTime() });
-        }
-        this.postMessage({
-            $$command: command,
-            $$postMessageId: postMessageId,
-            $$result: 'success'
-        });
-    }
-
-    private requireUndef(command: string, postMessageId: string, id: string) {
-        (<any>window).requirejs.undef(id);
-        this.postMessage({
-            $$command: command,
-            $$postMessageId: postMessageId,
-            $$result: 'success'
-        });
-    }
-
-    private async sandFiddle(command: string, postMessageId: string, request: any): Promise<void> {
+    private async brew(command: string, postMessageId: string, request: any): Promise<void> {
         const HostWebWorker = require('worker-loader?inline&name=HostWebWorker.js!./HostWebWorker.ts');
         let worker: Worker = new HostWebWorker();
         try {
@@ -435,12 +269,12 @@ class HostWebProxy {
 
             let result: any;
             if (timeout) {
-                result = await this.timeout(workerPromise, timeout, `A timeout occurred while invoking the SandFiddle. (${timeout}ms)`);
+                result = await this.timeout(workerPromise, timeout, `A timeout occurred while invoking the Brew. (${timeout}ms)`);
             } else {
                 result = await workerPromise;
             }
 
-            let sandFiddleMessage: CommandResponse = {
+            let brewMessage: CommandResponse = {
                 $$command: command,
                 $$postMessageId: postMessageId,
                 $$result: 'success',
@@ -448,7 +282,7 @@ class HostWebProxy {
                 transferrableData: result.transferrableData
             }
 
-            this.postMessage(sandFiddleMessage);
+            this.postMessage(brewMessage);
         }
         catch (ex) {
             this.postMessageError(command, postMessageId, ex);

@@ -58,7 +58,7 @@ export interface SPContextInfo {
     expires: Date;
 }
 
-export interface SandFiddleConfig {
+export interface BrewConfig {
     requireConfig: any;
     defines: { [id: string]: string };
     entryPointId: string;

@@ -5,7 +5,7 @@ import * as URI from 'urijs';
 import { get, defaultsDeep, isError, omit } from 'lodash';
 import * as Bluebird from 'bluebird';
 import { SPProxy, defaultSPProxyConfig } from './SPProxy';
-import { SPContextConfig, SPContextAuthenticationConfig, SPContextInfo, SandFiddleConfig } from './index.d';
+import { SPContextConfig, SPContextAuthenticationConfig, SPContextInfo, BrewConfig } from './index.d';
 import Utilities from './Utilities';
 
 export const SPContextLocalStorageKey = 'sp-lookout-context';
@@ -143,19 +143,6 @@ export class SPContext {
     }
 
     /**
-     * Evaluates the specified script 
-     */
-    public async eval(code: string, timeout?: number): Promise<any> {
-        if (!code) {
-            throw Error('The code to execute must be supplied as the first argument.');
-        }
-
-        let proxy = await this.ensureContext();
-
-        return proxy.invoke('Eval', { code }, undefined, timeout);
-    }
-
-    /**
      * Executes http requests through a proxy.
      * @returns promise that resolves with the response.
      */
@@ -245,76 +232,16 @@ export class SPContext {
     }
 
     /**
-     * Loads the script at the specified url into the context of the HostWebProxy.
-     * @param src Absolute URL to the script resource.
-     */
-    public async injectScript(src: string | object, timeout?: number): Promise<any> {
-        if (!src) {
-            throw Error('An absolute url to the desired script resource must be specified.');
-        }
-
-        let proxy = await this.ensureContext();
-
-        if (src instanceof Object) {
-            return proxy.invoke('InjectScript', src);
-        } else {
-            return proxy.invoke('InjectScript', { src });
-        }
-    }
-
-    /**
-     * Using RequireJS within the proxy, dynamically requires the module with the specified id and returns the result.
-     * @param id The id of the module to load
-     */
-    public async require(id: string, timeout?: number) {
-        if (!id) {
-            throw Error('Module id must be supplied as the first argument.');
-        }
-
-        let proxy = await this.ensureContext();
-
-        return proxy.invoke('Require', { id }, undefined, timeout);
-    }
-
-    /**
-     * Pass configuration options to RequireJS instance within the proxy.
-     * @param id 
-     */
-    public async requireConfig(config: RequireConfig, timeout?: number) {
-        if (!config) {
-            throw Error('Config object must be supplied as the first argument.');
-        }
-
-        let proxy = await this.ensureContext();
-
-        return proxy.invoke('Require.Config', { config }, undefined, timeout);
-    }
-
-    /**
-     * Undefines the specified module from within the proxy.
-     * @param id 
-     */
-    public async requireUndefine(id: string, timeout?: number) {
-        if (!id) {
-            throw Error('Module id must be supplied as the first argument.');
-        }
-
-        let proxy = await this.ensureContext();
-
-        return proxy.invoke('Require.Undef', { id }, undefined, timeout);
-    }
-
-    /**
      * Using an isolated web worker, returns the results of the specified entry point.
      * @param config 
      */
-    public async sandFiddle(config: SandFiddleConfig, timeout?: number, transferrablePath?: string, onProgress?: (progress: any) => void) {
+    public async brew(config: BrewConfig, timeout?: number, transferrablePath?: string, onProgress?: (progress: any) => void) {
         if (!config) {
-            throw Error('SandFiddleConfig must be specified as the first argument.');
+            throw Error('BrewConfig must be specified as the first argument.');
         }
 
         const proxy = await this.ensureContext();
-        return proxy.invoke('SandFiddle', config, undefined, timeout, transferrablePath, onProgress);
+        return proxy.invoke('Brew', config, undefined, timeout, transferrablePath, onProgress);
     }
 
     /**
