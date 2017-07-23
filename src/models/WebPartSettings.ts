@@ -7,8 +7,7 @@ export interface WebPartSettings {
     type: WebPartType;
     title: string;
     locked: boolean;
-    props: any;
-    //[others: string]: any;
+    props: object | null;
 }
 
 export enum WebPartType {
@@ -29,5 +28,5 @@ export const defaultWebPartSettings: WebPartSettings = {
     title: 'New WebPart',
     type: WebPartType.text,
     locked: false,
-    props: undefined
+    props: null
 };

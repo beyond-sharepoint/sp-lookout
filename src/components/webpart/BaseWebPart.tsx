@@ -28,7 +28,7 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
     }
 
     public get webPartProps(): P {
-        return this.props.settings.props;
+        return this.props.settings.props as P;
     }
 
     public componentWillMount() {
@@ -75,7 +75,7 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
                     }
                 </div>
                 <div className="webpart-container" style={containerStyle}>
-                    {typeof this.renderWebPartContent === 'function' ? this.renderWebPartContent(settings.props || {}) : null}
+                    {typeof this.renderWebPartContent === 'function' ? this.renderWebPartContent(settings.props as P) : null}
                 </div>
                 <Panel
                     isOpen={this.state.showPanel}
@@ -92,9 +92,9 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
         );
     }
 
-    protected abstract getDefaultWebPartProps(): P;
+    protected abstract getDefaultWebPartProps(): P | null;
 
-    protected abstract renderWebPartContent?(webPartProps: P): JSX.Element;
+    protected abstract renderWebPartContent?(webPartProps: P | null): JSX.Element;
 
     @autobind
     private renderBaseWebPartSettings(): JSX.Element {
@@ -149,14 +149,14 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
     }
 
     @autobind
-    private initializeWebPartProperties(props: BaseWebPartProps) {
+    private initializeWebPartProperties(props: BaseWebPartProps): void {
         if (typeof this.getDefaultWebPartProps !== 'function') {
             return;
         }
 
         const defaultProps = cloneDeep(this.getDefaultWebPartProps());
 
-        if (typeof props.settings.props === 'undefined') {
+        if (typeof props.settings.props === 'undefined' || props.settings.props === null) {
             props.settings.props = observable(defaultProps);
         } else {
             props.settings.props = observable(defaultsDeep(props.settings.props, defaultProps));
@@ -185,7 +185,7 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
     @action.bound
     private onWebPartTypeChanged(dropDownOption: IDropdownOption) {
         (this.props.settings.type as any) = dropDownOption.key;
-        this.props.settings.props = this.initializeWebPartProperties(this.props);
+        this.initializeWebPartProperties(this.props);
         this.onWebPartPropertiesChanged();
     }
 
@@ -204,7 +204,7 @@ export interface BaseWebPartState {
 export interface BaseWebPartProps {
     locked: boolean;
     settings: WebPartSettings;
-    webPartTypeNames: Array<{ key: string, text: string}>;
+    webPartTypeNames: Array<{ key: string, text: string }>;
     onWebPartSettingsChanged?: () => void;
     onDeleteWebPart?: () => void;
 }

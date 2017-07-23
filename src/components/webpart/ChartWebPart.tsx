@@ -116,7 +116,7 @@ export interface ChartWebPartProps {
 export const defaultChartWebPartProps: ChartWebPartProps = {
     chartType: 'line',
     chartOptions: {
-        maintainAspectRatio: true
+        maintainAspectRatio: false
     },
     chartData: {
         labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
