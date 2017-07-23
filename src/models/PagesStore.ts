@@ -2,6 +2,7 @@ import { autorun, observable, extendObservable, observe, action, computed, runIn
 import * as localforage from 'localforage';
 import { defaultsDeep, find, filter } from 'lodash';
 import { PageSettings, defaultPageSettings } from './PageSettings';
+const tropicalOutlook = require('./data/tropical-outlook.json');
 
 export const PagesLocalStorageKey = 'sp-lookout-pages';
 
@@ -10,7 +11,7 @@ export class PagesStore {
 
     public constructor(pages?: Array<PageSettings>) {
         if (!pages) {
-            this._pages = observable([defaultPageSettings]);
+            this._pages = observable([defaultPageSettings, tropicalOutlook]);
         } else {
             // for (const page of pages) {
             //     defaultsDeep(page, defaultPageSettings);

@@ -1,0 +1,187 @@
+{
+    "id": "tropicalOutlook",
+    "name": "Tropical Outlook",
+    "iconClassName": "rainShowersDay",
+    "isExpanded": true,
+    "locked": false,
+    "columns": 4,
+    "rowHeight": 10,
+    "subPages": [],
+    "webParts": [
+        {
+            "title": "Current Time",
+            "type": "clock",
+            "locked": true,
+            "props": {
+                "format": "MMMM Do YYYY, h:mm:ss a"
+            },
+            "id": "YUPghotc",
+            "x": 3,
+            "y": 0,
+            "w": 1,
+            "h": 5
+        },
+        {
+            "title": "Official 2 Day NHC Outlook",
+            "type": "image",
+            "locked": true,
+            "props": {
+                "imageUrl": "http://www.nhc.noaa.gov/xgtwo/two_atl_2d0.png",
+                "linkUrl": "http://www.nhc.noaa.gov/gtwo.php?basin=atlc&fdays=2",
+                "fitWidth": true,
+                "fitHeight": true,
+                "width": "",
+                "height": ""
+            },
+            "id": "rymjO6AR",
+            "x": 1,
+            "y": 0,
+            "w": 1,
+            "h": 11
+        },
+        {
+            "id": "D98ss6ln",
+            "x": 1,
+            "y": 11,
+            "w": 1,
+            "h": 11,
+            "title": "Official 5 Day NHC Outlook",
+            "type": "image",
+            "locked": true,
+            "props": {
+                "imageUrl": "http://www.nhc.noaa.gov/xgtwo/two_atl_5d0.png",
+                "linkUrl": "http://www.nhc.noaa.gov/gtwo.php?basin=atlc&fdays=5",
+                "fitWidth": true,
+                "fitHeight": true,
+                "width": "",
+                "height": ""
+            }
+        },
+        {
+            "id": "LOApAHH9",
+            "x": 2,
+            "y": 0,
+            "w": 1,
+            "h": 9,
+            "title": "NWS Active Alerts Map",
+            "type": "image",
+            "locked": true,
+            "props": {
+                "imageUrl": "http://forecast.weather.gov/wwamap/png/US.png",
+                "linkUrl": "http://www.weather.gov/largemap.php",
+                "fitWidth": true,
+                "fitHeight": true,
+                "width": "",
+                "height": ""
+            }
+        },
+        {
+            "id": "OknmcuH6",
+            "x": 2,
+            "y": 9,
+            "w": 1,
+            "h": 10,
+            "title": "Current Tornado and Severe Thunderstrom Watches:",
+            "type": "image",
+            "locked": true,
+            "props": {
+                "imageUrl": "http://www.spc.noaa.gov/products/watch/validww.png",
+                "linkUrl": "http://www.spc.noaa.gov/products/watch/validww.png",
+                "fitWidth": true,
+                "fitHeight": true,
+                "width": "",
+                "height": ""
+            }
+        },
+        {
+            "id": "NXwBQIcE",
+            "x": 2,
+            "y": 19,
+            "w": 1,
+            "h": 10,
+            "title": "Today's Storm Outlook:",
+            "type": "image",
+            "locked": true,
+            "props": {
+                "imageUrl": "http://www.spc.noaa.gov/products/outlook/day1otlk.gif",
+                "linkUrl": "http://www.spc.noaa.gov/products/outlook/day1otlk.html",
+                "fitWidth": true,
+                "fitHeight": true,
+                "width": "",
+                "height": ""
+            }
+        },
+        {
+            "id": "Gg0d27WF",
+            "x": 0,
+            "y": 0,
+            "w": 1,
+            "h": 11,
+            "title": "Water Sea Surface Temps",
+            "type": "image",
+            "locked": true,
+            "props": {
+                "imageUrl": "http://www.ospo.noaa.gov/data/ocean/ohc/images/sst_naQG3_ddc.gif",
+                "linkUrl": "http://www.ospo.noaa.gov/data/ocean/ohc/images/sst_naQG3_ddc.gif",
+                "fitWidth": true,
+                "fitHeight": true,
+                "width": "",
+                "height": ""
+            }
+        },
+        {
+            "id": "2XK33r40",
+            "x": 1,
+            "y": 22,
+            "w": 1,
+            "h": 7,
+            "title": "Atlantic / Caribbean Surface Charts",
+            "type": "image",
+            "locked": true,
+            "props": {
+                "imageUrl": "http://www.opc.ncep.noaa.gov/UA/Atl_Tropics.gif",
+                "linkUrl": "http://www.opc.ncep.noaa.gov/UA/Atl_Tropics.gif",
+                "fitWidth": true,
+                "fitHeight": false,
+                "width": "",
+                "height": ""
+            }
+        },
+        {
+            "id": "QakU5QJJ",
+            "x": 3,
+            "y": 5,
+            "w": 1,
+            "h": 11,
+            "title": "Forecast",
+            "type": "image",
+            "locked": true,
+            "props": {
+                "imageUrl": "http://origin.wpc.ncep.noaa.gov/basicwx/allfcsts_loop_ndfd.gif",
+                "linkUrl": "http://origin.wpc.ncep.noaa.gov/basicwx/allfcsts_loop_ndfd.gif",
+                "fitWidth": true,
+                "fitHeight": true,
+                "width": "",
+                "height": ""
+            }
+        },
+        {
+            "id": "Iyt1KDZi",
+            "x": 3,
+            "y": 16,
+            "w": 1,
+            "h": 10,
+            "title": "Tropical Surface Forecast",
+            "type": "image",
+            "locked": true,
+            "props": {
+                "imageUrl": "http://images.intellicast.com/WxImages/CustomGraphic/tgsfc24.gif",
+                "linkUrl": "http://images.intellicast.com/WxImages/CustomGraphic/tgsfc24.gif",
+                "fitWidth": true,
+                "fitHeight": true,
+                "width": "",
+                "height": ""
+            }
+        }
+    ]
+}

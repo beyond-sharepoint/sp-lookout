@@ -22,19 +22,21 @@ export class ImageWebPart extends BaseWebPart<ImageWebPartProps, any> {
     }
 
     renderWebPartContent(props: ImageWebPartProps) {
-        const { imageUrl, resizeToFit, maintainAspectRatio, width, height } = props;
+        const { imageUrl, fitWidth, fitHeight, width, height } = props;
 
         const imgStyle: React.CSSProperties = {
-            width: resizeToFit ? '100%' : width,
-            height: resizeToFit ? maintainAspectRatio ? null : '100%' : height
+            width: width,
+            height: height,
+            maxWidth: fitWidth ? '100%' : null,
+            maxHeight: fitHeight ? '100%' : null
         }
 
-        if (props.imageClickUrl) {
+        if (props.linkUrl) {
             imgStyle.cursor = 'pointer';
         }
 
         return (
-            <img src={imageUrl} style={imgStyle} onClick={this.onImageClicked}/>
+            <img src={imageUrl} style={imgStyle} onClick={this.onImageClicked} />
         );
     }
 
@@ -42,9 +44,9 @@ export class ImageWebPart extends BaseWebPart<ImageWebPartProps, any> {
         return (
             <div>
                 <TextField label="Image Url" value={this.webPartProps.imageUrl} onChanged={this.onImageUrlChanged} />
-                <TextField label="Image Click Url" value={this.webPartProps.imageClickUrl} onChanged={this.onImageClickUrlChanged} />
-                <Toggle label="Resize To Fit" checked={this.webPartProps.resizeToFit} onChanged={this.onResizeToFitChanged} />
-                <Toggle label="Maintain Aspect Ratio" checked={this.webPartProps.maintainAspectRatio} onChanged={this.onMaintainAspectRatioChanged} />
+                <TextField label="Link Url" value={this.webPartProps.linkUrl} onChanged={this.onImageClickUrlChanged} />
+                <Toggle label="Resize To Fit Width" checked={this.webPartProps.fitWidth} onChanged={this.onResizeToFitWidthChanged} />
+                <Toggle label="Resize to Fit Height" checked={this.webPartProps.fitHeight} onChanged={this.onResizeToFitHeightChanged} />
             </div>
         );
     }
@@ -54,47 +56,49 @@ export class ImageWebPart extends BaseWebPart<ImageWebPartProps, any> {
         this.webPartProps.imageUrl = newValue;
         super.onWebPartSettingsChanged();
     }
-    
+
     @action.bound
     private onImageClickUrlChanged(newValue: any) {
-        this.webPartProps.imageClickUrl = newValue;
+        this.webPartProps.linkUrl = newValue;
         super.onWebPartSettingsChanged();
     }
 
     @action.bound
-    private onResizeToFitChanged(newValue) {
-        this.webPartProps.resizeToFit = newValue;
+    private onResizeToFitWidthChanged(newValue) {
+        this.webPartProps.fitWidth = newValue;
         super.onWebPartSettingsChanged();
     }
 
     @action.bound
-    private onMaintainAspectRatioChanged(newValue) {
-        this.webPartProps.maintainAspectRatio = newValue;
+    private onResizeToFitHeightChanged(newValue) {
+        this.webPartProps.fitHeight = newValue;
         super.onWebPartSettingsChanged();
     }
 
     @action.bound
     private onImageClicked() {
-        if (!this.webPartProps.imageClickUrl) {
+        if (!this.webPartProps.linkUrl) {
             return;
         }
 
-        window.open(this.webPartProps.imageClickUrl, '_blank');
+        window.open(this.webPartProps.linkUrl, '_blank');
     }
 }
 
 export interface ImageWebPartProps {
     imageUrl: string;
-    imageClickUrl: string;
-    resizeToFit: boolean;
-    maintainAspectRatio: boolean;
-    width?: string | number;
-    height?: string | number;
+    linkUrl: string;
+    fitWidth: boolean;
+    fitHeight: boolean;
+    width: string;
+    height: string;
 }
 
 export const defaultImageWebPartProps: ImageWebPartProps = {
     imageUrl: '',
-    imageClickUrl: '',
-    resizeToFit: true,
-    maintainAspectRatio: true
+    linkUrl: '',
+    fitWidth: true,
+    fitHeight: true,
+    width: '',
+    height: '',
 };

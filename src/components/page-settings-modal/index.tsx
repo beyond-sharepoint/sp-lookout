@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { action } from 'mobx';
+import { action, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import { get, set } from 'lodash';
 
@@ -10,10 +10,11 @@ import { ComboBox, IComboBoxOption } from 'office-ui-fabric-react/lib/ComboBox';
 import { Pivot, PivotItem } from 'office-ui-fabric-react/lib/Pivot';
 import { Dropdown, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
 import { Toggle } from 'office-ui-fabric-react/lib/Toggle';
-import { PrimaryButton } from 'office-ui-fabric-react/lib/Button';
+import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react/lib/Button';
 import { ISelectableOption, SelectableOptionMenuItemType } from 'office-ui-fabric-react/lib/utilities/selectableOption/SelectableOption.Props';
 
-import { startCase, sortBy } from 'lodash';
+import * as FileSaver from 'file-saver';
+import { startCase, sortBy, kebabCase } from 'lodash';
 
 import { PagesStore, PageSettings } from '../../models';
 import './index.css';
@@ -79,6 +80,7 @@ export class PageSettingsModal extends React.Component<PageSettingsProps, any> {
                     </Pivot>
                 </div>
                 <div className="page-settings-modal-footer">
+                    <DefaultButton text="Export Page" onClick={this.exportPage} />
                     {currentPage.id !== 'dashboard'
                         ? <PrimaryButton text="Delete Page" onClick={this.deletePage} style={{ backgroundColor: '#a80000' }} />
                         : null
@@ -105,7 +107,7 @@ export class PageSettingsModal extends React.Component<PageSettingsProps, any> {
         if (!newValue || !newValue.key) {
             return;
         }
-        
+
         this.props.currentPage.iconClassName = newValue.key.toString() || '';
     }
 
@@ -123,6 +125,12 @@ export class PageSettingsModal extends React.Component<PageSettingsProps, any> {
     private deletePage(ev) {
         this.props.onDismiss(ev);
         this.props.onDeletePage(this.props.currentPage);
+    }
+
+    @action.bound
+    private exportPage(ev) {
+        const blob = new Blob([JSON.stringify(toJS(this.props.currentPage), null, 4)], { type: 'text/plain;charset=utf-8' });
+        FileSaver.saveAs(blob, kebabCase(this.props.currentPage.name) + '.json');
     }
 }
 
