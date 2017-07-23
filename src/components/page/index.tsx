@@ -114,9 +114,6 @@ export default class Page extends React.Component<PageProps, PageState> {
     private renderWebPart(webPartSettings: WebPartSettings) {
         const { currentPage } = this.props;
 
-        console.dir(webPartSettings);
-        console.dir(WebPartTypeNames);
-
         const webPartProps: BaseWebPartProps = {
             locked: currentPage.locked,
             settings: webPartSettings,

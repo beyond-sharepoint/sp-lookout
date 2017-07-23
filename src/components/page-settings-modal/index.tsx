@@ -102,6 +102,10 @@ export class PageSettingsModal extends React.Component<PageSettingsProps, any> {
 
     @action.bound
     private updateIconClassName(newValue: IComboBoxOption) {
+        if (!newValue || !newValue.key) {
+            return;
+        }
+        
         this.props.currentPage.iconClassName = newValue.key.toString() || '';
     }
 
