@@ -81,8 +81,6 @@ export default web.get();`,
 import * as ReactDOMServer from 'react-dom-server';
 
 class MyComponent {
-    
-    
     render() {
         const foo = "Hello, world!";
         const styles = {

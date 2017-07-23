@@ -6,13 +6,20 @@ import { Menu, MainButton, ChildButton } from 'react-mfb';
 import { find } from 'lodash';
 
 import { PageSettingsModal } from '../page-settings-modal';
-import { webPartTypes } from '../webpart';
+import { webPartTypes, BaseWebPartProps } from '../webpart';
 
 import { PagesStore, PageSettings, WebPartSettings, WebPartType, defaultWebPartSettings, Util } from '../../models';
 
 import './index.css';
 
 const Layout = ReactGridLayout.WidthProvider(ReactGridLayout);
+const WebPartTypeNames: Array<{ key: string, text: string }> = [];
+for (const key of Object.keys(webPartTypes)) {
+    WebPartTypeNames.push({
+        key: key,
+        text: webPartTypes[key].name
+    });
+}
 
 @observer
 export default class Page extends React.Component<PageProps, PageState> {
@@ -107,9 +114,13 @@ export default class Page extends React.Component<PageProps, PageState> {
     private renderWebPart(webPartSettings: WebPartSettings) {
         const { currentPage } = this.props;
 
-        const webPartProps = {
+        console.dir(webPartSettings);
+        console.dir(WebPartTypeNames);
+
+        const webPartProps: BaseWebPartProps = {
             locked: currentPage.locked,
             settings: webPartSettings,
+            webPartTypeNames: WebPartTypeNames,
             onWebPartSettingsChanged: () => { this.onWebPartSettingsChanged(webPartSettings); },
             onDeleteWebPart: () => { this.onDeleteWebPart(webPartSettings.id); }
         };

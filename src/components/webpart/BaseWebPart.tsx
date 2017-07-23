@@ -9,26 +9,19 @@ import { Dropdown, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
 import { IRenderFunction } from 'office-ui-fabric-react/lib/Utilities';
 import { defaultsDeep, cloneDeep } from 'lodash';
 
-import { WebPartSettings, WebPartType } from '../../models';
+import { WebPartSettings } from '../../models';
 
 import './index.css';
-
-export const webPartTypeNames = [
-    { key: 'chart', text: 'Chart' },
-    { key: 'clock', text: 'Clock' },
-    { key: 'note', text: 'Note' },
-    { key: 'text', text: 'Text' }
-];
 
 /**
  * Represents a component that renders a dynamic component on a Page
  */
-export abstract class BaseWebPart<P extends object, S extends WebPartState> extends React.Component<WebPartProps, S> {
-    public constructor(props: WebPartProps) {
+export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> extends React.Component<BaseWebPartProps, S> {
+    public constructor(props: BaseWebPartProps) {
         super(props);
 
         if (!this.state) {
-            (this.state as WebPartState) = {
+            (this.state as BaseWebPartState) = {
                 showPanel: false
             };
         }
@@ -42,7 +35,7 @@ export abstract class BaseWebPart<P extends object, S extends WebPartState> exte
         this.initializeWebPartProperties(this.props);
     }
 
-    public componentWillReceiveProps(nextProps: WebPartProps) {
+    public componentWillReceiveProps(nextProps: BaseWebPartProps) {
         this.initializeWebPartProperties(nextProps);
     }
 
@@ -91,6 +84,7 @@ export abstract class BaseWebPart<P extends object, S extends WebPartState> exte
                     onRenderFooterContent={this.renderWebPartSettingsFooter}
                     headerText="WebPart Settings"
                 >
+                    {this.renderBaseWebPartSettings()}
                     {typeof this.renderWebPartSettings === 'function' ? this.renderWebPartSettings() : null}
                 </Panel>
             </div>
@@ -102,19 +96,21 @@ export abstract class BaseWebPart<P extends object, S extends WebPartState> exte
     protected abstract renderWebPartContent?(webPartProps: P): JSX.Element;
 
     @autobind
-    protected renderWebPartSettings(): JSX.Element {
+    private renderBaseWebPartSettings(): JSX.Element {
         return (
             <div>
                 <TextField label="WebPart Title" value={this.props.settings.title} onChanged={this.onWebPartTitleChanged} />
                 <Dropdown
                     label="WebPart Type"
-                    selectedKey={WebPartType[this.props.settings.type]}
+                    selectedKey={this.props.settings.type}
                     onChanged={this.onWebPartTypeChanged}
-                    options={webPartTypeNames}
+                    options={this.props.webPartTypeNames}
                 />
             </div>
         );
     }
+
+    protected renderWebPartSettings?(): JSX.Element
 
     @autobind
     protected renderWebPartSettingsFooter(props: IPanelProps): JSX.Element {
@@ -152,7 +148,7 @@ export abstract class BaseWebPart<P extends object, S extends WebPartState> exte
     }
 
     @autobind
-    private initializeWebPartProperties(props: WebPartProps) {
+    private initializeWebPartProperties(props: BaseWebPartProps) {
         if (typeof this.getDefaultWebPartProps !== 'function') {
             return;
         }
@@ -187,7 +183,8 @@ export abstract class BaseWebPart<P extends object, S extends WebPartState> exte
 
     @action.bound
     private onWebPartTypeChanged(dropDownOption: IDropdownOption) {
-        this.props.settings.type = WebPartType[dropDownOption.key];
+        console.dir(dropDownOption);
+        (this.props.settings.type as any) = dropDownOption.key;
         this.props.settings.props = this.initializeWebPartProperties(this.props);
         this.onWebPartSettingsChanged();
     }
@@ -200,13 +197,14 @@ export abstract class BaseWebPart<P extends object, S extends WebPartState> exte
     }
 }
 
-export interface WebPartState {
+export interface BaseWebPartState {
     showPanel: boolean;
 }
 
-export interface WebPartProps {
+export interface BaseWebPartProps {
     locked: boolean;
     settings: WebPartSettings;
+    webPartTypeNames: Array<{ key: string, text: string}>;
     onWebPartSettingsChanged?: () => void;
     onDeleteWebPart?: () => void;
 }

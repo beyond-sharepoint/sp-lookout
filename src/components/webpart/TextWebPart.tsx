@@ -29,7 +29,6 @@ export class TextWebPart extends BaseWebPart<TextWebPartProps, any> {
     public renderWebPartSettings() {
         return (
             <div>
-                {super.renderWebPartSettings()}
                 <TextField label="Text to Display" value={this.webPartProps.text} onChanged={this.onTextChanged} />
             </div>
         );

@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import { autobind } from 'office-ui-fabric-react/lib';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import * as moment from 'moment';
-import { BaseWebPart, WebPartState } from './BaseWebPart';
+import { BaseWebPart, BaseWebPartState } from './BaseWebPart';
 
 @observer
 export class ClockWebPart extends BaseWebPart<ClockWebPartProps, ClockWebPartState> {
@@ -44,7 +44,6 @@ export class ClockWebPart extends BaseWebPart<ClockWebPartProps, ClockWebPartSta
     public renderWebPartSettings() {
         return (
             <div>
-                {super.renderWebPartSettings()}
                 <TextField label="Date Format" value={this.webPartProps.format} onChanged={this.onFormatChanged} />
             </div>
         );
@@ -64,7 +63,7 @@ export class ClockWebPart extends BaseWebPart<ClockWebPartProps, ClockWebPartSta
     }
 }
 
-export interface ClockWebPartState extends WebPartState {
+export interface ClockWebPartState extends BaseWebPartState {
     time: string;
 }
 
