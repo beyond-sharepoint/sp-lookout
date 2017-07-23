@@ -59,7 +59,7 @@ export class ClockWebPart extends BaseWebPart<ClockWebPartProps, ClockWebPartSta
     @action.bound
     private onFormatChanged(newFormat: string) {
         this.webPartProps.format = newFormat;
-        super.onWebPartSettingsChanged();
+        super.onWebPartPropertiesChanged();
     }
 }
 

@@ -20,7 +20,7 @@ export class TextWebPart extends BaseWebPart<TextWebPartProps, any> {
         };
     }
 
-    renderWebPartContent(props: any) {
+    public renderWebPartContent(props: any) {
         return (
             <div>{this.webPartProps.text}</div>
         );
@@ -37,7 +37,7 @@ export class TextWebPart extends BaseWebPart<TextWebPartProps, any> {
     @action.bound
     private onTextChanged(newValue: any) {
         this.webPartProps.text = newValue;
-        super.onWebPartSettingsChanged();
+        super.onWebPartPropertiesChanged();
     }
 }
 

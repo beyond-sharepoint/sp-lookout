@@ -172,13 +172,13 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
     @action.bound
     private onToggleLock() {
         this.props.settings.locked = !this.props.settings.locked;
-        this.onWebPartSettingsChanged();
+        this.onWebPartPropertiesChanged();
     }
 
     @action.bound
     private onWebPartTitleChanged(newTitle: string) {
         this.props.settings.title = newTitle;
-        this.onWebPartSettingsChanged();
+        this.onWebPartPropertiesChanged();
     }
 
     @action.bound
@@ -186,11 +186,11 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
         console.dir(dropDownOption);
         (this.props.settings.type as any) = dropDownOption.key;
         this.props.settings.props = this.initializeWebPartProperties(this.props);
-        this.onWebPartSettingsChanged();
+        this.onWebPartPropertiesChanged();
     }
 
     @autobind
-    protected onWebPartSettingsChanged() {
+    protected onWebPartPropertiesChanged() {
         if (typeof this.props.onWebPartSettingsChanged === 'function') {
             this.props.onWebPartSettingsChanged();
         }

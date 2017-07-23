@@ -31,7 +31,7 @@ export class NoteWebPart extends BaseWebPart<NoteWebPartProps, any> {
     @action.bound
     private onNoteChanged(newValue: any) {
         this.webPartProps.text = newValue.target.value;
-        super.onWebPartSettingsChanged();
+        super.onWebPartPropertiesChanged();
     }
 }
 

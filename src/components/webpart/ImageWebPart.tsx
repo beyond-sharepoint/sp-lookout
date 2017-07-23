@@ -54,25 +54,25 @@ export class ImageWebPart extends BaseWebPart<ImageWebPartProps, any> {
     @action.bound
     private onImageUrlChanged(newValue: any) {
         this.webPartProps.imageUrl = newValue;
-        super.onWebPartSettingsChanged();
+        super.onWebPartPropertiesChanged();
     }
 
     @action.bound
     private onImageClickUrlChanged(newValue: any) {
         this.webPartProps.linkUrl = newValue;
-        super.onWebPartSettingsChanged();
+        super.onWebPartPropertiesChanged();
     }
 
     @action.bound
     private onResizeToFitWidthChanged(newValue) {
         this.webPartProps.fitWidth = newValue;
-        super.onWebPartSettingsChanged();
+        super.onWebPartPropertiesChanged();
     }
 
     @action.bound
     private onResizeToFitHeightChanged(newValue) {
         this.webPartProps.fitHeight = newValue;
-        super.onWebPartSettingsChanged();
+        super.onWebPartPropertiesChanged();
     }
 
     @action.bound
