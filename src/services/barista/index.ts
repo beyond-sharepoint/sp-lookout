@@ -51,40 +51,33 @@ export default class Barista {
         const { fullPath, input, brewMode, allowDebuggerStatement, requireConfig, timeout } = settings;
         const spContext = await SPContext.getContext(this._config.webFullUrl, this._spContextConfig);
 
-        const filename: string = URI(fullPath).filename();
-
         //Transpile the main module.
-        const transpileResult = this.transpile(filename, input, allowDebuggerStatement || false);
-
-        //TODO: determine any dependent modules that have a spl prefix and get them.
+        const transpileResult = this.transpile(fullPath, input, allowDebuggerStatement || false);
 
         const defines: { [path: string]: string } = {};
         defines[fullPath] = transpileResult.outputText;
 
+        //Transpile dependencies
         const relativeImports: Array<string> = (<any>transpileResult).relativeImports;
         for(const relativePath of relativeImports) {
             const dependencyAbsolutePath = URI(relativePath).absoluteTo(fullPath).href();
             const dependentFiddleSettings = this._fiddlesStore.getFiddleSettingsByPath(dependencyAbsolutePath);
 
             if (dependentFiddleSettings) {
-                const dependencyFileName = URI(dependencyAbsolutePath).filename();
-                const dependencyResult = this.transpile(dependencyFileName, dependentFiddleSettings.code, allowDebuggerStatement || false);
+                const dependencyResult = this.transpile(dependencyAbsolutePath, dependentFiddleSettings.code, allowDebuggerStatement || false);
                 defines[dependencyAbsolutePath] = dependencyResult.outputText;
             }
         }
 
-        console.dir(defines);
-        
-
-        //Ensure a unique define. Mostly for 'require' mode.
+        //Ensure a unique define - this is only for 'require' mode, where required scripts will pollute the global namespace.
         //TODO: This probably needs to be done for all defines, not just our entry point.
         //However, that will mess things up for all requires. So we might need to do
         //this at a step before.
-        const brewName = `${filename}-${(new Date()).getTime()}`;
+        const brewName = `${fullPath}-${(new Date()).getTime()}`;
         for (const path of Object.keys(defines)) {
             const define = defines[path];
-            if (define.startsWith(`define('${filename}',[`)) {
-                defines[path] = define.replace(`define('${filename}',[`, `define('${brewName}',[`);
+            if (define.startsWith(`define('${fullPath}',[`)) {
+                defines[path] = define.replace(`define('${fullPath}',[`, `define('${brewName}',[`);
             }
         }
 
