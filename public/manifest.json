@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "SP Lookout!",
+  "name": "SP Lookout! - Your SharePoint Dashboard",
   "icons": [
     {
       "src": "favicon.ico",
