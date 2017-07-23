@@ -89,18 +89,17 @@ export class ChartWebPart extends BaseWebPart<ChartWebPartProps, any> {
     }
 
     @action.bound
-    private onMaintainAspectRatioChanged(newValue) {
+    private onMaintainAspectRatioChanged(newValue: boolean) {
         this.webPartProps.chartOptions.maintainAspectRatio = newValue;
         super.onWebPartPropertiesChanged();
     }
 
     @action.bound
-    private onChartDataChanged(newValue) {
+    private onChartDataChanged(newValue: string) {
         try {
             this.webPartProps.chartData = observable(JSON.parse(newValue));
             super.onWebPartPropertiesChanged();
-        }
-        catch (ex) {
+        } catch (ex) {
             //Write an error...
         }
     }
@@ -143,4 +142,4 @@ export const defaultChartWebPartProps: ChartWebPartProps = {
             borderWidth: 1
         }]
     }
-}
+};

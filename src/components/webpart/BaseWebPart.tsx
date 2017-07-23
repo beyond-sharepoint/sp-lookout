@@ -83,6 +83,7 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
                     onDismiss={this.hideWebPartSettings}
                     onRenderFooterContent={this.renderWebPartSettingsFooter}
                     headerText="WebPart Settings"
+                    className="web-part-settings"
                 >
                     {this.renderBaseWebPartSettings()}
                     {typeof this.renderWebPartSettings === 'function' ? this.renderWebPartSettings() : null}
@@ -110,7 +111,7 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
         );
     }
 
-    protected renderWebPartSettings?(): JSX.Element
+    protected renderWebPartSettings?(): JSX.Element;
 
     @autobind
     protected renderWebPartSettingsFooter(props: IPanelProps): JSX.Element {
@@ -183,7 +184,6 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
 
     @action.bound
     private onWebPartTypeChanged(dropDownOption: IDropdownOption) {
-        console.dir(dropDownOption);
         (this.props.settings.type as any) = dropDownOption.key;
         this.props.settings.props = this.initializeWebPartProperties(this.props);
         this.onWebPartPropertiesChanged();

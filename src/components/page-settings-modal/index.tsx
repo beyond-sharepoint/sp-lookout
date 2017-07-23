@@ -57,9 +57,9 @@ export class PageSettingsModal extends React.Component<PageSettingsProps, any> {
                             />
                             <ComboBox
                                 defaultSelectedKey={currentPage.iconClassName}
-                                label='Icon Class Name:'
+                                label="Icon Class Name:"
                                 selectedKey={currentPage.iconClassName}
-                                ariaLabel='Icon Class Name'
+                                ariaLabel="Icon Class Name"
                                 allowFreeform={true}
                                 autoComplete="on"
                                 options={iconOptions}

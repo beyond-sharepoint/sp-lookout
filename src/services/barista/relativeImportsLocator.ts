@@ -12,6 +12,7 @@ export const RelativeImportsLocator = (context: ts.TransformationContext): ts.Tr
                 if (relativeRegExp.test(moduleName)) {
                     relativeImports.push(moduleName);
                 }
+                return ts.visitEachChild(node, visitor, context);
             default:
                 return ts.visitEachChild(node, visitor, context);
         }
@@ -22,7 +23,7 @@ export const RelativeImportsLocator = (context: ts.TransformationContext): ts.Tr
         const result = ts.visitNode(sf, visitor);
         (<any>RelativeImportsLocator).relativeImports = relativeImports;
         return result;
-    }
+    };
 
     return transformer;
 };

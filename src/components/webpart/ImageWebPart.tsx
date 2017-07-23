@@ -29,7 +29,7 @@ export class ImageWebPart extends BaseWebPart<ImageWebPartProps, any> {
             height: height,
             maxWidth: fitWidth ? '100%' : null,
             maxHeight: fitHeight ? '100%' : null
-        }
+        };
 
         if (props.linkUrl) {
             imgStyle.cursor = 'pointer';
@@ -64,13 +64,13 @@ export class ImageWebPart extends BaseWebPart<ImageWebPartProps, any> {
     }
 
     @action.bound
-    private onResizeToFitWidthChanged(newValue) {
+    private onResizeToFitWidthChanged(newValue: boolean) {
         this.webPartProps.fitWidth = newValue;
         super.onWebPartPropertiesChanged();
     }
 
     @action.bound
-    private onResizeToFitHeightChanged(newValue) {
+    private onResizeToFitHeightChanged(newValue: boolean) {
         this.webPartProps.fitHeight = newValue;
         super.onWebPartPropertiesChanged();
     }
