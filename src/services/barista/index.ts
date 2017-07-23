@@ -4,6 +4,7 @@ import * as URI from 'urijs';
 import { cloneDeep, defaultsDeep } from 'lodash';
 
 import { DebuggerTransformer } from './debuggerTransformer';
+import { RelativeImportsLocator } from './relativeImportsLocator';
 import { SPContext, SPContextConfig, SPProxy, SPContextError, defaultSPContextConfig } from '../spcontext';
 
 export default class Barista {
@@ -37,6 +38,7 @@ export default class Barista {
         const { filename, input, brewMode, allowDebuggerStatement, requireConfig, timeout } = settings;
         const spContext = await SPContext.getContext(this._config.webFullUrl, this._spContextConfig);
 
+        //Transpile the main module.
         const transpileResult = this.transpile(filename, input, allowDebuggerStatement || false);
 
         //TODO: determine any dependent modules that have a spl prefix and get them.
@@ -44,6 +46,9 @@ export default class Barista {
         const defines: { [id: string]: string } = {
             filename: transpileResult.outputText
         };
+
+        const relativeImports: Array<string> = (<any>transpileResult).relativeImports;
+        console.log(relativeImports);
 
         //Ensure a unique define. Mostly for 'require' mode.
         //TODO: This probably needs to be done for all defines, not just our entry point.
@@ -135,6 +140,7 @@ export default class Barista {
     private transpile(filename: string, input: string, allowDebuggerStatement: boolean): ts.TranspileOutput {
 
         let beforeTransformers: any = [];
+        beforeTransformers.push(RelativeImportsLocator);
         if (!allowDebuggerStatement) {
             beforeTransformers.push(DebuggerTransformer);
         }
@@ -152,6 +158,7 @@ export default class Barista {
             fileName: filename
         });
 
+        (<any>output).relativeImports = (<any>RelativeImportsLocator).relativeImports;
         output.outputText = output.outputText.replace('define([', `define('${filename}',[`);
         return output;
     }
