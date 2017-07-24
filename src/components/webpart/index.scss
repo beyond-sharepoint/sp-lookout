@@ -51,3 +51,36 @@
 .web-part-settings .ms-Panel-contentInner{
     top: 0;
 }
+
+.script-editor-web-part-modal-container {
+    height: 80vh;
+    width: 60vw;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: stretch;
+}
+
+.script-editor-web-part-modal-header {
+    background: #0078d7;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    font-size: 21px;
+    font-weight: 400;
+    padding-left: 28px;
+    min-height: 40px;
+}
+
+.script-editor-web-part-modal-body {
+    flex: 4 4 auto;
+    padding: 5px 28px;
+    display: flex;
+    overflow-y: auto;
+}
+
+.script-editor-web-part-modal-footer {
+    display: flex;
+    padding: 5px 28px;
+    min-height: 40px;
+    justify-content: flex-end;
+}

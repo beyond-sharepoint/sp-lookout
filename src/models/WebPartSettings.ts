@@ -15,6 +15,7 @@ export enum WebPartType {
     clock = 'clock',
     note = 'note',
     image = 'image',
+    scriptEditor = 'scriptEditpr',
     text = 'text',
     viewer = 'viewer'
 }

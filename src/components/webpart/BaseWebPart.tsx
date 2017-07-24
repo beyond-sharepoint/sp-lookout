@@ -22,7 +22,7 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
 
         if (!this.state) {
             (this.state as BaseWebPartState) = {
-                showPanel: false
+                showWebPartSettingsPanel: false
             };
         }
     }
@@ -78,7 +78,7 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
                     {typeof this.renderWebPartContent === 'function' ? this.renderWebPartContent(settings.props as P) : null}
                 </div>
                 <Panel
-                    isOpen={this.state.showPanel}
+                    isOpen={this.state.showWebPartSettingsPanel}
                     type={PanelType.smallFixedFar}
                     onDismiss={this.hideWebPartSettings}
                     onRenderFooterContent={this.renderWebPartSettingsFooter}
@@ -137,14 +137,14 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
     @autobind
     protected showWebPartSettings() {
         this.setState({
-            showPanel: true
+            showWebPartSettingsPanel: true
         });
     }
 
     @autobind
     protected hideWebPartSettings() {
         this.setState({
-            showPanel: false
+            showWebPartSettingsPanel: false
         });
     }
 
@@ -198,7 +198,7 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
 }
 
 export interface BaseWebPartState {
-    showPanel: boolean;
+    showWebPartSettingsPanel: boolean;
 }
 
 export interface BaseWebPartProps {
