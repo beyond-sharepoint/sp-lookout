@@ -87,9 +87,9 @@
   version "4.14.52"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.52.tgz#de5c7ab14da1289733233c9b0ec6f9e377db90f5"
 
-"@types/lodash@^4.14.70":
-  version "4.14.70"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.70.tgz#37bda4acfb3bb79143009cc9d00abd559f7dca30"
+"@types/lodash@^4.14.71":
+  version "4.14.71"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.71.tgz#0dc383f78981216ac76e2f2c3afd998e0450e4c1"
 
 "@types/microsoft-ajax@*":
   version "0.0.32"
@@ -103,9 +103,9 @@
   version "6.0.64"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-6.0.64.tgz#cdc901411f6301e1437dfed23bc68f54442e4dc8"
 
-"@types/node@^8.0.14":
-  version "8.0.14"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.14.tgz#4a19dc6bb61d16c01cbadc7b30ac23518fff176b"
+"@types/node@^8.0.15":
+  version "8.0.15"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.15.tgz#8f23f8a4642ced357704d048010876fc0c7f179a"
 
 "@types/react-dom@^15.5.1":
   version "15.5.1"
@@ -154,9 +154,9 @@
   version "3.16.20-alpha"
   resolved "https://registry.yarnpkg.com/@types/z-schema/-/z-schema-3.16.20-alpha.tgz#36f588ccca27d8e86dd6bb595a973aede8803766"
 
-"@uifabric/styling@>=0.13.14 <1.0.0":
-  version "0.13.14"
-  resolved "https://registry.yarnpkg.com/@uifabric/styling/-/styling-0.13.14.tgz#459fd283060fd06b05f972935980b090936a0154"
+"@uifabric/styling@>=0.13.15 <1.0.0":
+  version "0.13.15"
+  resolved "https://registry.yarnpkg.com/@uifabric/styling/-/styling-0.13.15.tgz#7e9356529e2dfce3588da84a490cd0e9f9a6a0fb"
   dependencies:
     "@microsoft/load-themed-styles" "^1.2.2"
     "@uifabric/utilities" ">=4.8.0 <5.0.0"
@@ -1608,7 +1608,7 @@ domain-browser@^1.1.1:
   version "1.1.7"
   resolved "https://registry.yarnpkg.com/domain-browser/-/domain-browser-1.1.7.tgz#867aa4b093faa05f1de08c06f4d7b21fdf8698bc"
 
-domelementtype@1:
+domelementtype@1, domelementtype@^1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/domelementtype/-/domelementtype-1.3.0.tgz#b17aed82e8ab59e52dd9c19b1756e0fc187204c2"
 
@@ -1622,6 +1622,12 @@ domhandler@2.1:
   dependencies:
     domelementtype "1"
 
+domhandler@^2.3.0:
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/domhandler/-/domhandler-2.4.1.tgz#892e47000a99be55bbf3774ffea0561d8879c259"
+  dependencies:
+    domelementtype "1"
+
 domutils@1.1:
   version "1.1.6"
   resolved "https://registry.yarnpkg.com/domutils/-/domutils-1.1.6.tgz#bddc3de099b9a2efacc51c623f28f416ecc57485"
@@ -1631,6 +1637,13 @@ domutils@1.1:
 domutils@1.5.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/domutils/-/domutils-1.5.1.tgz#dcd8488a26f563d61079e48c9f7b7e32373682cf"
+  dependencies:
+    dom-serializer "0"
+    domelementtype "1"
+
+domutils@^1.5.1:
+  version "1.6.2"
+  resolved "https://registry.yarnpkg.com/domutils/-/domutils-1.6.2.tgz#1958cc0b4c9426e9ed367fb1c8e854891b0fa3ff"
   dependencies:
     dom-serializer "0"
     domelementtype "1"
@@ -1704,7 +1717,7 @@ enhanced-resolve@^3.0.0:
     object-assign "^4.0.1"
     tapable "^0.2.5"
 
-entities@~1.1.1:
+entities@^1.1.1, entities@~1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/entities/-/entities-1.1.1.tgz#6e5c2d0a5621b5dadaecef80b90edfb5cd7772f0"
 
@@ -2485,6 +2498,17 @@ html-webpack-plugin@2.28.0:
     lodash "^4.17.3"
     pretty-error "^2.0.2"
     toposort "^1.0.0"
+
+htmlparser2@^3.9.0:
+  version "3.9.2"
+  resolved "https://registry.yarnpkg.com/htmlparser2/-/htmlparser2-3.9.2.tgz#1bdf87acca0f3f9e53fa4fcceb0f4b4cbb00b338"
+  dependencies:
+    domelementtype "^1.3.0"
+    domhandler "^2.3.0"
+    domutils "^1.5.1"
+    entities "^1.1.1"
+    inherits "^2.0.1"
+    readable-stream "^2.0.2"
 
 htmlparser2@~3.3.0:
   version "3.3.0"
@@ -3947,12 +3971,12 @@ obuf@^1.0.0, obuf@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/obuf/-/obuf-1.1.1.tgz#104124b6c602c6796881a042541d36db43a5264e"
 
-office-ui-fabric-react@^4.21.4:
-  version "4.21.4"
-  resolved "https://registry.yarnpkg.com/office-ui-fabric-react/-/office-ui-fabric-react-4.21.4.tgz#01c303c7b0faf9fddb4ffe2fb5b171b700c86810"
+office-ui-fabric-react@^4.22.0:
+  version "4.22.0"
+  resolved "https://registry.yarnpkg.com/office-ui-fabric-react/-/office-ui-fabric-react-4.22.0.tgz#18b77d92825143fb8baea6b4022e7208d9fe02bc"
   dependencies:
     "@microsoft/load-themed-styles" "^1.2.2"
-    "@uifabric/styling" ">=0.13.14 <1.0.0"
+    "@uifabric/styling" ">=0.13.15 <1.0.0"
     "@uifabric/utilities" ">=4.8.0 <5.0.0"
     prop-types "^15.5.10"
     tslib "^1.6.0"
@@ -4654,9 +4678,9 @@ rc@^1.0.1, rc@^1.1.6, rc@^1.1.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-chartjs-2@^2.5.4:
-  version "2.5.4"
-  resolved "https://registry.yarnpkg.com/react-chartjs-2/-/react-chartjs-2-2.5.4.tgz#ced89581996537de1899d4f58594ffc322a1b16d"
+react-chartjs-2@^2.5.5:
+  version "2.5.5"
+  resolved "https://registry.yarnpkg.com/react-chartjs-2/-/react-chartjs-2-2.5.5.tgz#15a2f6d3f3558eab49be4b4cbe65adf8cdb2a79c"
   dependencies:
     lodash.find "^4.6.0"
     lodash.isequal "^4.4.0"
@@ -4760,9 +4784,15 @@ react-grid-layout@^0.14.7:
     react-draggable "^2.2.6"
     react-resizable "^1.4.0"
 
-react-inspector@^2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/react-inspector/-/react-inspector-2.1.1.tgz#2e68030d7ef0811a012f167258dd84232fd5ead1"
+react-html-parser@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/react-html-parser/-/react-html-parser-1.0.3.tgz#28358f0cc11eee3bf490f8ab6c9c31bd2c806790"
+  dependencies:
+    htmlparser2 "^3.9.0"
+
+react-inspector@^2.1.3:
+  version "2.1.3"
+  resolved "https://registry.yarnpkg.com/react-inspector/-/react-inspector-2.1.3.tgz#61fc4c6b6b29b5262af3aad781a12138cd181a32"
   dependencies:
     babel-runtime "^6.23.0"
     is-dom "^1.0.9"
