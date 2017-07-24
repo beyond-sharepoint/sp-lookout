@@ -82,6 +82,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
 
             return (
                 <Page
+                    barista={this._barista}
                     pagesStore={this.props.pagesStore}
                     currentPage={currentPage}
                 />
@@ -105,6 +106,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
                     if (currentPage) {
                         return (
                             <Page
+                                barista={this._barista}
                                 pagesStore={this.props.pagesStore}
                                 currentPage={currentPage}
                             />

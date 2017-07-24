@@ -48,11 +48,18 @@ export default class Barista {
      * Brews the specified typescript code.
      */
     public async brew(settings: BrewSettings): Promise<any> {
-        const { fullPath, input, brewMode, allowDebuggerStatement, requireConfig, timeout } = settings;
+        const { fullPath, allowDebuggerStatement, timeout } = settings;
         const spContext = await SPContext.getContext(this._config.webFullUrl, this._spContextConfig);
 
-        //Transpile the main module.
-        const transpileResult = this.transpile(fullPath, input, allowDebuggerStatement || false);
+        //Take Order, get the fiddle settings from the store
+        const targetFiddleSettings = this._fiddlesStore.getFiddleSettingsByPath(fullPath);
+
+        if (!targetFiddleSettings) {
+            throw Error(`A module with the specified path was not found in the store associated with this barista: ${fullPath}`);
+        }
+
+        //Tamp, Transpile the main module.
+        const transpileResult = this.transpile(fullPath, targetFiddleSettings.code, allowDebuggerStatement || false);
 
         const defines: { [path: string]: string } = {};
         defines[fullPath] = transpileResult.outputText;
@@ -69,10 +76,11 @@ export default class Barista {
             }
         }
 
+        //Brew
         try {
             return await spContext.brew(
                 {
-                    requireConfig: requireConfig,
+                    requireConfig: targetFiddleSettings.requireConfig,
                     defines: defines,
                     entryPointId: fullPath,
                     timeout
@@ -161,10 +169,6 @@ export interface BaristaConfig {
 
 export interface BrewSettings {
     fullPath: string;
-    input: string;
-    brewMode?: 'require' | 'sandfiddle';
-    moduleLocator?: (moduleId: string) => string;
     allowDebuggerStatement?: boolean;
     timeout?: number;
-    requireConfig?: RequireConfig;
 }

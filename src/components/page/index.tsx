@@ -6,9 +6,10 @@ import { Menu, MainButton, ChildButton } from 'react-mfb';
 import { find } from 'lodash';
 
 import { PageSettingsModal } from '../page-settings-modal';
-import { webPartTypes, BaseWebPartProps } from '../webpart';
+import { webPartTypes, BaseWebPartProps, asScriptedWebPart } from '../webpart';
 
 import { PagesStore, PageSettings, WebPartSettings, WebPartType, defaultWebPartSettings, Util } from '../../models';
+import Barista from '../../services/barista';
 
 import './index.css';
 
@@ -127,7 +128,12 @@ export default class Page extends React.Component<PageProps, PageState> {
             throw Error(`A WebPart did not correspond to the specified type: ${webPartSettings.type}. Please check the web part mapping.`);
         }
 
-        const WebPart = webPartDef.type;
+        let WebPart = webPartDef.type;
+
+        //TODO: Change this!!!
+        if (webPartSettings.type === 'scriptEditor') {
+            WebPart = asScriptedWebPart(this.props.barista, WebPart);
+        }
 
         return (
             <WebPart
@@ -204,6 +210,7 @@ export interface PageState {
 }
 
 export interface PageProps {
+    barista: Barista
     pagesStore: PagesStore;
     currentPage: PageSettings;
 }

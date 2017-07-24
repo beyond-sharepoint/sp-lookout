@@ -92,9 +92,9 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
         );
     }
 
-    protected abstract getDefaultWebPartProps(): P | null;
+    public abstract getDefaultWebPartProps(): P | null;
 
-    protected abstract renderWebPartContent?(webPartProps: P | null): JSX.Element;
+    public abstract renderWebPartContent?(webPartProps: P | null): JSX.Element;
 
     @autobind
     private renderBaseWebPartSettings(): JSX.Element {
@@ -111,7 +111,7 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
         );
     }
 
-    protected renderWebPartSettings?(): JSX.Element;
+    public renderWebPartSettings?(): JSX.Element;
 
     @autobind
     protected renderWebPartSettingsFooter(props: IPanelProps): JSX.Element {
@@ -132,7 +132,7 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
         );
     }
 
-    protected getWebPartContainerStyle?(): React.CSSProperties | undefined;
+    public getWebPartContainerStyle?(): React.CSSProperties | undefined;
 
     @autobind
     protected showWebPartSettings() {

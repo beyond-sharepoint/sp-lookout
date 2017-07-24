@@ -170,6 +170,10 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
         if (!currentFiddle || !currentFiddle.code) {
             return;
         }
+
+        if (typeof timeout === 'undefined') {
+            timeout = 5000;
+        }
         
         let lastBrewResult: any = undefined;
         let lastBrewResultIsError = false;
@@ -182,17 +186,11 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
 
         try {
 
-            const brewSettings: BrewSettings = defaultsDeep(
-                {
-                    fullPath: currentFiddleFullPath,
-                    input: currentFiddle.code,
-                    brewMode: currentFiddle.brewMode,
-                    allowDebuggerStatement: allowDebugger,
-                    timeout: timeout,
-                    requireConfig: toJS(currentFiddle.requireConfig)
-                },
-                defaultBrewSettings
-            ) as BrewSettings;
+            const brewSettings: BrewSettings = {
+                fullPath: currentFiddleFullPath,
+                allowDebuggerStatement: allowDebugger,
+                timeout: timeout
+            };
 
             let result = await barista.brew(brewSettings);
             if (!result) {
@@ -355,11 +353,3 @@ export interface FiddleProps {
     currentFiddle: FiddleSettings;
     currentFiddleFullPath: string;
 }
-
-export const defaultBrewSettings: BrewSettings = {
-    fullPath: '',
-    input: '',
-    brewMode: 'sandfiddle',
-    timeout: 5000,
-    requireConfig: defaultFiddleSettings.requireConfig
-};
