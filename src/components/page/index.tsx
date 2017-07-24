@@ -56,7 +56,7 @@ export default class Page extends React.Component<PageProps, PageState> {
                     layout={layout}
                     cols={columns}
                     rowHeight={rowHeight}
-                    verticalCompact={false}
+                    verticalCompact={currentPage.compactVertical}
                     onLayoutChange={this.onLayoutChange}
                     isDraggable={!locked}
                     isResizable={!locked}

@@ -14,6 +14,7 @@ export interface PageSettings {
     locked: boolean;
     columns: number;
     rowHeight: number;
+    compactVertical: boolean;
     subPages: Array<PageSettings>;
     webParts: Array<WebPartSettings>;
 }
@@ -26,6 +27,7 @@ export const defaultPageSettings: PageSettings = {
     locked: false,
     columns: 12,
     rowHeight: 30,
+    compactVertical: false,
     subPages: [],
     webParts: [
         { 'title': 'SP Lookout!', 'type': WebPartType.chart, 'locked': true, 'id': '0', 'x': 0, 'y': 0, 'w': 4, 'h': 8, 'props': null },

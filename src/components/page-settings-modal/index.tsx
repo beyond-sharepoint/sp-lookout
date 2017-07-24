@@ -76,6 +76,11 @@ export class PageSettingsModal extends React.Component<PageSettingsProps, any> {
                                 value={currentPage.rowHeight.toString()}
                                 onChanged={this.updateRowHeight}
                             />
+                            <Toggle
+                                label="Compact Vertical"
+                                checked={currentPage.compactVertical}
+                                onChanged={this.onCompactVerticalChanged}
+                            />
                         </PivotItem>
                     </Pivot>
                 </div>
@@ -119,6 +124,11 @@ export class PageSettingsModal extends React.Component<PageSettingsProps, any> {
     @action.bound
     private updateRowHeight(newValue: string) {
         this.props.currentPage.rowHeight = parseInt(newValue, 10);
+    }
+
+    @action.bound
+    private onCompactVerticalChanged(newValue: boolean) {
+        this.props.currentPage.compactVertical = newValue;
     }
 
     @action.bound
