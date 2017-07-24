@@ -27,7 +27,7 @@ export class ScriptEditorWebPart extends BaseWebPart<ScriptEditorWebPartProps, S
 
     public renderWebPartContent(props: ScriptEditorWebPartProps) {
         return (
-            <div>{ReactHtmlParser(props.htmlContent)}</div>
+            <div style={{display: 'flex', height: '100%', width: '100%', flex: 1}}>{ReactHtmlParser(props.htmlContent)}</div>
         );
     }
 
@@ -47,7 +47,7 @@ export class ScriptEditorWebPart extends BaseWebPart<ScriptEditorWebPartProps, S
                     </div>
                     <div className="script-editor-web-part-modal-body">
                         <MonacoEditor
-                            value={this.webPartProps.htmlContent}
+                            value={this.state.htmlContentInEdit}
                             language="html"
                             onChange={this.onHtmlContentChanged}
                             options={{
@@ -74,26 +74,33 @@ export class ScriptEditorWebPart extends BaseWebPart<ScriptEditorWebPartProps, S
     @autobind
     protected showScriptEditorModal() {
         this.setState({
-            showScriptEditorModal: true
+            showScriptEditorModal: true,
+            htmlContentInEdit: this.webPartProps.htmlContent
         });
     }
 
     @autobind
     protected hideScriptEditorModal() {
+        this.webPartProps.htmlContent = this.state.htmlContentInEdit;
+        super.onWebPartPropertiesChanged();
+
         this.setState({
-            showScriptEditorModal: false
+            showScriptEditorModal: false,
+            htmlContentInEdit: ''
         });
     }
 
     @action.bound
     private onHtmlContentChanged(newHtmlContent: string) {
-        this.webPartProps.htmlContent = newHtmlContent;
-        super.onWebPartPropertiesChanged();
+        this.setState({
+            htmlContentInEdit: newHtmlContent
+        });
     }
 }
 
 export interface ScriptEditorWebPartState extends BaseWebPartState {
     showScriptEditorModal: boolean;
+    htmlContentInEdit: string;
 }
 
 export interface ScriptEditorWebPartProps {
