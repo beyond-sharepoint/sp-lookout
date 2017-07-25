@@ -44,7 +44,6 @@ export function asScriptedWebPart<P extends object, S extends BaseWebPartState, 
                 }).then((result) => {
                     const propsToApply = get(result.data, this.webPartProps.resultPropertyPath);
                     assign(this.webPartProps, propsToApply);
-                    console.dir(this.props);
                     this.setState({
                         lastResultWasError: false,
                         lastResult: result.data
@@ -90,7 +89,7 @@ export function asScriptedWebPart<P extends object, S extends BaseWebPartState, 
                 return (
                     <WebPart
                         {...this.props}
-                        isNested={true}
+                        disableChrome={true}
                     />
                 )
             }

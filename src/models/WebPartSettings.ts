@@ -4,8 +4,9 @@ export interface WebPartSettings {
     y: number;
     w: number;
     h: number;
-    type: WebPartType;
     title: string;
+    type: WebPartType;
+    attributes: Array<string>;
     locked: boolean;
     props: object | null;
 }
@@ -28,6 +29,7 @@ export const defaultWebPartSettings: WebPartSettings = {
     h: 0,
     title: 'New WebPart',
     type: WebPartType.text,
+    attributes: [],
     locked: false,
     props: null
 };

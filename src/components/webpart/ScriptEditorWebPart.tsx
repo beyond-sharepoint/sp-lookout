@@ -5,6 +5,7 @@ import { observer } from 'mobx-react';
 import ReactHtmlParser from 'react-html-parser';
 import { autobind } from 'office-ui-fabric-react/lib';
 import { DefaultButton, PrimaryButton } from 'office-ui-fabric-react/lib/Button';
+import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 
 import { BaseWebPart, BaseWebPartState } from './BaseWebPart';
@@ -12,10 +13,25 @@ import MonacoEditor from '../monaco-editor';
 
 @observer
 export class ScriptEditorWebPart extends BaseWebPart<ScriptEditorWebPartProps, ScriptEditorWebPartState> {
+    private _rootDiv;
 
     getDefaultWebPartProps() {
         return {
-            htmlContent: "<div>Hello, world!</div>"
+            htmlContent: '<div>Hello, world!</div>',
+            rootStyle: '',
+            rootClass: ''
+        };
+    }
+
+    componentDidMount() {
+        if (this.webPartProps.rootStyle) {
+            this._rootDiv.setAttribute('style', this.webPartProps.rootStyle);
+        }
+    }
+
+    componentDidUpdate() {
+        if (this.webPartProps.rootStyle) {
+            this._rootDiv.setAttribute('style', this.webPartProps.rootStyle);
         }
     }
 
@@ -27,7 +43,7 @@ export class ScriptEditorWebPart extends BaseWebPart<ScriptEditorWebPartProps, S
 
     public renderWebPartContent() {
         return (
-            <div style={{display: 'flex', height: '100%', width: '100%', flex: 1}}>{ReactHtmlParser(this.webPartProps.htmlContent)}</div>
+            <div ref={(e) => this._rootDiv = e} className={this.webPartProps.rootClass || undefined}>{ReactHtmlParser(this.webPartProps.htmlContent)}</div>
         );
     }
 
@@ -35,6 +51,8 @@ export class ScriptEditorWebPart extends BaseWebPart<ScriptEditorWebPartProps, S
 
         return (
             <div>
+                <TextField label="Root Class" value={this.webPartProps.rootClass} onChanged={this.onRootClassChanged} />
+                <TextField label="Root Style" value={this.webPartProps.rootStyle} onChanged={this.onRootStyleChanged} />
                 <DefaultButton text="Edit Html Content" onClick={this.showScriptEditorModal} />
                 <Modal
                     isOpen={this.state.showScriptEditorModal}
@@ -96,6 +114,18 @@ export class ScriptEditorWebPart extends BaseWebPart<ScriptEditorWebPartProps, S
             htmlContentInEdit: newHtmlContent
         });
     }
+
+    @action.bound
+    private onRootClassChanged(newValue: string) {
+        this.webPartProps.rootClass = newValue;
+        super.onWebPartPropertiesChanged();
+    }
+
+    @action.bound
+    private onRootStyleChanged(newValue: string) {
+        this.webPartProps.rootStyle = newValue;
+        super.onWebPartPropertiesChanged();
+    }
 }
 
 export interface ScriptEditorWebPartState extends BaseWebPartState {
@@ -105,4 +135,6 @@ export interface ScriptEditorWebPartState extends BaseWebPartState {
 
 export interface ScriptEditorWebPartProps {
     htmlContent: string;
+    rootStyle: string;
+    rootClass: string;
 }

@@ -6,8 +6,9 @@ import { Panel, PanelType, IPanelProps } from 'office-ui-fabric-react/lib/Panel'
 import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react/lib/Button';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import { Dropdown, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
+import { Checkbox } from 'office-ui-fabric-react/lib/Checkbox';
 import { IRenderFunction } from 'office-ui-fabric-react/lib/Utilities';
-import { defaultsDeep, cloneDeep } from 'lodash';
+import { defaultsDeep, cloneDeep, pull } from 'lodash';
 
 import { WebPartSettings } from '../../models';
 
@@ -47,7 +48,7 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
             containerStyle = this.getWebPartContainerStyle();
         }
 
-        if (this.props.isNested === true) {
+        if (this.props.disableChrome === true) {
             if (typeof this.renderWebPartContent === 'function') {
                 return this.renderWebPartContent();
             }
@@ -101,7 +102,7 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
 
     public abstract getDefaultWebPartProps(): P | null;
 
-    public abstract renderWebPartContent?(): JSX.Element;
+    public abstract renderWebPartContent?(): JSX.Element | null;
 
     @autobind
     private renderBaseWebPartSettings(): JSX.Element {
@@ -113,6 +114,16 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
                     selectedKey={this.props.settings.type}
                     onChanged={this.onWebPartTypeChanged}
                     options={this.props.webPartTypeNames}
+                />
+                <Checkbox
+                    label='Use Script'
+                    checked={this.props.settings.attributes.indexOf('useScript') > -1}
+                    onChange={this.useScriptChanged}
+                />
+                <Checkbox
+                    label='Auto Refresh'
+                    checked={this.props.settings.attributes.indexOf('autoRefresh') > -1}
+                    onChange={this.autoRefreshChanged}
                 />
             </div>
         );
@@ -196,6 +207,31 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
         this.onWebPartPropertiesChanged();
     }
 
+
+    @autobind
+    protected useScriptChanged(ev: any, checked: boolean) {
+        if (checked === true) {
+            pull(this.props.settings.attributes, 'useScript');
+            this.props.settings.attributes.push('useScript');
+        } else {
+            pull(this.props.settings.attributes, 'useScript');
+        }
+
+        this.onWebPartPropertiesChanged();
+    }
+
+    @autobind
+    protected autoRefreshChanged(ev: any, checked: boolean) {
+        if (checked === true) {
+            pull(this.props.settings.attributes, 'autoRefresh');
+            this.props.settings.attributes.push('autoRefresh');
+        } else {
+            pull(this.props.settings.attributes, 'autoRefresh');
+        }
+
+        this.onWebPartPropertiesChanged();
+    }
+
     @autobind
     protected onWebPartPropertiesChanged() {
         if (typeof this.props.onWebPartSettingsChanged === 'function') {
@@ -210,7 +246,7 @@ export interface BaseWebPartState {
 
 export interface BaseWebPartProps {
     locked: boolean;
-    isNested?: boolean;
+    disableChrome?: boolean;
     settings: WebPartSettings;
     webPartTypeNames: Array<{ key: string, text: string }>;
     onWebPartSettingsChanged?: () => void;
