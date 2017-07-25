@@ -32,7 +32,7 @@ const iconOptions = sortBy(
 );
 
 @observer
-export class PageSettingsModal extends React.Component<PageSettingsProps, any> {
+export class WebPartPageSettingsModal extends React.Component<PageSettingsProps, any> {
     public render() {
         const {
             showPageSettingsModal,
@@ -74,7 +74,7 @@ export class PageSettingsModal extends React.Component<PageSettingsProps, any> {
                             <div>
                                 {['lg', 'md', 'sm', 'xs', 'xxs'].map((val) => {
                                     return (
-                                        <span>{upperFirst(val)}: <input type="number" style={{ width: '50px', marginRight: '20px' }} value={this.props.currentPage.breakpoints[val]} onChange={(ev) => this.onBreakpointChanged(val, ev)}/></span>
+                                        <span key={val}>{upperFirst(val)}: <input type="number" style={{ width: '50px', marginRight: '20px' }} value={this.props.currentPage.breakpoints[val]} onChange={(ev) => this.onBreakpointChanged(val, ev)} /></span>
                                     );
                                 })}
                             </div>
@@ -82,7 +82,7 @@ export class PageSettingsModal extends React.Component<PageSettingsProps, any> {
                             <div>
                                 {['lg', 'md', 'sm', 'xs', 'xxs'].map((val) => {
                                     return (
-                                        <span>{upperFirst(val)}: <input type="number" style={{ width: '50px', marginRight: '20px' }} value={this.props.currentPage.columns[val]} onChange={(ev) => this.onColumnChanged(val, ev)}/></span>
+                                        <span key={val}>{upperFirst(val)}: <input type="number" style={{ width: '50px', marginRight: '20px' }} value={this.props.currentPage.columns[val]} onChange={(ev) => this.onColumnChanged(val, ev)} /></span>
                                     );
                                 })}
                             </div>

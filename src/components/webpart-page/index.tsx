@@ -3,12 +3,12 @@ import * as ReactGridLayout from 'react-grid-layout';
 import { action, extendObservable, observable, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import { Menu, MainButton, ChildButton } from 'react-mfb';
-import { find } from 'lodash';
+import { unset } from 'lodash';
 
-import { PageSettingsModal } from '../webpart-page-settings-modal';
+import { WebPartPageSettingsModal } from '../webpart-page-settings-modal';
 import { webPartTypes, BaseWebPartProps, asScriptedWebPart } from '../webpart';
 
-import { PagesStore, PageSettings, WebPartSettings, WebPartType, defaultWebPartSettings, Util } from '../../models';
+import { PagesStore, PageSettings, WebPartLayout, WebPartSettings, WebPartType, defaultWebPartSettings, Util } from '../../models';
 import Barista from '../../services/barista';
 
 import './index.css';
@@ -31,42 +31,38 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
         this.state = {
             showPageSettingsModal: false
         };
-
     }
 
     public render() {
         const { currentPage, pagesStore } = this.props;
         const { columns, rowHeight, locked } = currentPage;
-        let layoutItems: Array<ReactGridLayout.Layout> = [];
-        for (let webPart of currentPage.webParts) {
-            let webPartLayout: ReactGridLayout.Layout = {
-                x: webPart.x,
-                y: webPart.y,
-                w: webPart.w,
-                h: webPart.h,
-                i: webPart.id,
-                isDraggable: !webPart.locked,
-                isResizable: !webPart.locked,
-                static: webPart.locked
-            };
+        let layouts: Partial<ReactGridLayout.Layouts> = {};
 
-            (webPartLayout as any).settings = webPart;
-            layoutItems.push(webPartLayout);
-        }
-
-        let lorry: any = {
-            'lg': layoutItems,
-            'md': layoutItems,
-            'sm': layoutItems,
-            'xs': layoutItems,
-            'xxs': layoutItems
+        for (const size of Object.keys(currentPage.layouts)) {
+            const webPartLayouts: { [id: string]: WebPartLayout } = currentPage.layouts[size];
+            const layout: Array<ReactGridLayout.Layout> = [];
+            for (const id of Object.keys(webPartLayouts)) {
+                const webPart: WebPartSettings = currentPage.webParts[id];
+                const webPartLayout: WebPartLayout = webPartLayouts[id];
+                layout.push({
+                    x: webPartLayout.x,
+                    y: webPartLayout.y,
+                    w: webPartLayout.w,
+                    h: webPartLayout.h,
+                    i: id,
+                    isDraggable: !webPart.locked,
+                    isResizable: !webPart.locked,
+                    static: webPart.locked
+                });
+                layouts[size] = layout;
+            }
         }
 
         return (
             <div style={{ flex: 1, backgroundColor: '#eee' }}>
                 <ResponsiveLayout
                     className="dashboard"
-                    layouts={lorry}
+                    layouts={(layouts as ReactGridLayout.Layouts)}
                     breakpoints={currentPage.breakpoints}
                     cols={currentPage.columns}
                     rowHeight={rowHeight}
@@ -76,10 +72,11 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
                     isResizable={!locked}
                     {...this.props}
                 >
-                    {layoutItems.map((webPart, ix) => {
+                    {Object.keys(currentPage.webParts).map((webPartId, ix) => {
+                        const webPart: WebPartSettings = currentPage.webParts[webPartId];
                         return (
-                            <div key={webPart.i}>
-                                {this.renderWebPart((webPart as any).settings)}
+                            <div key={webPartId}>
+                                {this.renderWebPart(webPartId, webPart)}
                             </div>
                         );
                     })}
@@ -114,7 +111,7 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
                         />
                     </Menu>
                 }
-                <PageSettingsModal
+                <WebPartPageSettingsModal
                     showPageSettingsModal={this.state.showPageSettingsModal}
                     onDismiss={() => { this.setState({ showPageSettingsModal: false }); PagesStore.saveToLocalStorage(this.props.pagesStore); }}
                     onDeletePage={(page) => { pagesStore.deletePage(page.id); PagesStore.saveToLocalStorage(this.props.pagesStore); }}
@@ -125,7 +122,7 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
         );
     }
 
-    private renderWebPart(webPartSettings: WebPartSettings) {
+    private renderWebPart(webPartId: string, webPartSettings: WebPartSettings) {
         const { currentPage } = this.props;
 
         const webPartProps: BaseWebPartProps = {
@@ -133,7 +130,7 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
             settings: webPartSettings,
             webPartTypeNames: WebPartTypeNames,
             onWebPartSettingsChanged: () => { this.onWebPartSettingsChanged(webPartSettings); },
-            onDeleteWebPart: () => { this.onDeleteWebPart(webPartSettings.id); }
+            onDeleteWebPart: () => { this.onDeleteWebPart(webPartId); }
         };
 
         const webPartDef = webPartTypes[webPartSettings.type];
@@ -157,30 +154,45 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
     @action.bound
     private startAddWebPart() {
         const { currentPage } = this.props;
-        currentPage.webParts.push(observable({
-            ...defaultWebPartSettings,
-            id: Util.makeId(8),
-            x: 0,
-            y: 0,
-            w: 2,
-            h: 2,
-            type: WebPartType.text,
-            title: 'New WebPart',
-            locked: false,
-            props: {}
-        }));
+        //TODO: Ensure unique id.
+        const newWebPartId = Util.makeId(8);
+        extendObservable(currentPage.webParts, {
+            [newWebPartId]: {
+                ...defaultWebPartSettings,
+                type: WebPartType.text,
+                title: 'New WebPart',
+                locked: false,
+                props: {}
+            }
+        });
+        ['lg', 'md', 'sm', 'xs', 'xxs'].forEach((breakpointName) => {
+            extendObservable(currentPage.layouts[breakpointName], {
+                [newWebPartId]: {
+                    x: 0,
+                    y: 0,
+                    w: 2,
+                    h: 2,
+                }
+            });
+        });
+        PagesStore.saveToLocalStorage(this.props.pagesStore);
+        this.forceUpdate();
     }
 
     @action.bound
     private onDeleteWebPart(webPartId: string) {
         const { currentPage } = this.props;
-        let webPart = find(currentPage.webParts, { id: webPartId });
+        let webPart = currentPage.webParts[webPartId];
         if (!webPart) {
             return;
         }
 
-        currentPage.webParts.splice(currentPage.webParts.indexOf(webPart), 1);
+        unset(currentPage.webParts, webPartId);
+        for (const size of Object.keys(currentPage.layouts)) {
+            unset(currentPage.layouts[size], webPartId);
+        }
         PagesStore.saveToLocalStorage(this.props.pagesStore);
+        this.forceUpdate();
     }
 
     @action.bound
@@ -196,17 +208,25 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
     }
 
     @action.bound
-    private onLayoutChange(layout: any) {
-        for (let position of layout) {
-            const webPart = find(this.props.currentPage.webParts, { id: position.i });
-            if (!webPart || webPart.locked) {
-                continue;
-            }
+    private onLayoutChange(currentLayout: ReactGridLayout.Layout, allLayouts: ReactGridLayout.Layouts) {
 
-            webPart.x = position.x;
-            webPart.y = position.y;
-            webPart.h = position.h;
-            webPart.w = position.w;
+        //Map of ReactGridLayout back to WebPartLayout 
+        for (const breakpointName of Object.keys(allLayouts)) {
+            const currentBreakpointLayout = allLayouts[breakpointName];
+            let currentWebPartLayouts: { [id: string]: WebPartLayout } = this.props.currentPage.layouts[breakpointName] || {};
+
+            for (let position of currentBreakpointLayout) {
+                const webPart = this.props.currentPage.webParts[position.i];
+                const currentWebPartLayout = currentWebPartLayouts[position.i] || {};
+                if (!webPart || !currentWebPartLayout || webPart.locked) {
+                    continue;
+                }
+
+                currentWebPartLayout.x = position.x;
+                currentWebPartLayout.y = position.y;
+                currentWebPartLayout.h = position.h;
+                currentWebPartLayout.w = position.w;
+            }
         }
         PagesStore.saveToLocalStorage(this.props.pagesStore);
     }

@@ -4,26 +4,97 @@
     "iconClassName": "rainShowersDay",
     "isExpanded": true,
     "locked": false,
-    "breakpoints": { "lg": 1200, "md": 996, "sm": 768, "xs": 480, "xxs": 0 },
-    "columns": { "lg": 4, "md": 4, "sm": 2, "xs": 2, "xxs": 1 },
+    "breakpoints": {
+        "lg": 1200,
+        "md": 996,
+        "sm": 768,
+        "xs": 480,
+        "xxs": 0
+    },
+    "columns": {
+        "lg": 4,
+        "md": 4,
+        "sm": 2,
+        "xs": 2,
+        "xxs": 1
+    },
+    "layouts": {
+        "lg": {
+            "YUPghotc": {
+                "x": 3,
+                "y": 0,
+                "w": 1,
+                "h": 5
+            },
+            "rymjO6AR": {
+                "x": 1,
+                "y": 0,
+                "w": 1,
+                "h": 11
+            },
+            "D98ss6ln": {
+                "x": 1,
+                "y": 11,
+                "w": 1,
+                "h": 11
+            },
+            "LOApAHH9": {
+                "x": 2,
+                "y": 0,
+                "w": 1,
+                "h": 9
+            },
+            "OknmcuH6": {
+                "x": 2,
+                "y": 9,
+                "w": 1,
+                "h": 10
+            },
+            "NXwBQIcE": {
+                "x": 2,
+                "y": 19,
+                "w": 1,
+                "h": 10
+            },
+            "Gg0d27WF": {
+                "x": 0,
+                "y": 0,
+                "w": 1,
+                "h": 11
+            },
+            "2XK33r40": {
+                "x": 1,
+                "y": 22,
+                "w": 1,
+                "h": 7
+            },
+            "QakU5QJJ": {
+                "x": 3,
+                "y": 5,
+                "w": 1,
+                "h": 11
+            },
+            "Iyt1KDZi": {
+                "x": 3,
+                "y": 16,
+                "w": 1,
+                "h": 10
+            }
+        }
+    },
     "rowHeight": 10,
     "compactVertical": false,
     "subPages": [],
-    "webParts": [
-        {
+    "webParts": {
+        "YUPghotc": {
             "title": "Current Time",
             "type": "clock",
             "locked": true,
             "props": {
                 "format": "MMMM Do YYYY, h:mm:ss a"
-            },
-            "id": "YUPghotc",
-            "x": 3,
-            "y": 0,
-            "w": 1,
-            "h": 5
+            }
         },
-        {
+        "rymjO6AR": {
             "title": "Official 2 Day NHC Outlook",
             "type": "image",
             "locked": true,
@@ -34,19 +105,9 @@
                 "fitHeight": true,
                 "width": "",
                 "height": ""
-            },
-            "id": "rymjO6AR",
-            "x": 1,
-            "y": 0,
-            "w": 1,
-            "h": 11
+            }
         },
-        {
-            "id": "D98ss6ln",
-            "x": 1,
-            "y": 11,
-            "w": 1,
-            "h": 11,
+        "D98ss6ln": {
             "title": "Official 5 Day NHC Outlook",
             "type": "image",
             "locked": true,
@@ -59,12 +120,7 @@
                 "height": ""
             }
         },
-        {
-            "id": "LOApAHH9",
-            "x": 2,
-            "y": 0,
-            "w": 1,
-            "h": 9,
+        "LOApAHH9": {
             "title": "NWS Active Alerts Map",
             "type": "image",
             "locked": true,
@@ -77,12 +133,7 @@
                 "height": ""
             }
         },
-        {
-            "id": "OknmcuH6",
-            "x": 2,
-            "y": 9,
-            "w": 1,
-            "h": 10,
+        "OknmcuH6": {
             "title": "Current Tornado and Severe Thunderstrom Watches:",
             "type": "image",
             "locked": true,
@@ -95,12 +146,7 @@
                 "height": ""
             }
         },
-        {
-            "id": "NXwBQIcE",
-            "x": 2,
-            "y": 19,
-            "w": 1,
-            "h": 10,
+        "NXwBQIcE": {
             "title": "Today's Storm Outlook:",
             "type": "image",
             "locked": true,
@@ -113,12 +159,7 @@
                 "height": ""
             }
         },
-        {
-            "id": "Gg0d27WF",
-            "x": 0,
-            "y": 0,
-            "w": 1,
-            "h": 11,
+        "Gg0d27WF": {
             "title": "Water Sea Surface Temps",
             "type": "image",
             "locked": true,
@@ -131,12 +172,7 @@
                 "height": ""
             }
         },
-        {
-            "id": "2XK33r40",
-            "x": 1,
-            "y": 22,
-            "w": 1,
-            "h": 7,
+        "2XK33r40": {
             "title": "Atlantic / Caribbean Surface Charts",
             "type": "image",
             "locked": true,
@@ -149,12 +185,7 @@
                 "height": ""
             }
         },
-        {
-            "id": "QakU5QJJ",
-            "x": 3,
-            "y": 5,
-            "w": 1,
-            "h": 11,
+        "QakU5QJJ": {
             "title": "Forecast",
             "type": "image",
             "locked": true,
@@ -167,12 +198,7 @@
                 "height": ""
             }
         },
-        {
-            "id": "Iyt1KDZi",
-            "x": 3,
-            "y": 16,
-            "w": 1,
-            "h": 10,
+        "Iyt1KDZi": {
             "title": "Tropical Surface Forecast",
             "type": "image",
             "locked": true,
@@ -185,5 +211,5 @@
                 "height": ""
             }
         }
-    ]
+    }
 }
