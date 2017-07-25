@@ -130,7 +130,7 @@ export default class Page extends React.Component<PageProps, PageState> {
 
         let WebPart = webPartDef.type;
 
-        if (webPartSettings.attributes.indexOf('useScript') > -1) {
+        if (webPartSettings.attributes && webPartSettings.attributes.indexOf('useScript') > -1) {
             WebPart = asScriptedWebPart(this.props.barista, WebPart);
         }
 

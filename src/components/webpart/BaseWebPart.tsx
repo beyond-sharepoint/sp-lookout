@@ -117,12 +117,12 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
                 />
                 <Checkbox
                     label="Use Script"
-                    checked={this.props.settings.attributes.indexOf('useScript') > -1}
+                    checked={this.props.settings.attributes && this.props.settings.attributes.indexOf('useScript') > -1}
                     onChange={this.useScriptChanged}
                 />
                 <Checkbox
                     label="Auto Refresh"
-                    checked={this.props.settings.attributes.indexOf('autoRefresh') > -1}
+                    checked={this.props.settings.attributes && this.props.settings.attributes.indexOf('autoRefresh') > -1}
                     onChange={this.autoRefreshChanged}
                 />
             </div>
