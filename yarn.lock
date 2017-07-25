@@ -75,9 +75,9 @@
   version "4.6.0"
   resolved "https://registry.yarnpkg.com/@types/history/-/history-4.6.0.tgz#093d67ed780d889c9543f6dca24ebee0b6b9fc45"
 
-"@types/jest@^20.0.4":
-  version "20.0.4"
-  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-20.0.4.tgz#91e2c76fbe90b3a719b5d689958f0495f005beb9"
+"@types/jest@^20.0.5":
+  version "20.0.5"
+  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-20.0.5.tgz#f463e58b2de6e801f40e33b05db894babdbad98c"
 
 "@types/jquery@*":
   version "3.2.8"
@@ -158,9 +158,9 @@
   version "3.16.20-alpha"
   resolved "https://registry.yarnpkg.com/@types/z-schema/-/z-schema-3.16.20-alpha.tgz#36f588ccca27d8e86dd6bb595a973aede8803766"
 
-"@uifabric/styling@>=0.13.15 <1.0.0":
-  version "0.13.15"
-  resolved "https://registry.yarnpkg.com/@uifabric/styling/-/styling-0.13.15.tgz#7e9356529e2dfce3588da84a490cd0e9f9a6a0fb"
+"@uifabric/styling@>=0.13.16 <1.0.0":
+  version "0.13.16"
+  resolved "https://registry.yarnpkg.com/@uifabric/styling/-/styling-0.13.16.tgz#af0f34989d310124d6e75b3d21c918a9e1584fa3"
   dependencies:
     "@microsoft/load-themed-styles" "^1.2.2"
     "@uifabric/utilities" ">=4.8.0 <5.0.0"
@@ -3975,12 +3975,12 @@ obuf@^1.0.0, obuf@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/obuf/-/obuf-1.1.1.tgz#104124b6c602c6796881a042541d36db43a5264e"
 
-office-ui-fabric-react@^4.22.0:
-  version "4.22.0"
-  resolved "https://registry.yarnpkg.com/office-ui-fabric-react/-/office-ui-fabric-react-4.22.0.tgz#18b77d92825143fb8baea6b4022e7208d9fe02bc"
+office-ui-fabric-react@^4.23.0:
+  version "4.23.0"
+  resolved "https://registry.yarnpkg.com/office-ui-fabric-react/-/office-ui-fabric-react-4.23.0.tgz#df71d9cd31a922abcb5556ca03e1d0ea93dd7dd3"
   dependencies:
     "@microsoft/load-themed-styles" "^1.2.2"
-    "@uifabric/styling" ">=0.13.15 <1.0.0"
+    "@uifabric/styling" ">=0.13.16 <1.0.0"
     "@uifabric/utilities" ">=4.8.0 <5.0.0"
     prop-types "^15.5.10"
     tslib "^1.6.0"
