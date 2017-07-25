@@ -5,7 +5,7 @@ import { autobind } from 'office-ui-fabric-react/lib';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import { SpinButton } from 'office-ui-fabric-react/lib/SpinButton';
 
-import { BaseWebPart, BaseWebPartState } from './BaseWebPart'
+import { BaseWebPart, BaseWebPartState } from './BaseWebPart';
 import { Util } from '../../models';
 import Barista from '../../services/barista/';
 
@@ -41,23 +41,27 @@ export function asScriptedWebPart<P extends object, S extends BaseWebPartState, 
                     fullPath: this.webPartProps.scriptPath,
                     allowDebuggerStatement: false,
                     timeout: this.webPartProps.scriptTimeout
-                }).then((result) => {
-                    const propsToApply = get(result.data, this.webPartProps.resultPropertyPath);
-                    assign(this.webPartProps, propsToApply);
-                    this.setState({
-                        lastResultWasError: false,
-                        lastResult: result.data
+                })
+                    .then(
+                    (result) => {
+                        const propsToApply = get(result.data, this.webPartProps.resultPropertyPath);
+                        assign(this.webPartProps, propsToApply);
+                        this.setState({
+                            lastResultWasError: false,
+                            lastResult: result.data
+                        });
+                    },
+                    (err) => {
+                        this.setState({
+                            lastResultWasError: true,
+                            lastResult: err.message
+                        });
+                    })
+                    .then(() => {
+                        this.setState({
+                            isLoading: false
+                        });
                     });
-                }, (err) => {
-                    this.setState({
-                        lastResultWasError: true,
-                        lastResult: err.message
-                    });
-                }).then(() => {
-                    this.setState({
-                        isLoading: false
-                    });
-                });
             } else {
                 this.setState({
                     isLoading: false,
@@ -91,7 +95,7 @@ export function asScriptedWebPart<P extends object, S extends BaseWebPartState, 
                         {...this.props}
                         disableChrome={true}
                     />
-                )
+                );
             }
 
             return (
@@ -128,10 +132,10 @@ export function asScriptedWebPart<P extends object, S extends BaseWebPartState, 
         }
 
         private onScriptTimeoutChanged(newValue: string) {
-            this.webPartProps.scriptTimeout = parseInt(newValue);
+            this.webPartProps.scriptTimeout = parseInt(newValue, 10);
             super.onWebPartPropertiesChanged();
         }
-    }
+    };
 
     interface ScriptedWebPartState extends BaseWebPartState {
         isLoading: boolean;

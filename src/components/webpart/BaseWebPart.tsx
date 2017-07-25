@@ -18,7 +18,7 @@ import './index.css';
  * Represents a component that renders a dynamic component on a Page
  */
 export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> extends React.Component<BaseWebPartProps, S> {
-    public constructor(props) {
+    public constructor(props: any) {
         super(props);
 
         if (!this.state) {
@@ -116,12 +116,12 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
                     options={this.props.webPartTypeNames}
                 />
                 <Checkbox
-                    label='Use Script'
+                    label="Use Script"
                     checked={this.props.settings.attributes.indexOf('useScript') > -1}
                     onChange={this.useScriptChanged}
                 />
                 <Checkbox
-                    label='Auto Refresh'
+                    label="Auto Refresh"
                     checked={this.props.settings.attributes.indexOf('autoRefresh') > -1}
                     onChange={this.autoRefreshChanged}
                 />
@@ -206,7 +206,6 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
         this.initializeWebPartProperties(this.props);
         this.onWebPartPropertiesChanged();
     }
-
 
     @autobind
     protected useScriptChanged(ev: any, checked: boolean) {

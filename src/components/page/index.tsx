@@ -133,7 +133,7 @@ export default class Page extends React.Component<PageProps, PageState> {
         if (webPartSettings.attributes.indexOf('useScript') > -1) {
             WebPart = asScriptedWebPart(this.props.barista, WebPart);
         }
-        
+
         return (
             <WebPart
                 {...webPartProps}
@@ -209,7 +209,7 @@ export interface PageState {
 }
 
 export interface PageProps {
-    barista: Barista
+    barista: Barista;
     pagesStore: PagesStore;
     currentPage: PageSettings;
 }

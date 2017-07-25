@@ -19,13 +19,16 @@ import { startCase, sortBy, kebabCase } from 'lodash';
 import { PagesStore, PageSettings } from '../../models';
 import './index.css';
 
-const iconOptions = sortBy(Object.keys(IconCodes).map((iconCode) => {
-    return {
-        key: iconCode,
-        iconClass: startCase(iconCode).replace(/\s/g, ''),
-        text: startCase(iconCode)
-    };
-}), ['text']);
+const iconOptions = sortBy(
+    Object.keys(IconCodes).map((iconCode) => {
+        return {
+            key: iconCode,
+            iconClass: startCase(iconCode).replace(/\s/g, ''),
+            text: startCase(iconCode)
+        };
+    }),
+    ['text']
+);
 
 @observer
 export class PageSettingsModal extends React.Component<PageSettingsProps, any> {
@@ -132,13 +135,13 @@ export class PageSettingsModal extends React.Component<PageSettingsProps, any> {
     }
 
     @action.bound
-    private deletePage(ev) {
+    private deletePage(ev: any) {
         this.props.onDismiss(ev);
         this.props.onDeletePage(this.props.currentPage);
     }
 
     @action.bound
-    private exportPage(ev) {
+    private exportPage(ev: any) {
         const blob = new Blob([JSON.stringify(toJS(this.props.currentPage), null, 4)], { type: 'text/plain;charset=utf-8' });
         FileSaver.saveAs(blob, kebabCase(this.props.currentPage.name) + '.json');
     }
