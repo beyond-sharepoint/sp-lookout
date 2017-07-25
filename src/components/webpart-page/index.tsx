@@ -5,7 +5,7 @@ import { observer } from 'mobx-react';
 import { Menu, MainButton, ChildButton } from 'react-mfb';
 import { find } from 'lodash';
 
-import { PageSettingsModal } from '../page-settings-modal';
+import { PageSettingsModal } from '../webpart-page-settings-modal';
 import { webPartTypes, BaseWebPartProps, asScriptedWebPart } from '../webpart';
 
 import { PagesStore, PageSettings, WebPartSettings, WebPartType, defaultWebPartSettings, Util } from '../../models';
@@ -13,7 +13,8 @@ import Barista from '../../services/barista';
 
 import './index.css';
 
-const Layout = ReactGridLayout.WidthProvider(ReactGridLayout);
+const ResponsiveLayout = ReactGridLayout.WidthProvider(ReactGridLayout.Responsive);
+
 const WebPartTypeNames: Array<{ key: string, text: string }> = [];
 for (const key of Object.keys(webPartTypes)) {
     WebPartTypeNames.push({
@@ -23,7 +24,7 @@ for (const key of Object.keys(webPartTypes)) {
 }
 
 @observer
-export default class Page extends React.Component<PageProps, PageState> {
+export default class WebPartPage extends React.Component<PageProps, PageState> {
     public constructor(props: PageProps) {
         super(props);
 
@@ -36,9 +37,9 @@ export default class Page extends React.Component<PageProps, PageState> {
     public render() {
         const { currentPage, pagesStore } = this.props;
         const { columns, rowHeight, locked } = currentPage;
-        let layout: Array<any> = [];
+        let layoutItems: Array<ReactGridLayout.Layout> = [];
         for (let webPart of currentPage.webParts) {
-            layout.push({
+            let webPartLayout: ReactGridLayout.Layout = {
                 x: webPart.x,
                 y: webPart.y,
                 w: webPart.w,
@@ -46,16 +47,28 @@ export default class Page extends React.Component<PageProps, PageState> {
                 i: webPart.id,
                 isDraggable: !webPart.locked,
                 isResizable: !webPart.locked,
-                static: webPart.locked,
-                settings: webPart
-            });
+                static: webPart.locked
+            };
+
+            (webPartLayout as any).settings = webPart;
+            layoutItems.push(webPartLayout);
         }
+
+        let lorry: any = {
+            'lg': layoutItems,
+            'md': layoutItems,
+            'sm': layoutItems,
+            'xs': layoutItems,
+            'xxs': layoutItems
+        }
+
         return (
             <div style={{ flex: 1, backgroundColor: '#eee' }}>
-                <Layout
+                <ResponsiveLayout
                     className="dashboard"
-                    layout={layout}
-                    cols={columns}
+                    layouts={lorry}
+                    breakpoints={currentPage.breakpoints}
+                    cols={currentPage.columns}
                     rowHeight={rowHeight}
                     verticalCompact={currentPage.compactVertical}
                     onLayoutChange={this.onLayoutChange}
@@ -63,14 +76,14 @@ export default class Page extends React.Component<PageProps, PageState> {
                     isResizable={!locked}
                     {...this.props}
                 >
-                    {layout.map((webPart, ix) => {
+                    {layoutItems.map((webPart, ix) => {
                         return (
                             <div key={webPart.i}>
-                                {this.renderWebPart(webPart.settings)}
+                                {this.renderWebPart((webPart as any).settings)}
                             </div>
                         );
                     })}
-                </Layout>
+                </ResponsiveLayout>
                 {currentPage.locked
                     ?
                     <Menu effect={'zoomin'} method={'hover'} position={'br'}>

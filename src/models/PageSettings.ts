@@ -6,13 +6,16 @@ export interface PageGroup {
     pages: Array<PageSettings>;
 }
 
+export type PageBreakpoints = 'lg' | 'md' | 'sm' | 'xs' | 'xxs';
+
 export interface PageSettings {
     id: string;
     name: string;
     iconClassName?: string;
     isExpanded: boolean;
     locked: boolean;
-    columns: number;
+    breakpoints: {[P in PageBreakpoints]: number };
+    columns: {[P in PageBreakpoints]: number};
     rowHeight: number;
     compactVertical: boolean;
     subPages: Array<PageSettings>;
@@ -25,7 +28,8 @@ export const defaultPageSettings: PageSettings = {
     iconClassName: 'PanoIndicator',
     isExpanded: true,
     locked: false,
-    columns: 12,
+    breakpoints: { lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 },
+    columns: { lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 },
     rowHeight: 30,
     compactVertical: false,
     subPages: [],

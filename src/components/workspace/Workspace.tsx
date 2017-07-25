@@ -18,7 +18,7 @@ import { defaultsDeep } from 'lodash';
 
 import Barista from '../../services/barista';
 import { SPContextConfig, defaultSPContextConfig } from '../../services/spcontext';
-import Page from '../page';
+import WebPartPage from '../webpart-page';
 import Aside from '../workspace-aside';
 import { WelcomeModal } from '../welcome-modal';
 import { WorkspaceSettingsModal } from '../workspace-settings-modal';
@@ -81,7 +81,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
             }
 
             return (
-                <Page
+                <WebPartPage
                     barista={this._barista}
                     pagesStore={this.props.pagesStore}
                     currentPage={currentPage}
@@ -105,7 +105,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
                     const currentPage = this.props.pagesStore.getPageSettings(stateProps.match.params.pageId);
                     if (currentPage) {
                         return (
-                            <Page
+                            <WebPartPage
                                 barista={this._barista}
                                 pagesStore={this.props.pagesStore}
                                 currentPage={currentPage}

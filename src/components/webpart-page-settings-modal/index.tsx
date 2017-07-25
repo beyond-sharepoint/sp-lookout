@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { action, toJS } from 'mobx';
 import { observer } from 'mobx-react';
-import { get, set } from 'lodash';
+import { get, set, upperFirst } from 'lodash';
 
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { IconCodes } from '@uifabric/styling';
@@ -10,6 +10,7 @@ import { ComboBox, IComboBoxOption } from 'office-ui-fabric-react/lib/ComboBox';
 import { Pivot, PivotItem } from 'office-ui-fabric-react/lib/Pivot';
 import { Dropdown, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
 import { Toggle } from 'office-ui-fabric-react/lib/Toggle';
+import { Label } from 'office-ui-fabric-react/lib/Label';
 import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react/lib/Button';
 import { ISelectableOption, SelectableOptionMenuItemType } from 'office-ui-fabric-react/lib/utilities/selectableOption/SelectableOption.Props';
 
@@ -69,11 +70,22 @@ export class PageSettingsModal extends React.Component<PageSettingsProps, any> {
                                 onChanged={this.updateIconClassName}
                                 onRenderOption={this.renderIconOption}
                             />
-                            <TextField
-                                label="Columns"
-                                value={currentPage.columns.toString()}
-                                onChanged={this.updateColumns}
-                            />
+                            <Label>Breakpoints:</Label>
+                            <div>
+                                {['lg', 'md', 'sm', 'xs', 'xxs'].map((val) => {
+                                    return (
+                                        <span>{upperFirst(val)}: <input type="number" style={{ width: '50px', marginRight: '20px' }} value={this.props.currentPage.breakpoints[val]} onChange={(ev) => this.onBreakpointChanged(val, ev)}/></span>
+                                    );
+                                })}
+                            </div>
+                            <Label>Columns:</Label>
+                            <div>
+                                {['lg', 'md', 'sm', 'xs', 'xxs'].map((val) => {
+                                    return (
+                                        <span>{upperFirst(val)}: <input type="number" style={{ width: '50px', marginRight: '20px' }} value={this.props.currentPage.columns[val]} onChange={(ev) => this.onColumnChanged(val, ev)}/></span>
+                                    );
+                                })}
+                            </div>
                             <TextField
                                 label="Row Height"
                                 value={currentPage.rowHeight.toString()}
@@ -120,8 +132,13 @@ export class PageSettingsModal extends React.Component<PageSettingsProps, any> {
     }
 
     @action.bound
-    private updateColumns(newValue: string) {
-        this.props.currentPage.columns = parseInt(newValue, 10);
+    private onBreakpointChanged(id: string, ev: React.ChangeEvent<HTMLInputElement>) {
+        this.props.currentPage.breakpoints[id] = ev.target.valueAsNumber;
+    }
+
+    @action.bound
+    private onColumnChanged(id: string, ev: React.ChangeEvent<HTMLInputElement>) {
+        this.props.currentPage.columns[id] = ev.target.valueAsNumber;
     }
 
     @action.bound
