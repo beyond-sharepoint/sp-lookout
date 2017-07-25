@@ -21,8 +21,8 @@ export class ImageWebPart extends BaseWebPart<ImageWebPartProps, any> {
         };
     }
 
-    renderWebPartContent(props: ImageWebPartProps) {
-        const { imageUrl, fitWidth, fitHeight, width, height } = props;
+    renderWebPartContent() {
+        const { imageUrl, linkUrl, fitWidth, fitHeight, width, height } = this.webPartProps;
 
         const imgStyle: React.CSSProperties = {
             width: width,
@@ -31,7 +31,7 @@ export class ImageWebPart extends BaseWebPart<ImageWebPartProps, any> {
             maxHeight: fitHeight ? '100%' : null
         };
 
-        if (props.linkUrl) {
+        if (linkUrl) {
             imgStyle.cursor = 'pointer';
         }
 

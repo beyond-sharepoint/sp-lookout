@@ -17,7 +17,7 @@ import './index.css';
  * Represents a component that renders a dynamic component on a Page
  */
 export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> extends React.Component<BaseWebPartProps, S> {
-    public constructor(props: BaseWebPartProps) {
+    public constructor(props) {
         super(props);
 
         if (!this.state) {
@@ -45,6 +45,13 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
         let containerStyle: React.CSSProperties | undefined = undefined;
         if (typeof this.getWebPartContainerStyle === 'function') {
             containerStyle = this.getWebPartContainerStyle();
+        }
+
+        if (this.props.isNested === true) {
+            if (typeof this.renderWebPartContent === 'function') {
+                return this.renderWebPartContent();
+            }
+            return null;
         }
 
         return (
@@ -75,7 +82,7 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
                     }
                 </div>
                 <div className="webpart-container" style={containerStyle}>
-                    {typeof this.renderWebPartContent === 'function' ? this.renderWebPartContent(settings.props as P) : null}
+                    {typeof this.renderWebPartContent === 'function' ? this.renderWebPartContent() : null}
                 </div>
                 <Panel
                     isOpen={this.state.showWebPartSettingsPanel}
@@ -94,7 +101,7 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
 
     public abstract getDefaultWebPartProps(): P | null;
 
-    public abstract renderWebPartContent?(webPartProps: P | null): JSX.Element;
+    public abstract renderWebPartContent?(): JSX.Element;
 
     @autobind
     private renderBaseWebPartSettings(): JSX.Element {
@@ -203,6 +210,7 @@ export interface BaseWebPartState {
 
 export interface BaseWebPartProps {
     locked: boolean;
+    isNested?: boolean;
     settings: WebPartSettings;
     webPartTypeNames: Array<{ key: string, text: string }>;
     onWebPartSettingsChanged?: () => void;

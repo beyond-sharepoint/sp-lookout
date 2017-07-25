@@ -35,7 +35,7 @@ export class ClockWebPart extends BaseWebPart<ClockWebPartProps, ClockWebPartSta
         };
     }
 
-    public renderWebPartContent(props: any) {
+    public renderWebPartContent() {
         return (
             <div>{this.state.time}</div>
         );

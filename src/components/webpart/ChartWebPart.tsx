@@ -19,15 +19,16 @@ export class ChartWebPart extends BaseWebPart<ChartWebPartProps, any> {
         return defaultChartWebPartProps;
     }
 
-    renderWebPartContent(props: ChartWebPartProps) {
+    renderWebPartContent() {
+        const { chartData, chartOptions, chartType } = this.webPartProps;
 
         const chartProps: any = {
-            data: cloneDeep(toJS(props.chartData)),
-            options: props.chartOptions
+            data: cloneDeep(toJS(chartData)),
+            options: chartOptions
         };
 
         let ChartElement: any;
-        switch (props.chartType) {
+        switch (chartType) {
             case 'bar':
                 ChartElement = ChartJS.Bar;
                 break;

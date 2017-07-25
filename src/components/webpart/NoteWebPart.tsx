@@ -13,7 +13,7 @@ export class NoteWebPart extends BaseWebPart<NoteWebPartProps, any> {
         return defaultNoteWebPartProps;
     }
 
-    renderWebPartContent(props: any) {
+    renderWebPartContent() {
         return (
             <textarea
                 value={this.webPartProps.text}

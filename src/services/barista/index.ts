@@ -55,7 +55,7 @@ export default class Barista {
         const targetFiddleSettings = this._fiddlesStore.getFiddleSettingsByPath(fullPath);
 
         if (!targetFiddleSettings) {
-            throw Error(`A module with the specified path was not found in the store associated with this barista: ${fullPath}`);
+            throw Error(`A module with the specified path was not found in the associated store: '${fullPath}'`);
         }
 
         //Tamp, Transpile the main module.

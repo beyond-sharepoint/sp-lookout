@@ -3,75 +3,96 @@ import { action, observable, isObservable, extendObservable, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import { autobind } from 'office-ui-fabric-react/lib';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
+import { SpinButton } from 'office-ui-fabric-react/lib/SpinButton';
 
 import { BaseWebPart, BaseWebPartState } from './BaseWebPart'
 import { Util } from '../../models';
 import Barista from '../../services/barista/';
 
-import { get } from 'lodash';
+import { get, assign } from 'lodash';
 
 export function asScriptedWebPart<P extends object, S extends BaseWebPartState, WP extends BaseWebPart<P, S>>(barista: Barista, webPart: WP) {
     return class ScriptedWebPart extends BaseWebPart<ScriptedWebPartProps, ScriptedWebPartState> {
-        private _innerWebPart: WP;
+        private _innerWebPart;
 
-        public constructor(props) {
+        public constructor(props: ScriptedWebPartProps) {
             super(props);
 
-            this._innerWebPart = new (webPart as any)();
             this.onScriptPathChanged = this.onScriptPathChanged.bind(this);
+            this.onResultPropertyPathChanged = this.onResultPropertyPathChanged.bind(this);
+            this.onScriptTimeoutChanged = this.onScriptTimeoutChanged.bind(this);
         }
 
         getDefaultWebPartProps() {
             return {
                 scriptPath: '',
                 resultPropertyPath: 'default',
-                scriptTimeout: 5000,
-                innerProps: this._innerWebPart.getDefaultWebPartProps(),
+                scriptTimeout: 5000
             };
         }
 
         componentDidMount() {
-            if (typeof super.componentDidMount === 'function') {
-                super.componentDidMount();
-            }
-
             this.setState({
                 isLoading: true
             });
 
-            barista.brew({
-                fullPath: this.webPartProps.scriptPath,
-                allowDebuggerStatement: false,
-                timeout: this.webPartProps.scriptTimeout
-            }).then((result) => {
-                this.webPartProps.innerProps = get(result.data, this.webPartProps.resultPropertyPath);
-                this.setState({
-                    lastResultWasError: false,
-                    lastResult: result.data
+            if (barista) {
+                barista.brew({
+                    fullPath: this.webPartProps.scriptPath,
+                    allowDebuggerStatement: false,
+                    timeout: this.webPartProps.scriptTimeout
+                }).then((result) => {
+                    const propsToApply = get(result.data, this.webPartProps.resultPropertyPath);
+                    assign(this.webPartProps, propsToApply);
+                    console.dir(this.props);
+                    this.setState({
+                        lastResultWasError: false,
+                        lastResult: result.data
+                    });
+                }, (err) => {
+                    this.setState({
+                        lastResultWasError: true,
+                        lastResult: err.message
+                    });
+                }).then(() => {
+                    this.setState({
+                        isLoading: false
+                    });
                 });
-            }, (err) => {
+            } else {
                 this.setState({
+                    isLoading: false,
                     lastResultWasError: true,
-                    lastResult: err
+                    lastResult: 'Could not establish connection with SharePoint. Ensure that a tenant url has been specified.'
                 });
-            }).then(() => {
-                this.setState({
-                    isLoading: false
-                });
-            });
+            }
+
         }
 
-        renderWebPartContent(props: ScriptedWebPartProps): JSX.Element {
-            const { isLoading } = this.state;
+        renderWebPartContent(): JSX.Element {
+            const { isLoading, lastResultWasError, lastResult } = this.state;
 
             if (isLoading) {
                 return (
-                    <span>Loading...</span>
+                    <div>Loading...</div>
                 );
             }
 
-            if (typeof this._innerWebPart.renderWebPartContent === 'function') {
-                return this._innerWebPart.renderWebPartContent(props.innerProps);
+            if (lastResultWasError === true) {
+                return (
+                    <div>An error occurred: {JSON.stringify(lastResult)}</div>
+                );
+            }
+
+            const WebPart = webPart as any;
+
+            if (typeof WebPart === 'function') {
+                return (
+                    <WebPart
+                        {...this.props}
+                        isNested={true}
+                    />
+                )
             }
 
             return (
@@ -84,6 +105,15 @@ export function asScriptedWebPart<P extends object, S extends BaseWebPartState, 
                 <div>
                     <TextField label="Fiddle Path" value={this.webPartProps.scriptPath} onChanged={this.onScriptPathChanged} />
                     <TextField label="Result Property Path" value={this.webPartProps.resultPropertyPath} onChanged={this.onResultPropertyPathChanged} />
+                    <SpinButton
+                        label="Script Timeout"
+                        min={0}
+                        max={600000}
+                        step={1}
+                        value={this.webPartProps.scriptTimeout.toString()}
+                        onIncrement={this.onScriptTimeoutChanged}
+                        onDecrement={this.onScriptTimeoutChanged}
+                    />
                 </div>
             );
         }
@@ -95,6 +125,11 @@ export function asScriptedWebPart<P extends object, S extends BaseWebPartState, 
 
         private onResultPropertyPathChanged(newValue: string) {
             this.webPartProps.resultPropertyPath = newValue;
+            super.onWebPartPropertiesChanged();
+        }
+
+        private onScriptTimeoutChanged(newValue: string) {
+            this.webPartProps.scriptTimeout = parseInt(newValue);
             super.onWebPartPropertiesChanged();
         }
     }
@@ -109,6 +144,5 @@ export function asScriptedWebPart<P extends object, S extends BaseWebPartState, 
         scriptPath: string;
         resultPropertyPath: string;
         scriptTimeout: number;
-        innerProps: P | null;
     }
 }

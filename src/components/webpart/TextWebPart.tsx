@@ -20,7 +20,7 @@ export class TextWebPart extends BaseWebPart<TextWebPartProps, any> {
         };
     }
 
-    public renderWebPartContent(props: any) {
+    public renderWebPartContent() {
         return (
             <div>{this.webPartProps.text}</div>
         );

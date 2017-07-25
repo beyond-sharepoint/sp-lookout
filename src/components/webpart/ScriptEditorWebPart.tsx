@@ -25,9 +25,9 @@ export class ScriptEditorWebPart extends BaseWebPart<ScriptEditorWebPartProps, S
         };
     }
 
-    public renderWebPartContent(props: ScriptEditorWebPartProps) {
+    public renderWebPartContent() {
         return (
-            <div style={{display: 'flex', height: '100%', width: '100%', flex: 1}}>{ReactHtmlParser(props.htmlContent)}</div>
+            <div style={{display: 'flex', height: '100%', width: '100%', flex: 1}}>{ReactHtmlParser(this.webPartProps.htmlContent)}</div>
         );
     }
 
