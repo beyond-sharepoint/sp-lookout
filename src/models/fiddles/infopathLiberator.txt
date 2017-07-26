@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import * as pnp from 'sp-pnp-js';
+import * as spLookout from 'sp-lookout';
 import * as fastXmlParser from 'https://cdnjs.cloudflare.com/ajax/libs/fast-xml-parser/2.7.1/parser.js';
 
 class InfopathLiberator {
@@ -19,12 +20,17 @@ class InfopathLiberator {
             throw Error("The specified location was not a forms library.");
         }
 
+        spLookout.reportProgress("Retrieving files...", properties);
+
         let files = await formsLibraryRootFolder.files.get();
 
-        let file = this.web.getFileByServerRelativeUrl(files[0].ServerRelativeUrl);
-        let xmlData = await file.getText();
+        for(let fileInfo of files) {
+            spLookout.reportProgress(`Retrieving ${fileInfo.Title}`);
+            let file = this.web.getFileByServerRelativeUrl(fileInfo.ServerRelativeUrl);
+            let xmlData = await file.getText();
 
-        return fastXmlParser.parse(xmlData);
+            return fastXmlParser.parse(xmlData);
+        }
     }
 }
 
