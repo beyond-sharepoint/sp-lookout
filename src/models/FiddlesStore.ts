@@ -79,6 +79,36 @@ export class FiddlesStore {
         return localforage.removeItem(FiddlesLocalStorageKey);
     }
 
+    public static getFileFolderMap(folder: FiddleFolder, path?: string, result?: { [path: string]: { type: 'file' | 'folder', item: FiddleFolder | FiddleSettings } }): { [path: string]: { type: 'file' | 'folder', item: FiddleFolder | FiddleSettings } } {
+        if (!folder) {
+            return {};
+        }
+
+        if (!result) {
+            result = {};
+        }
+
+        for (let fi of folder.files) {
+            const currentFilePath = path ? `${path}/${fi.name}` : fi.name;
+            result[currentFilePath] = {
+                type: 'file',
+                item: fi
+            }
+        }
+
+        for (let f of folder.folders) {
+            const currentPath = path ? `${path}/${f.name}` : f.name;
+            result[currentPath] = {
+                type: 'folder',
+                item: f
+            };
+
+            this.getFileFolderMap(f, currentPath, result);
+        }
+
+        return result;
+    }
+
     public static getFolderMap(folder: FiddleFolder, path?: string): { [path: string]: FiddleFolder } {
         if (!folder) {
             return {};

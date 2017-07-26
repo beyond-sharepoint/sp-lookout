@@ -45,14 +45,14 @@ export default class Barista {
     }
 
     /**
-      * Transpiles the specified typescript code.
+      * Transpiles the specified typescript code and returns a map of define statements.
       */
-    private tamp(fullPath: string, targetFiddleSettings: FiddleSettings, allowDebuggerStatement: boolean, defines?: { [path: string]: string }) {
+    private tamp(fullPath: string, targetFiddleSettings: FiddleSettings, allowDebuggerStatement: boolean, defines?: { [path: string]: string }): { [path: string]: string } {
 
         if (!defines) {
             defines = {};
         } else if (defines[fullPath]) {
-            return;
+            return defines;
         }
 
         //Tamp, Transpile the main module.
@@ -69,12 +69,14 @@ export default class Barista {
                 this.tamp(dependencyAbsolutePath, dependentFiddleSettings, allowDebuggerStatement, defines);
             }
         }
+
+        return defines;
     }
 
     /**
      * Brews the specified typescript code.
      */
-    public async brew(settings: BrewSettings): Promise<any> {
+    public async brew(settings: BrewSettings, onProgress?: (progress: any) => void): Promise<any> {
         const { fullPath, allowDebuggerStatement, timeout } = settings;
         const spContext = await SPContext.getContext(this._config.webFullUrl, this._spContextConfig);
 
@@ -85,10 +87,8 @@ export default class Barista {
             throw Error(`A module with the specified path was not found in the associated store: '${fullPath}'`);
         }
 
-        const defines: { [path: string]: string } = {};
-
-        //Tamp, Transpile the main module.
-        this.tamp(fullPath, targetFiddleSettings, allowDebuggerStatement || false, defines);
+        //Tamp, Transpile the main module and resulting dependencies.
+        const defines = this.tamp(fullPath, targetFiddleSettings, allowDebuggerStatement || false);
 
         //Brew
         try {
@@ -99,7 +99,9 @@ export default class Barista {
                     entryPointId: fullPath,
                     timeout
                 },
-                timeout
+                timeout,
+                undefined,
+                onProgress
             );
         } catch (ex) {
             if (ex instanceof SPContextError) {

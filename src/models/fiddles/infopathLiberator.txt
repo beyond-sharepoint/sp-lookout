@@ -1,0 +1,32 @@
+import * as _ from 'lodash';
+import * as pnp from 'sp-pnp-js';
+import * as fastXmlParser from 'https://cdnjs.cloudflare.com/ajax/libs/fast-xml-parser/2.7.1/parser.js';
+
+class InfopathLiberator {
+    web: pnp.Web = new pnp.Web(location.origin);
+    
+    async processInfopathLibrary(formsLibraryServerRelativeUrl: string) {
+        let formsLibraryRootFolder = await this.web.getFolderByServerRelativeUrl(formsLibraryServerRelativeUrl);
+
+        //Assert that the location exists and that it's a forms library.
+        let folderInfo = await formsLibraryRootFolder.get();
+        if (folderInfo.Exists !== true) {
+            throw Error("The specified location does not exist.");
+        }
+
+        let properties = await formsLibraryRootFolder.properties.get();
+        if (properties["vti_x005f_listservertemplate"] !== 115) {
+            throw Error("The specified location was not a forms library.");
+        }
+
+        let files = await formsLibraryRootFolder.files.get();
+
+        let file = this.web.getFileByServerRelativeUrl(files[0].ServerRelativeUrl);
+        let xmlData = await file.getText();
+
+        return fastXmlParser.parse(xmlData);
+    }
+}
+
+const liberator = new InfopathLiberator();
+export default liberator.processInfopathLibrary("/MyForms");
