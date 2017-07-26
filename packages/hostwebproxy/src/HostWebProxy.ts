@@ -1,4 +1,4 @@
-import * as tslib from 'tslib/tslib.js';
+const HostWebWorker = require('worker-loader?inline&name=HostWebWorker.js!./HostWebWorker.ts');
 
 class HostWebProxy {
     private _hostWebProxyConfig: HostWebProxyConfig;
@@ -226,7 +226,6 @@ class HostWebProxy {
     }
 
     private async brew(command: string, postMessageId: string, request: any): Promise<void> {
-        const HostWebWorker = require('worker-loader?inline&name=HostWebWorker.js!./HostWebWorker.ts');
         let worker: Worker = new HostWebWorker();
         try {
             const requireScriptElement = document.getElementById('require.js');
@@ -234,7 +233,6 @@ class HostWebProxy {
                 throw Error('Unable to find Require.js script element. This is highly unusual and it probably means someone edited the HostWebProxy.aspx or a hole has been torn in the fabric of the universe. That, or something just went wrong.');
             }
             request.requirejs = requireScriptElement.innerText;
-            request.tslib = tslib;
             worker.postMessage(request, request.data ? [request.data] : undefined);
             let resolveWorker, rejectWorker;
             let workerPromise: Promise<any> = new Promise((resolve, reject) => {

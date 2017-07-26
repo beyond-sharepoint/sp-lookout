@@ -12,19 +12,29 @@ module.exports = {
         rules: [
             //Delicious ES2015 code, made simple for simpleton browsers.
             {
+                test: /tslib\/tslib.js$/,
+                loader: 'raw-loader'
+            },
+            {
                 test: /\.js$/,
                 exclude: /(node_modules|bower_components)/,
                 loader: 'babel-loader',
                 query: {
-                    presets: [["es2015", { "modules": false }]],
+                    presets: [
+                        ["es2015", {
+                            "modules": false
+                        }]
+                    ],
                     plugins: [
                         "transform-runtime",
                         "transform-async-to-generator"
                     ]
                 }
             },
-            { test: /\.tsx?$/, loader: 'ts-loader' },
-            { test: /tslib\/tslib.js$/, loader: 'raw-loader' },
+            {
+                test: /\.tsx?$/,
+                loader: 'ts-loader'
+            },
             {
                 test: /\.aspx$/,
                 loader: 'raw-loader'

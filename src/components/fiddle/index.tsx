@@ -21,7 +21,7 @@ import { FiddlesStore, FiddleSettings, defaultFiddleSettings, Util } from '../..
 import './index.css';
 
 @observer
-export default class Fiddle extends React.Component<FiddleProps, any> {
+export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
     private editorOptions;
     private commandBarItems: IContextualMenuItem[];
     private commandBarFarItems;
@@ -63,9 +63,13 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
         ];
 
         this.state = {
+            isBrewing: false,
             fiddlePaneSize: '50%',
             showFiddleSettingsModal: false,
             showEditor: true,
+            lastBrewResult: undefined,
+            lastBrewResultIsError: false,
+            lastProgressReport: undefined,
         };
 
         //Ensure that the fiddle store isn't updated more than once every second.
@@ -98,10 +102,10 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
             this._extraLibs.push(lib);
         }
 
-        // // extra libraries
-        // monaco.languages.typescript.typescriptDefaults.addExtraLib(
-        //     `declare module "sp-pnp-js" { export declare function next() : string }`,
-        //     'node_modules/@types/sp-pnp-js/index.d.ts');
+        // define sp-lookout
+        monaco.languages.typescript.typescriptDefaults.addExtraLib(
+            `declare module "sp-lookout" { export declare function reportProgress(message: string, details: any) :void }`,
+            'node_modules/@types/sp-lookout/index.d.ts');
     }
 
     @autobind
@@ -159,6 +163,13 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
         );
     }
 
+    @autobind
+    private reportProgress(progress: any): void {
+        this.setState({
+            lastProgressReport: progress
+        });
+    }
+
     private async brew(allowDebugger?: boolean, timeout?: number) {
         const { barista, fiddlesStore, currentFiddle, currentFiddleFullPath } = this.props;
         const { isBrewing } = this.state;
@@ -174,7 +185,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
         if (typeof timeout === 'undefined') {
             timeout = 5000;
         }
-        
+
         let lastBrewResult: any = undefined;
         let lastBrewResultIsError = false;
 
@@ -192,7 +203,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
                 timeout: timeout
             };
 
-            let result = await barista.brew(brewSettings);
+            let result = await barista.brew(brewSettings, this.reportProgress);
             if (!result) {
                 result = {
                     data: 'An empty result was returned.'
@@ -265,6 +276,11 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
                 break;
         }
 
+        let brewingLabel = 'Brewing...';
+        if (this.state.lastProgressReport && this.state.lastProgressReport.data && this.state.lastProgressReport.data.message) {
+            brewingLabel = this.state.lastProgressReport.data.message;
+        }
+
         return (
             <SplitPane
                 split="vertical"
@@ -306,7 +322,7 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
                 </div>
                 <div className="fiddle-results" style={{ backgroundColor: theme.endsWith('dark') ? 'black' : null }}>
                     {isBrewing ?
-                        <Spinner size={SpinnerSize.large} label="Brewing..." ariaLive="assertive" />
+                        <Spinner size={SpinnerSize.large} label={brewingLabel} ariaLive="assertive" />
                         : null}
                     {!isBrewing ?
                         <ObjectInspector data={lastBrewResult} expandLevel={2} showNonenumerable={false} theme={theme.endsWith('dark') ? 'chromeDark' : 'chromeLight'} />
@@ -345,6 +361,16 @@ export default class Fiddle extends React.Component<FiddleProps, any> {
         });
         FiddlesStore.saveToLocalStorage(this.props.fiddlesStore);
     }
+}
+
+export interface FiddleState {
+    isBrewing: boolean;
+    showEditor: boolean;
+    showFiddleSettingsModal: boolean;
+    lastBrewResult: any;
+    lastBrewResultIsError: boolean;
+    lastProgressReport: any;
+    fiddlePaneSize: string | number;
 }
 
 export interface FiddleProps {

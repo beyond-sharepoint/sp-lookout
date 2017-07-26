@@ -1,3 +1,15 @@
+import * as tslib from 'tslib/tslib.js';
+
+class SPLookout {
+    reportProgress(message, details) {
+        (<any>self).postMessage({
+            result: 'progress',
+            message: message,
+            details: details
+        });
+    }
+}
+
 class SandFiddleProcessor {
     private _context: any;
     private _request: any;
@@ -18,9 +30,13 @@ class SandFiddleProcessor {
             (<any>self).requirejs.onError = this.postMessageError;
         }
 
-        if (this._request.tslib) {
-            (<any>this._context).eval(this._request.tslib);
+        //Now that we have require.js, register tslib.
+        if (tslib) {
+            (<any>this._context).eval(tslib);
         }
+
+        //Also define SPLiberator module
+        (<any>this._context).eval('define(\'sp-lookout\', [], function(require, exports, module) { return self.spLookoutInstance; });');
     }
 
     public loadDefines() {
@@ -103,6 +119,8 @@ class SandFiddleProcessor {
     }
 }
 
+/** Entry point */
+
 //Monkeypatch Request to resolve issues when initializing via Request("");
 const __nativeRequest = (<any>self).Request;
 
@@ -113,6 +131,9 @@ const __nativeRequest = (<any>self).Request;
 
     return new __nativeRequest(input, init);
 }
+
+//Define a SPLookout global
+(<any>self).spLookoutInstance = new SPLookout();
 
 onmessage = (e) => {
 
