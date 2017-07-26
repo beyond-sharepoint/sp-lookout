@@ -6,7 +6,7 @@ import { cloneDeep, defaultsDeep } from 'lodash';
 import { DebuggerTransformer } from './debuggerTransformer';
 import { RelativeImportsLocator } from './relativeImportsLocator';
 import { SPContext, SPContextConfig, SPProxy, SPContextError, defaultSPContextConfig } from '../spcontext';
-import { FiddlesStore } from '../../models/FiddlesStore';
+import { FiddlesStore, FiddleSettings } from '../../models';
 
 export default class Barista {
     private _config: BaristaConfig;
@@ -45,6 +45,33 @@ export default class Barista {
     }
 
     /**
+      * Transpiles the specified typescript code.
+      */
+    private tamp(fullPath: string, targetFiddleSettings: FiddleSettings, allowDebuggerStatement: boolean, defines?: { [path: string]: string }) {
+
+        if (!defines) {
+            defines = {};
+        } else if (defines[fullPath]) {
+            return;
+        }
+
+        //Tamp, Transpile the main module.
+        const transpileResult = this.transpile(fullPath, targetFiddleSettings.code, allowDebuggerStatement);
+        defines[fullPath] = transpileResult.outputText;
+
+        //Transpile dependencies
+        const relativeImports: Array<string> = (<any>transpileResult).relativeImports;
+        for (const relativePath of relativeImports) {
+            const dependencyAbsolutePath = URI(relativePath).absoluteTo(fullPath).href();
+            const dependentFiddleSettings = this._fiddlesStore.getFiddleSettingsByPath(dependencyAbsolutePath);
+
+            if (dependentFiddleSettings) {
+                this.tamp(dependencyAbsolutePath, dependentFiddleSettings, allowDebuggerStatement, defines);
+            }
+        }
+    }
+
+    /**
      * Brews the specified typescript code.
      */
     public async brew(settings: BrewSettings): Promise<any> {
@@ -58,23 +85,10 @@ export default class Barista {
             throw Error(`A module with the specified path was not found in the associated store: '${fullPath}'`);
         }
 
-        //Tamp, Transpile the main module.
-        const transpileResult = this.transpile(fullPath, targetFiddleSettings.code, allowDebuggerStatement || false);
-
         const defines: { [path: string]: string } = {};
-        defines[fullPath] = transpileResult.outputText;
 
-        //Transpile dependencies
-        const relativeImports: Array<string> = (<any>transpileResult).relativeImports;
-        for (const relativePath of relativeImports) {
-            const dependencyAbsolutePath = URI(relativePath).absoluteTo(fullPath).href();
-            const dependentFiddleSettings = this._fiddlesStore.getFiddleSettingsByPath(dependencyAbsolutePath);
-
-            if (dependentFiddleSettings) {
-                const dependencyResult = this.transpile(dependencyAbsolutePath, dependentFiddleSettings.code, allowDebuggerStatement || false);
-                defines[dependencyAbsolutePath] = dependencyResult.outputText;
-            }
-        }
+        //Tamp, Transpile the main module.
+        this.tamp(fullPath, targetFiddleSettings, allowDebuggerStatement || false, defines);
 
         //Brew
         try {
