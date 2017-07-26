@@ -104,7 +104,7 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
 
         // define sp-lookout
         monaco.languages.typescript.typescriptDefaults.addExtraLib(
-            `declare module "sp-lookout" { export declare function reportProgress(message: string, details: any) :void }`,
+            `declare module "sp-lookout" { export declare function reportProgress(message: string, details?: any) :void }`,
             'node_modules/@types/sp-lookout/index.d.ts');
     }
 

@@ -26,6 +26,7 @@ export function asScriptedWebPart<P extends object, S extends BaseWebPartState, 
             this.onScriptPathChanged = this.onScriptPathChanged.bind(this);
             this.onResultPropertyPathChanged = this.onResultPropertyPathChanged.bind(this);
             this.onScriptTimeoutChanged = this.onScriptTimeoutChanged.bind(this);
+            this.reportProgress = this.reportProgress.bind(this);
         }
 
         getDefaultWebPartProps() {
@@ -36,28 +37,27 @@ export function asScriptedWebPart<P extends object, S extends BaseWebPartState, 
             };
         }
 
+        private reportProgress(progress: any): void {
+            if (this._disposed) {
+                return;
+            }
+
+            this.setState({
+                lastProgress: progress
+            });
+        }
+
         componentDidMount() {
             this.setState({
                 isLoading: true
             });
 
             if (barista) {
-
-                const onProgress = (progress: any) => {
-                    if (this._disposed) {
-                        return;
-                    }
-
-                    this.setState({
-                        lastProgress: progress
-                    });
-                };
-
                 barista.brew({
                     fullPath: this.webPartProps.scriptPath,
                     allowDebuggerStatement: false,
                     timeout: this.webPartProps.scriptTimeout
-                })
+                }, this.reportProgress)
                     .then(
                     (result) => {
                         if (this._disposed) {
@@ -104,14 +104,14 @@ export function asScriptedWebPart<P extends object, S extends BaseWebPartState, 
             const { isLoading, lastResultWasError, lastResult, lastProgress } = this.state;
             let loadingLabel = 'Loading...';
 
-            if(typeof lastProgress === 'string') {
-                loadingLabel = lastProgress;
+            if (lastProgress && lastProgress.data && lastProgress.data.message) {
+                loadingLabel = lastProgress.data.message;
             }
 
             if (isLoading) {
                 return (
                     <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <Spinner size={SpinnerSize.large} label='Loading...' ariaLive='assertive' />
+                        <Spinner size={SpinnerSize.large} label={loadingLabel} ariaLive='assertive' />
                     </div>
                 );
             }
