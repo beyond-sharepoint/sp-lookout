@@ -1,22 +1,22 @@
 import { autorun, observable, extendObservable, observe, action, computed, runInAction, toJS, IObservableObject } from 'mobx';
 import * as localforage from 'localforage';
 import { defaultsDeep, find, filter } from 'lodash';
-import { PageSettings, defaultPageSettings } from './PageSettings';
+import { PageSettings } from './PageSettings';
+
+const dashboard = require('./data/dashboard.json');
 const tropicalOutlook = require('./data/tropical-outlook.json');
 
 export const PagesLocalStorageKey = 'sp-lookout-pages';
 
 export class PagesStore {
-    private _pages: Array<PageSettings>;
+    @observable
+    private _pages: Array<PageSettings> = [];
 
     public constructor(pages?: Array<PageSettings>) {
         if (!pages) {
-            this._pages = observable([defaultPageSettings, tropicalOutlook]);
+            this._pages = [dashboard, tropicalOutlook];
         } else {
-            // for (const page of pages) {
-            //     defaultsDeep(page, defaultPageSettings);
-            // }
-            this._pages = observable(pages);
+            this._pages = pages;
         }
     }
 

@@ -13,7 +13,6 @@ import {
     SettingsStore,
     PagesStore,
     PageSettings,
-    defaultPageSettings,
     FiddlesStore,
     FiddleSettings,
     FiddleFolder,
@@ -171,15 +170,9 @@ export default class Aside extends React.Component<AsideProps, any> {
 
     @action.bound
     private onAddPage() {
-        const newPageSettings: PageSettings = defaultsDeep(
-            {
-                id: Util.makeId(8),
-                name: 'New Page',
-                iconClassName: ''
-            },
-            defaultPageSettings
-        );
-        this.props.pagesStore.pages.push(observable(newPageSettings));
+        const newPageSettings: PageSettings = new PageSettings('New Page');
+        
+        this.props.pagesStore.pages.push(newPageSettings);
         PagesStore.saveToLocalStorage(this.props.pagesStore);
     }
 
@@ -189,14 +182,7 @@ export default class Aside extends React.Component<AsideProps, any> {
             return;
         }
 
-        const newPageSettings: PageSettings = defaultsDeep(
-            {
-                id: Util.makeId(8),
-                name: 'New Sub Page',
-                iconClassName: ''
-            },
-            defaultPageSettings
-        );
+        const newPageSettings: PageSettings = new PageSettings('New Sub Page');
 
         let selectedPage = this.props.pagesStore.getPageSettings(this.props.selectedPageId);
         if (!selectedPage) {

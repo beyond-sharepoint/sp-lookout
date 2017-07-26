@@ -1,16 +1,27 @@
-export interface WebPartSettings {
-    title: string;
-    type: WebPartType;
-    attributes: Array<string>;
-    locked: boolean;
-    props: object | null;
+import { observable } from 'mobx';
+
+export class WebPartSettings {
+    @observable 
+    title: string = 'New WebPart';
+
+    @observable
+    type: WebPartType = WebPartType.text;
+
+    @observable
+    attributes: Array<string> = [];
+
+    @observable
+    locked: boolean = false;
+
+    @observable
+    props: object | null = null;
 }
 
-export interface WebPartLayout {
-    x: number;
-    y: number;
-    w: number;
-    h: number;
+export class WebPartLayout {
+    x: number = 0;
+    y: number = 0;
+    w: number = 2;
+    h: number = 2;
 }
 
 export enum WebPartType {
@@ -22,18 +33,3 @@ export enum WebPartType {
     text = 'text',
     viewer = 'viewer'
 }
-
-export const defaultWebPartLayout: WebPartLayout = {
-    x: 0,
-    y: 0,
-    w: 0,
-    h: 0,
-}
-
-export const defaultWebPartSettings: WebPartSettings = {
-    title: 'New WebPart',
-    type: WebPartType.text,
-    attributes: [],
-    locked: false,
-    props: null
-};

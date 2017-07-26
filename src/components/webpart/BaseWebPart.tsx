@@ -233,8 +233,8 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
 
     @autobind
     protected onWebPartPropertiesChanged() {
-        if (typeof this.props.onWebPartSettingsChanged === 'function') {
-            this.props.onWebPartSettingsChanged();
+        if (typeof this.props.onWebPartPropertiesChanged === 'function') {
+            this.props.onWebPartPropertiesChanged();
         }
     }
 }
@@ -248,6 +248,6 @@ export interface BaseWebPartProps {
     disableChrome?: boolean;
     settings: WebPartSettings;
     webPartTypeNames: Array<{ key: string, text: string }>;
-    onWebPartSettingsChanged?: () => void;
+    onWebPartPropertiesChanged?: () => void;
     onDeleteWebPart?: () => void;
 }

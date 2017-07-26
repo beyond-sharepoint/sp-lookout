@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactGridLayout from 'react-grid-layout';
-import { action, extendObservable, observable, toJS } from 'mobx';
+import { action, extendObservable, computed, observable, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import { Menu, MainButton, ChildButton } from 'react-mfb';
 import { unset } from 'lodash';
@@ -8,7 +8,7 @@ import { unset } from 'lodash';
 import { WebPartPageSettingsModal } from '../webpart-page-settings-modal';
 import { webPartTypes, BaseWebPartProps, asScriptedWebPart } from '../webpart';
 
-import { PagesStore, PageSettings, WebPartLayout, WebPartSettings, WebPartType, defaultWebPartSettings, Util } from '../../models';
+import { PagesStore, PageSettings, ResponsivePageLayouts, WebPartLayout, WebPartSettings, WebPartType, Util } from '../../models';
 import Barista from '../../services/barista';
 
 import './index.css';
@@ -29,17 +29,16 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
         super(props);
 
         this.state = {
-            showPageSettingsModal: false
+            showPageSettingsModal: false,
+            gridLayout: this.mapWebPartLayoutToGridLayout(props.currentPage)
         };
     }
 
-    public render() {
-        const { currentPage, pagesStore } = this.props;
-        const { columns, rowHeight, locked } = currentPage;
+    public mapWebPartLayoutToGridLayout(currentPage: PageSettings): ReactGridLayout.Layouts {
         let layouts: Partial<ReactGridLayout.Layouts> = {};
 
         for (const size of Object.keys(currentPage.layouts)) {
-            const webPartLayouts: { [id: string]: WebPartLayout } = currentPage.layouts[size];
+            const webPartLayouts: ResponsivePageLayouts = currentPage.layouts[size];
             const layout: Array<ReactGridLayout.Layout> = [];
             for (const id of Object.keys(webPartLayouts)) {
                 const webPart: WebPartSettings = currentPage.webParts[id];
@@ -58,11 +57,24 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
             }
         }
 
+        return layouts as ReactGridLayout.Layouts;
+    }
+
+    componentWillReceiveProps(nextProps: PageProps) {
+        this.setState({
+            gridLayout: this.mapWebPartLayoutToGridLayout(nextProps.currentPage)
+        });
+    }
+
+    public render() {
+        const { currentPage, pagesStore } = this.props;
+        const { columns, rowHeight, locked } = currentPage;
+
         return (
             <div style={{ flex: 1, backgroundColor: '#eee' }}>
                 <ResponsiveLayout
                     className="dashboard"
-                    layouts={(layouts as ReactGridLayout.Layouts)}
+                    layouts={this.state.gridLayout}
                     breakpoints={currentPage.breakpoints}
                     cols={currentPage.columns}
                     rowHeight={rowHeight}
@@ -129,7 +141,7 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
             locked: currentPage.locked,
             settings: webPartSettings,
             webPartTypeNames: WebPartTypeNames,
-            onWebPartSettingsChanged: () => { this.onWebPartSettingsChanged(webPartSettings); },
+            onWebPartPropertiesChanged: () => { this.onWebPartPropertiesChanged(webPartSettings); },
             onDeleteWebPart: () => { this.onDeleteWebPart(webPartId); }
         };
 
@@ -154,29 +166,22 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
     @action.bound
     private startAddWebPart() {
         const { currentPage } = this.props;
-        //TODO: Ensure unique id.
         const newWebPartId = Util.makeId(8);
         extendObservable(currentPage.webParts, {
-            [newWebPartId]: {
-                ...defaultWebPartSettings,
-                type: WebPartType.text,
-                title: 'New WebPart',
-                locked: false,
-                props: {}
-            }
+            [newWebPartId]: new WebPartSettings()
         });
+
         ['lg', 'md', 'sm', 'xs', 'xxs'].forEach((breakpointName) => {
             extendObservable(currentPage.layouts[breakpointName], {
-                [newWebPartId]: {
-                    x: 0,
-                    y: 0,
-                    w: 2,
-                    h: 2,
-                }
+                [newWebPartId]: new WebPartLayout()
             });
         });
+
         PagesStore.saveToLocalStorage(this.props.pagesStore);
-        this.forceUpdate();
+
+        this.setState({
+            gridLayout: this.mapWebPartLayoutToGridLayout(currentPage)
+        });
     }
 
     @action.bound
@@ -192,7 +197,9 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
             unset(currentPage.layouts[size], webPartId);
         }
         PagesStore.saveToLocalStorage(this.props.pagesStore);
-        this.forceUpdate();
+        this.setState({
+            gridLayout: this.mapWebPartLayoutToGridLayout(currentPage)
+        });
     }
 
     @action.bound
@@ -232,13 +239,17 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
     }
 
     @action.bound
-    private onWebPartSettingsChanged(settings: WebPartSettings) {
+    private onWebPartPropertiesChanged(settings: WebPartSettings) {
         PagesStore.saveToLocalStorage(this.props.pagesStore);
+        this.setState({
+            gridLayout: this.mapWebPartLayoutToGridLayout(this.props.currentPage)
+        });
     }
 }
 
 export interface PageState {
     showPageSettingsModal: boolean;
+    gridLayout: ReactGridLayout.Layouts;
 }
 
 export interface PageProps {
