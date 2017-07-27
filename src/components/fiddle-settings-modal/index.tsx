@@ -43,7 +43,7 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, an
                                 onChanged={this.updateDescription}
                             />
                             <SpinButton
-                                label="Script Timeout"
+                                label="Script Timeout (ms)"
                                 min={0}
                                 max={600000}
                                 step={1}

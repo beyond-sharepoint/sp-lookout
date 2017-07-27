@@ -194,7 +194,7 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
         }
 
         if (typeof timeout === 'undefined') {
-            timeout = currentFiddle.brewTimeout || 5000;
+            timeout = typeof currentFiddle.brewTimeout === 'number' ? currentFiddle.brewTimeout : 5000;
         }
 
         let lastBrewResult: any = undefined;
