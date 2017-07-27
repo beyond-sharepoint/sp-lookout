@@ -191,7 +191,7 @@ export class WebPartPageSettingsModal extends React.Component<PageSettingsProps,
     }
 
     @action.bound
-    private updateBackgroundImageSize(newValue) {
+    private updateBackgroundImageSize(newValue: string) {
         this.props.currentPage.backgroundImageSize = newValue;
     }
 
