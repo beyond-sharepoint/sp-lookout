@@ -12,6 +12,7 @@ export interface FiddleSettings {
     editorOptions: monaco.editor.IEditorOptions;
     requireConfig: RequireConfig;
     brewTimeout: number;
+    autoSaveArrayBufferResults: boolean;
 }
 
 export const defaultEditorOptions: monaco.editor.IEditorOptions = {
@@ -53,4 +54,5 @@ export const defaultFiddleSettings: FiddleSettings = {
         paths: defaultPaths
     },
     brewTimeout: 5000,
+    autoSaveArrayBufferResults: true
 };

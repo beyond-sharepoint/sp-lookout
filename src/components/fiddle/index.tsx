@@ -222,10 +222,11 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
             console.dir(result);
             lastBrewResult = result.data || result.transferrableData;
 
-            //TODO: Make this togglable
-            for (let key of Object.keys(lastBrewResult)) {
-                if (lastBrewResult[key] instanceof ArrayBuffer) {
-                    FileSaver.saveAs(new Blob([lastBrewResult[key]]), key);
+            if (this.props.currentFiddle.autoSaveArrayBufferResults === true) {
+                for (let key of Object.keys(lastBrewResult)) {
+                    if (lastBrewResult[key] instanceof ArrayBuffer) {
+                        FileSaver.saveAs(new Blob([lastBrewResult[key]]), key);
+                    }
                 }
             }
         } catch (ex) {

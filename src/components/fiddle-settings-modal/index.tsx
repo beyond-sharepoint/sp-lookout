@@ -52,6 +52,15 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, an
                                 onDecrement={this.updateBrewTimeout}
                                 onValidate={this.updateBrewTimeout}
                             />
+                            <Toggle
+                                defaultChecked={currentFiddle.autoSaveArrayBufferResults}
+                                onChanged={this.updateAutoSaveArrayBufferResults}
+                                label="Auto-Save ArrayBuffer Results"
+                                onAriaLabel="Auto-Save is enabled. Press to disable."
+                                offAriaLabel="Auto-Save is disabled. Press to enable."
+                                onText="On"
+                                offText="Off"
+                            />
                         </PivotItem>
                         <PivotItem linkText="Editor Options">
                             <Dropdown
@@ -137,13 +146,18 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, an
     }
 
     @action.bound
+    private updateAutoSaveArrayBufferResults(newValue: boolean) {
+        this.props.currentFiddle.autoSaveArrayBufferResults = newValue;
+    }
+
+    @action.bound
     private updateTheme(ev: any) {
         this.props.currentFiddle.theme = ev.key;
     }
 
     @action.bound
-    private updateMinimap(ev: any) {
-        set(this.props, 'currentFiddle.editorOptions.minimap.enabled', ev);
+    private updateMinimap(newValue: boolean) {
+        set(this.props, 'currentFiddle.editorOptions.minimap.enabled', newValue);
     }
 
     @action.bound
