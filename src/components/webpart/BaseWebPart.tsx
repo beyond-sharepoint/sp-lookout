@@ -42,6 +42,38 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
         this.initializeWebPartProperties(nextProps);
     }
 
+    private renderWebPartTitle() {
+        const { locked, settings, children } = this.props;
+
+        return (
+            <div className="webpart-title">
+                <span className="webpart-title-text">
+                    {settings.title}
+                </span>
+                {!locked ?
+                    <span className="webpart-title-actions">
+                        <span className="action" onClick={this.onToggleLock} title="Lock/Unlock WebPart">
+                            <i className={`ms-Icon ms-Icon--${settings.locked ? 'Lock' : 'Unlock'}`} aria-hidden="true" />
+                        </span>
+                        {!settings.locked ?
+                            <span className="action" onClick={this.showWebPartSettings} title="Show WebPart Settings">
+                                <i className="ms-Icon ms-Icon--Settings" aria-hidden="true" />
+                            </span>
+                            : null
+                        }
+                        {!settings.locked ?
+                            <span className="action" onClick={this.onDeleteWebPart} title="Delete WebPart">
+                                <i className="ms-Icon ms-Icon--ChromeClose" aria-hidden="true" />
+                            </span>
+                            : null
+                        }
+                    </span>
+                    : null
+                }
+            </div>
+        );
+    }
+
     public render() {
         const { locked, settings, children } = this.props;
 
@@ -61,31 +93,10 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
 
         return (
             <div className="webpart-main">
-                <div className="webpart-title">
-                    <span className="webpart-title-text">
-                        {settings.title}
-                    </span>
-                    {!locked ?
-                        <span className="webpart-title-actions">
-                            <span className="action" onClick={this.onToggleLock} title="Lock/Unlock WebPart">
-                                <i className={`ms-Icon ms-Icon--${settings.locked ? 'Lock' : 'Unlock'}`} aria-hidden="true" />
-                            </span>
-                            {!settings.locked ?
-                                <span className="action" onClick={this.showWebPartSettings} title="Show WebPart Settings">
-                                    <i className="ms-Icon ms-Icon--Settings" aria-hidden="true" />
-                                </span>
-                                : null
-                            }
-                            {!settings.locked ?
-                                <span className="action" onClick={this.onDeleteWebPart} title="Delete WebPart">
-                                    <i className="ms-Icon ms-Icon--ChromeClose" aria-hidden="true" />
-                                </span>
-                                : null
-                            }
-                        </span>
-                        : null
-                    }
-                </div>
+                {locked && settings.chromeStyle === 'hiddenOnPageLocked'
+                    ? null
+                    : this.renderWebPartTitle()
+                }
                 <div className="webpart-container" style={containerStyle}>
                     {typeof this.renderWebPartContent === 'function' ? this.renderWebPartContent() : null}
                 </div>
@@ -138,6 +149,15 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
                         <ColorPicker
                             color={this.props.settings.backgroundColor || '#ccc'}
                             onColorChanged={this.updateBackgroundColor}
+                        />
+                        <Dropdown
+                            label="Chrome Style"
+                            selectedKey={this.props.settings.chromeStyle}
+                            onChanged={this.updateChromeStyle}
+                            options={[
+                                { key: 'default', text: 'Default (visible)' },
+                                { key: 'hiddenOnPageLocked', text: 'Hidden When Page Locked' }
+                            ]}
                         />
                     </PivotItem>
                 </Pivot>
@@ -251,6 +271,12 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
     protected updateBackgroundColor(newColor: string) {
         this.props.settings.backgroundColor = newColor;
 
+        this.onWebPartPropertiesChanged();
+    }
+
+    @autobind
+    protected updateChromeStyle(dropDownOption: IDropdownOption) {
+        this.props.settings.chromeStyle = dropDownOption.key as string;
         this.onWebPartPropertiesChanged();
     }
 

@@ -17,6 +17,9 @@ export class WebPartSettings {
     backgroundColor: string = '#ccc';
 
     @observable
+    chromeStyle: string = 'default';
+
+    @observable
     props: object | null = null;
 }
 

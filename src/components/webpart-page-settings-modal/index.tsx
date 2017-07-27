@@ -97,7 +97,7 @@ export class WebPartPageSettingsModal extends React.Component<PageSettingsProps,
                                 onChanged={this.onCompactVerticalChanged}
                             />
                         </PivotItem>
-                        <PivotItem linkText="Background Options">
+                        <PivotItem linkText="Appearance">
                             <Label>Background Color:</Label>
                             <ColorPicker color={currentPage.backgroundColor || '#eee'} onColorChanged={this.updateBackgroundColor} />
                             <TextField

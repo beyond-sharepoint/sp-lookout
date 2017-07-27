@@ -343,6 +343,7 @@
             "type": "clock",
             "locked": true,
             "backgroundColor": "#ccc",
+            "chromeStyle": "hiddenOnPageLocked",
             "props": {
                 "format": "MMMM Do YYYY, h:mm:ss a"
             }
@@ -352,6 +353,7 @@
             "type": "image",
             "locked": true,
             "backgroundColor": "#000",
+            "chromeStyle": "hiddenOnPageLocked",
             "props": {
                 "imageUrl": "http://www.nhc.noaa.gov/xgtwo/two_atl_2d0.png",
                 "linkUrl": "http://www.nhc.noaa.gov/gtwo.php?basin=atlc&fdays=2",
@@ -366,6 +368,7 @@
             "type": "image",
             "locked": true,
             "backgroundColor": "#000",
+            "chromeStyle": "hiddenOnPageLocked",
             "props": {
                 "imageUrl": "http://www.nhc.noaa.gov/xgtwo/two_atl_5d0.png",
                 "linkUrl": "http://www.nhc.noaa.gov/gtwo.php?basin=atlc&fdays=5",
@@ -380,6 +383,7 @@
             "type": "image",
             "locked": true,
             "backgroundColor": "#000",
+            "chromeStyle": "hiddenOnPageLocked",
             "props": {
                 "imageUrl": "http://forecast.weather.gov/wwamap/png/US.png",
                 "linkUrl": "http://www.weather.gov/largemap.php",
@@ -394,6 +398,7 @@
             "type": "image",
             "locked": true,
             "backgroundColor": "#000",
+            "chromeStyle": "hiddenOnPageLocked",
             "props": {
                 "imageUrl": "http://www.spc.noaa.gov/products/watch/validww.png",
                 "linkUrl": "http://www.spc.noaa.gov/products/watch/validww.png",
@@ -408,6 +413,7 @@
             "type": "image",
             "locked": true,
             "backgroundColor": "#000",
+            "chromeStyle": "hiddenOnPageLocked",
             "props": {
                 "imageUrl": "http://www.spc.noaa.gov/products/outlook/day1otlk.gif",
                 "linkUrl": "http://www.spc.noaa.gov/products/outlook/day1otlk.html",
@@ -422,6 +428,7 @@
             "type": "image",
             "locked": true,
             "backgroundColor": "#000",
+            "chromeStyle": "hiddenOnPageLocked",
             "props": {
                 "imageUrl": "http://www.ospo.noaa.gov/data/ocean/ohc/images/sst_naQG3_ddc.gif",
                 "linkUrl": "http://www.ospo.noaa.gov/data/ocean/ohc/images/sst_naQG3_ddc.gif",
@@ -436,6 +443,7 @@
             "type": "image",
             "locked": true,
             "backgroundColor": "#000",
+            "chromeStyle": "hiddenOnPageLocked",
             "props": {
                 "imageUrl": "http://www.opc.ncep.noaa.gov/UA/Atl_Tropics.gif",
                 "linkUrl": "http://www.opc.ncep.noaa.gov/UA/Atl_Tropics.gif",
@@ -449,6 +457,7 @@
             "title": "Forecast",
             "type": "image",
             "backgroundColor": "#000",
+            "chromeStyle": "hiddenOnPageLocked",
             "locked": true,
             "props": {
                 "imageUrl": "http://origin.wpc.ncep.noaa.gov/basicwx/allfcsts_loop_ndfd.gif",
@@ -464,6 +473,7 @@
             "type": "image",
             "locked": true,
             "backgroundColor": "#000",
+            "chromeStyle": "hiddenOnPageLocked",
             "props": {
                 "imageUrl": "http://images.intellicast.com/WxImages/CustomGraphic/tgsfc24.gif",
                 "linkUrl": "http://images.intellicast.com/WxImages/CustomGraphic/tgsfc24.gif",

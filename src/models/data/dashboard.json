@@ -163,6 +163,8 @@
             "type": "chart",
             "attributes": [],
             "locked": true,
+            "backgroundColor": "#ccc",
+            "chromeStyle": "default",
             "props": {
                 "chartType": "line",
                 "chartOptions": {
@@ -214,6 +216,7 @@
             "attributes": [],
             "locked": true,
             "backgroundColor": "#ccc",
+            "chromeStyle": "hiddenOnPageLocked",
             "props": {
                 "format": "MMMM Do YYYY, h:mm:ss a"
             }
@@ -224,6 +227,7 @@
             "attributes": [],
             "locked": true,
             "backgroundColor": "#fff",
+            "chromeStyle": "default",
             "props": {
                 "text": "When the graph to the left goes over 10,000 microbars, run!\n\n12/2/2017: Got really close - 9,723.. I put on my running shoes.\n\n"
             }
@@ -234,6 +238,7 @@
             "attributes": [],
             "locked": true,
             "backgroundColor": "#ccc",
+            "chromeStyle": "default",
             "props": {
                 "text": ""
             }
