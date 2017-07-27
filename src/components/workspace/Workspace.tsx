@@ -14,7 +14,7 @@ import { CommandBar } from 'office-ui-fabric-react/lib/CommandBar';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { INavLink, INavLinkGroup } from 'office-ui-fabric-react/lib/Nav';
 import SplitPane from '../split-pane/SplitPane';
-import { defaultsDeep } from 'lodash';
+import { defaultsDeep, debounce } from 'lodash';
 
 import Barista from '../../services/barista';
 import { SPContextConfig, defaultSPContextConfig } from '../../services/spcontext';
@@ -134,6 +134,8 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
                 }
             }
         ];
+
+        this.triggerWindowResizeEvent = debounce(this.triggerWindowResizeEvent, 10);
     }
 
     public componentWillMount() {
@@ -405,6 +407,10 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
         SettingsStore.saveToLocalStorage(this.props.settingsStore);
 
         //Trigger a resize
+        this.triggerWindowResizeEvent();
+    }
+
+    private triggerWindowResizeEvent() {
         window.dispatchEvent(new Event('resize'));
     }
 
