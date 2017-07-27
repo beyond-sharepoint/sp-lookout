@@ -29,7 +29,7 @@ class InfopathLiberator {
         return _.concat(result, parentKey || []);
     }
 
-    decodeInfoPathAttachment(attachmentBase64: string): { fileName: string, data: ArrayBuffer } {        
+    decodeInfoPathAttachment(attachmentBase64: string): { fileName: string, data: ArrayBuffer } {
         const attachmentByteArray = spLookout.base64ToArrayBuffer(attachmentBase64);
         const attachmentDataView = new DataView(attachmentByteArray, 0);
         const fileNameLength = attachmentDataView.getUint8(20) * 2;
@@ -44,12 +44,7 @@ class InfopathLiberator {
         }
     }
 
-    async getAllFormAttachmentsAsZip(formServerRelativeUrl: string) {
-        const form = this.web.getFileByServerRelativeUrl(formServerRelativeUrl);
-        const formXml = await form.getText();
-
-        let formJson = fastXmlParser.parse(formXml);
-
+    async decodeAttachmentsInForm(formJson: string): Promise<Array<any>> {
         const attachments = [];
         for (const path of this.paths(formJson)) {
             const value = _.get(formJson, path);
@@ -58,21 +53,51 @@ class InfopathLiberator {
             }
         }
 
-        const decodedAttachments = [];
+        const decodedAttachments: Array<any> = [];
         for (const attachment of attachments) {
             const decodedAttachment = this.decodeInfoPathAttachment(attachment);
             decodedAttachments.push(decodedAttachment);
         }
 
-        let zip = new JSZip();
-        for(let decodedAttachment of decodedAttachments) {
-            zip.file(decodedAttachment.fileName, decodedAttachment.data);
-        }
-
-        return await zip.generateAsync({type:"arraybuffer"});
+        return decodedAttachments;
     }
 
-    async getAllFormsAsJson(formsLibraryServerRelativeUrl: string) {
+    async saveFormAttachmentsAsZip(formServerRelativeUrl: string, targetFolder: string) {
+        spLookout.reportProgress(`Retrieving ${formServerRelativeUrl}`);
+        const form = this.web.getFileByServerRelativeUrl(formServerRelativeUrl);
+        const targetZipFileName = formServerRelativeUrl.substring(formServerRelativeUrl.lastIndexOf('/')).replace(/\.xml$/, '.zip');
+        const formXml = await form.getText();
+
+        let formJson = fastXmlParser.parse(formXml);
+        const decodedAttachments = await this.decodeAttachmentsInForm(formJson);
+
+        const result: any = {
+            formServerRelativeUrl,
+            attachmentCount: decodedAttachments.length
+        };
+
+        spLookout.reportProgress(`Processing Attachments in ${formServerRelativeUrl}`);
+        if (decodedAttachments.length > 0) {
+            let zip = new JSZip();
+            for (let decodedAttachment of decodedAttachments) {
+                zip.file(decodedAttachment.fileName, decodedAttachment.data);
+            }
+
+            const formAttachmentsZip = await zip.generateAsync({ type: "arraybuffer" });
+
+            await this.web.getFolderByServerRelativeUrl(targetFolder)
+                .files
+                .addChunked(targetFolder + targetZipFileName, formAttachmentsZip, data => {
+                    spLookout.reportProgress(`Uploading ${targetFolder + targetZipFileName} (${data.chunkSize} of ${formAttachmentsZip.byteLength})`);
+                }, true);
+
+            result.zipServerRelativeUrl = targetFolder + targetZipFileName;
+        }
+
+        return result;
+    }
+
+    async saveAllFormAttachmentsAsZip(formsLibraryServerRelativeUrl: string, targetFolder: string) {
         let formsLibraryRootFolder = await this.web.getFolderByServerRelativeUrl(formsLibraryServerRelativeUrl);
 
         //Assert that the location exists and that it's a forms library.
@@ -87,22 +112,17 @@ class InfopathLiberator {
         }
 
         spLookout.reportProgress("Retrieving files...", properties);
-        let result = {};
 
+        let results = [];
         let files = await formsLibraryRootFolder.files.get();
         await bluebird.map(_.sampleSize(files, 10), async (fileInfo: any) => {
-            spLookout.reportProgress(`Retrieving ${fileInfo.Title}`);
-            let file = this.web.getFileByServerRelativeUrl(fileInfo.ServerRelativeUrl);
-            let xmlData = await file.getText();
-
-            let xmlJson = fastXmlParser.parse(xmlData);
-            result[fileInfo.ServerRelativeUrl] = this.paths(xmlJson);
+            const attachmentResult = await this.saveFormAttachmentsAsZip(fileInfo.ServerRelativeUrl, targetFolder);
+            results.push(attachmentResult);
         }, { concurrency: 3 });
 
-        return result;
+        return results;
     }
 }
 
 const liberator = new InfopathLiberator();
-//export default liberator.getAllFormsAsJson("MyForms");
-export const attachments = liberator.getAllFormAttachmentsAsZip('/MyForms/2016-10-19T14_10_32.xml')
+export const attachments = liberator.saveAllFormAttachmentsAsZip('/MyForms', 'Temp')

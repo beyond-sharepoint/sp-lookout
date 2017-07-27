@@ -91,6 +91,7 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
             'async': require('file-loader!@types/async/index.d.ts'),
             'bluebird': require('file-loader!@types/bluebird/index.d.ts'),
             'jszip': require('file-loader!@types/jszip/index.d.ts'),
+            'urijs': require('file-loader!@types/urijs/index.d.ts'),
             'sp-pnp-js': require('file-loader!./types/sp-pnp-js.d.html'),
         };
 
@@ -242,7 +243,8 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
             this.setState({
                 isBrewing: false,
                 lastBrewResult,
-                lastBrewResultIsError
+                lastBrewResultIsError,
+                lastProgressReport: null
             });
             console.log('your brew is complete!');
         }

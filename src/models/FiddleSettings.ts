@@ -38,6 +38,7 @@ export const defaultPaths = {
     'async': 'https://cdnjs.cloudflare.com/ajax/libs/async/2.5.0/async.min',
     'bluebird': 'https://cdnjs.cloudflare.com/ajax/libs/bluebird/3.5.0/bluebird.min',
     'jszip': 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min',
+    'urijs': 'https://cdnjs.cloudflare.com/ajax/libs/URI.js/1.18.10/URI.min',
     'rrule': require('file-loader!rrule')
 };
 
