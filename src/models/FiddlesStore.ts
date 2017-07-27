@@ -93,7 +93,7 @@ export class FiddlesStore {
             result[currentFilePath] = {
                 type: 'file',
                 item: fi
-            }
+            };
         }
 
         for (let f of folder.folders) {

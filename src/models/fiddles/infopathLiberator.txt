@@ -1,12 +1,78 @@
 import * as _ from 'lodash';
 import * as pnp from 'sp-pnp-js';
 import * as spLookout from 'sp-lookout';
+import * as bluebird from 'bluebird';
+import * as JSZip from 'jszip';
 import * as fastXmlParser from 'https://cdnjs.cloudflare.com/ajax/libs/fast-xml-parser/2.7.1/parser.js';
 
 class InfopathLiberator {
     web: pnp.Web = new pnp.Web(location.origin);
-    
-    async processInfopathLibrary(formsLibraryServerRelativeUrl: string) {
+
+    paths(obj, parentKey?) {
+        var result;
+        if (_.isArray(obj)) {
+            var idx = 0;
+            result = _.flatMap(obj, (obj) => {
+                return this.paths(obj, (parentKey || '') + '[' + idx++ + ']');
+            });
+        }
+        else if (_.isPlainObject(obj)) {
+            result = _.flatMap(_.keys(obj), (key) => {
+                return _.map(this.paths(obj[key], key), (subkey) => {
+                    return (parentKey ? parentKey + '.' : '') + subkey;
+                });
+            });
+        }
+        else {
+            result = [];
+        }
+        return _.concat(result, parentKey || []);
+    }
+
+    decodeInfoPathAttachment(attachmentBase64: string): { fileName: string, data: ArrayBuffer } {        
+        const attachmentByteArray = spLookout.base64ToArrayBuffer(attachmentBase64);
+        const attachmentDataView = new DataView(attachmentByteArray, 0);
+        const fileNameLength = attachmentDataView.getUint8(20) * 2;
+
+        let fileName = "";
+        for (let i = 0; i < fileNameLength - 2; i += 2) {
+            fileName += String.fromCharCode(attachmentDataView.getUint8(24 + i));
+        }
+        return {
+            fileName: fileName,
+            data: attachmentByteArray.slice(24 + fileNameLength)
+        }
+    }
+
+    async getAllFormAttachmentsAsZip(formServerRelativeUrl: string) {
+        const form = this.web.getFileByServerRelativeUrl(formServerRelativeUrl);
+        const formXml = await form.getText();
+
+        let formJson = fastXmlParser.parse(formXml);
+
+        const attachments = [];
+        for (const path of this.paths(formJson)) {
+            const value = _.get(formJson, path);
+            if (typeof value === 'string' && value.startsWith('x0lGQRQAAA')) {
+                attachments.push(value);
+            }
+        }
+
+        const decodedAttachments = [];
+        for (const attachment of attachments) {
+            const decodedAttachment = this.decodeInfoPathAttachment(attachment);
+            decodedAttachments.push(decodedAttachment);
+        }
+
+        let zip = new JSZip();
+        for(let decodedAttachment of decodedAttachments) {
+            zip.file(decodedAttachment.fileName, decodedAttachment.data);
+        }
+
+        return await zip.generateAsync({type:"arraybuffer"});
+    }
+
+    async getAllFormsAsJson(formsLibraryServerRelativeUrl: string) {
         let formsLibraryRootFolder = await this.web.getFolderByServerRelativeUrl(formsLibraryServerRelativeUrl);
 
         //Assert that the location exists and that it's a forms library.
@@ -21,18 +87,22 @@ class InfopathLiberator {
         }
 
         spLookout.reportProgress("Retrieving files...", properties);
+        let result = {};
 
         let files = await formsLibraryRootFolder.files.get();
-
-        for(let fileInfo of files) {
+        await bluebird.map(_.sampleSize(files, 10), async (fileInfo: any) => {
             spLookout.reportProgress(`Retrieving ${fileInfo.Title}`);
             let file = this.web.getFileByServerRelativeUrl(fileInfo.ServerRelativeUrl);
             let xmlData = await file.getText();
 
-            return fastXmlParser.parse(xmlData);
-        }
+            let xmlJson = fastXmlParser.parse(xmlData);
+            result[fileInfo.ServerRelativeUrl] = this.paths(xmlJson);
+        }, { concurrency: 3 });
+
+        return result;
     }
 }
 
 const liberator = new InfopathLiberator();
-export default liberator.processInfopathLibrary("/MyForms");
+//export default liberator.getAllFormsAsJson("MyForms");
+export const attachments = liberator.getAllFormAttachmentsAsZip('/MyForms/2016-10-19T14_10_32.xml')

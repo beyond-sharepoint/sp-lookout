@@ -6,6 +6,7 @@ import { action, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import * as Mousetrap from 'mousetrap';
 import * as URI from 'urijs';
+import * as FileSaver from 'file-saver';
 import { autobind } from 'office-ui-fabric-react/lib';
 import { CommandBar } from 'office-ui-fabric-react/lib/CommandBar';
 import { IContextualMenuItem } from 'office-ui-fabric-react';
@@ -87,6 +88,9 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
             'react-dom-server': require('file-loader!@types/react-dom/server/index.d.ts'),
             'lodash': require('file-loader!@types/lodash/index.d.ts'),
             'moment': require('file-loader!moment/moment.d.ts'),
+            'async': require('file-loader!@types/async/index.d.ts'),
+            'bluebird': require('file-loader!@types/bluebird/index.d.ts'),
+            'jszip': require('file-loader!@types/jszip/index.d.ts'),
             'sp-pnp-js': require('file-loader!./types/sp-pnp-js.d.html'),
         };
 
@@ -104,9 +108,13 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
 
         // define sp-lookout
         const spLookoutLib = monaco.languages.typescript.typescriptDefaults.addExtraLib(
-            `declare module "sp-lookout" { export declare function reportProgress(message: string, details?: any) :void }`,
+            `declare module "sp-lookout" { 
+                export declare function arrayBufferToBase64(arrayBuffer: ArrayBuffer): string
+                export declar function base64ToArrayBuffer(base64: string): ArrayBuffer
+                export declare function reportProgress(message: string, details?: any) :void
+            }`,
             'node_modules/@types/sp-lookout/index.d.ts');
-            
+
         this._extraLibs.push(spLookoutLib);
     }
 
@@ -185,7 +193,7 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
         }
 
         if (typeof timeout === 'undefined') {
-            timeout = 5000;
+            timeout = currentFiddle.brewTimeout || 5000;
         }
 
         let lastBrewResult: any = undefined;
@@ -213,6 +221,13 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
             }
             console.dir(result);
             lastBrewResult = result.data || result.transferrableData;
+
+            //TODO: Make this togglable
+            for (let key of Object.keys(lastBrewResult)) {
+                if (lastBrewResult[key] instanceof ArrayBuffer) {
+                    FileSaver.saveAs(new Blob([lastBrewResult[key]]), key);
+                }
+            }
         } catch (ex) {
             lastBrewResultIsError = true;
             lastBrewResult = {

@@ -8,6 +8,7 @@ import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import { Pivot, PivotItem } from 'office-ui-fabric-react/lib/Pivot';
 import { Dropdown, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
 import { Toggle } from 'office-ui-fabric-react/lib/Toggle';
+import { SpinButton } from 'office-ui-fabric-react/lib/SpinButton';
 
 import { FiddlesStore, FiddleSettings, defaultFiddleSettings } from '../../models';
 import './index.css';
@@ -40,6 +41,16 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, an
                                 multiline={true}
                                 value={currentFiddle.description}
                                 onChanged={this.updateDescription}
+                            />
+                            <SpinButton
+                                label="Script Timeout"
+                                min={0}
+                                max={600000}
+                                step={1}
+                                value={currentFiddle.brewTimeout.toString()}
+                                onIncrement={this.updateBrewTimeout}
+                                onDecrement={this.updateBrewTimeout}
+                                onValidate={this.updateBrewTimeout}
                             />
                         </PivotItem>
                         <PivotItem linkText="Editor Options">
@@ -112,6 +123,17 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, an
     @action.bound
     private updateDescription(newValue: any) {
         this.props.currentFiddle.description = newValue;
+    }
+
+    @action.bound
+    private updateBrewTimeout(newValue: string) {
+        try {
+            this.props.currentFiddle.brewTimeout = parseInt(newValue, 10);
+            return newValue;
+        }
+        finally {
+            return;
+        }
     }
 
     @action.bound

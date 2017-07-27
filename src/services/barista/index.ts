@@ -45,8 +45,8 @@ export default class Barista {
     }
 
     /**
-      * Transpiles the specified typescript code and returns a map of define statements.
-      */
+     * Transpiles the specified typescript code and returns a map of define statements.
+     */
     private tamp(fullPath: string, targetFiddleSettings: FiddleSettings, allowDebuggerStatement: boolean, defines?: { [path: string]: string }): { [path: string]: string } {
 
         if (!defines) {
@@ -82,7 +82,7 @@ export default class Barista {
 
         //Take Order, get the fiddle settings from the store
         const targetFiddleSettings = this._fiddlesStore.getFiddleSettingsByPath(fullPath);
-
+        
         if (!targetFiddleSettings) {
             throw Error(`A module with the specified path was not found in the associated store: '${fullPath}'`);
         }

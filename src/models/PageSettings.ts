@@ -52,7 +52,7 @@ export class PageSettings {
 
     @observable
     webParts: { [webPartId: string]: WebPartSettings } = {};
-};
+}
 
 export class ResponsivePageLayouts {
     @observable

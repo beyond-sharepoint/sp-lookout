@@ -53,11 +53,14 @@ export function asScriptedWebPart<P extends object, S extends BaseWebPartState, 
             });
 
             if (barista) {
-                barista.brew({
-                    fullPath: this.webPartProps.scriptPath,
-                    allowDebuggerStatement: false,
-                    timeout: this.webPartProps.scriptTimeout
-                }, this.reportProgress)
+                barista.brew(
+                    {
+                        fullPath: this.webPartProps.scriptPath,
+                        allowDebuggerStatement: false,
+                        timeout: this.webPartProps.scriptTimeout
+                    },
+                    this.reportProgress
+                )
                     .then(
                     (result) => {
                         if (this._disposed) {
@@ -111,7 +114,7 @@ export function asScriptedWebPart<P extends object, S extends BaseWebPartState, 
             if (isLoading) {
                 return (
                     <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <Spinner size={SpinnerSize.large} label={loadingLabel} ariaLive='assertive' />
+                        <Spinner size={SpinnerSize.large} label={loadingLabel} ariaLive="assertive" />
                     </div>
                 );
             }
@@ -164,8 +167,8 @@ export function asScriptedWebPart<P extends object, S extends BaseWebPartState, 
             return (
                 <div>
                     <ComboBox
-                        label='Fiddle Path:'
-                        ariaLabel='Fiddle Path'
+                        label="Fiddle Path:"
+                        ariaLabel="Fiddle Path"
                         allowFreeform={false}
                         autoComplete={'on'}
                         options={this.getFileFolderOptions()}

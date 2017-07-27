@@ -11,7 +11,6 @@ export interface FiddleSettings {
     lastResult: any;
     editorOptions: monaco.editor.IEditorOptions;
     requireConfig: RequireConfig;
-    brewMode: 'require' | 'sandfiddle';
     brewTimeout: number;
 }
 
@@ -34,7 +33,10 @@ export const defaultPaths = {
     'react': 'https://cdnjs.cloudflare.com/ajax/libs/react/15.6.1/react',
     'react-dom': 'https://cdnjs.cloudflare.com/ajax/libs/react/15.6.1/react-dom',
     'react-dom-server': 'https://cdnjs.cloudflare.com/ajax/libs/react/15.6.1/react-dom-server',
-    'Chartjs': 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min',
+    'chartjs': 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min',
+    'async': 'https://cdnjs.cloudflare.com/ajax/libs/async/2.5.0/async.min',
+    'bluebird': 'https://cdnjs.cloudflare.com/ajax/libs/bluebird/3.5.0/bluebird.min',
+    'jszip': 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min',
     'rrule': require('file-loader!rrule')
 };
 
@@ -51,5 +53,4 @@ export const defaultFiddleSettings: FiddleSettings = {
         paths: defaultPaths
     },
     brewTimeout: 5000,
-    brewMode: 'sandfiddle',
 };
