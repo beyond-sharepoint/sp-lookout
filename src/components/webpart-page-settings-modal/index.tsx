@@ -13,6 +13,7 @@ import { Toggle } from 'office-ui-fabric-react/lib/Toggle';
 import { Label } from 'office-ui-fabric-react/lib/Label';
 import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react/lib/Button';
 import { ISelectableOption, SelectableOptionMenuItemType } from 'office-ui-fabric-react/lib/utilities/selectableOption/SelectableOption.Props';
+import { ColorPicker } from 'office-ui-fabric-react/lib/ColorPicker';
 
 import * as FileSaver from 'file-saver';
 import { startCase, sortBy, kebabCase } from 'lodash';
@@ -60,7 +61,6 @@ export class WebPartPageSettingsModal extends React.Component<PageSettingsProps,
                                 onChanged={this.updatePageName}
                             />
                             <ComboBox
-                                defaultSelectedKey={currentPage.iconClassName}
                                 label="Icon Class Name:"
                                 selectedKey={currentPage.iconClassName}
                                 ariaLabel="Icon Class Name"
@@ -95,6 +95,42 @@ export class WebPartPageSettingsModal extends React.Component<PageSettingsProps,
                                 label="Compact Vertical"
                                 checked={currentPage.compactVertical}
                                 onChanged={this.onCompactVerticalChanged}
+                            />
+                        </PivotItem>
+                        <PivotItem linkText="Background Options">
+                            <Label>Background Color:</Label>
+                            <ColorPicker color={currentPage.backgroundColor || '#eee'} onColorChanged={this.updateBackgroundColor} />
+                            <TextField
+                                label="Background Image:"
+                                value={currentPage.backgroundImage}
+                                onChanged={this.updateBackgroundImage}
+                            />
+                            <ComboBox
+                                label="Background Size:"
+                                selectedKey={currentPage.backgroundImageSize}
+                                ariaLabel="Background Repeat"
+                                allowFreeform={true}
+                                autoComplete="on"
+                                options={[
+                                    { key: 'auto', text: 'Auto' },
+                                    { key: 'cover', text: 'Cover' },
+                                    { key: 'contain', text: 'Contain' },
+                                ]}
+                                onChanged={this.updateBackgroundImageSize}
+                            />
+                            <ComboBox
+                                label="Background Repeat:"
+                                selectedKey={currentPage.backgroundImageRepeat}
+                                ariaLabel="Background Repeat"
+                                allowFreeform={false}
+                                autoComplete="on"
+                                options={[
+                                    { key: 'repeat', text: 'Repeat' },
+                                    { key: 'repeat-x', text: 'Repeat X' },
+                                    { key: 'repeat-y', text: 'Repeat Y' },
+                                    { key: 'no-repeat', text: 'No Repeat' },
+                                ]}
+                                onChanged={this.updateBackgroundImageRepeat}
                             />
                         </PivotItem>
                     </Pivot>
@@ -149,6 +185,30 @@ export class WebPartPageSettingsModal extends React.Component<PageSettingsProps,
     @action.bound
     private onCompactVerticalChanged(newValue: boolean) {
         this.props.currentPage.compactVertical = newValue;
+    }
+
+    @action.bound
+    private updateBackgroundColor(newColor: string) {
+        this.props.currentPage.backgroundColor = newColor;
+    }
+
+    @action.bound
+    private updateBackgroundImage(newValue: string) {
+        this.props.currentPage.backgroundImage = newValue;
+    }
+
+    @action.bound
+    private updateBackgroundImageSize(newValue?: IComboBoxOption, index?: number, value?: string) {
+        if (newValue) {
+            this.props.currentPage.backgroundImageSize = newValue.key as string;
+        } else if (value) {
+            this.props.currentPage.backgroundImageSize = value;
+        }
+    }
+
+    @action.bound
+    private updateBackgroundImageRepeat(newValue: IComboBoxOption) {
+        this.props.currentPage.backgroundImageRepeat = newValue.key as string;
     }
 
     @action.bound

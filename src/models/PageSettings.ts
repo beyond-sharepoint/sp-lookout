@@ -33,6 +33,18 @@ export class PageSettings {
     locked: boolean = false;
 
     @observable
+    backgroundColor: string = '#eee';
+
+    @observable
+    backgroundImage: string = '';
+
+    @observable
+    backgroundImageRepeat: string = 'no-repeat';
+
+    @observable
+    backgroundImageSize: string = 'cover';
+
+    @observable
     breakpoints: {[P in PageBreakpoints]: number } = { lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 };
 
     @observable

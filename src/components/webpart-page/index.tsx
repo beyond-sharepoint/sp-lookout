@@ -70,19 +70,42 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
         const { currentPage, pagesStore } = this.props;
         const { columns, rowHeight, locked } = currentPage;
 
+        const backgroundImageStyle: React.CSSProperties = {
+            position: 'fixed',
+            width: '100%',
+            height: '100%',
+            backgroundImage: `url(${currentPage.backgroundImage})`,
+            backgroundSize: currentPage.backgroundImageSize,
+            backgroundRepeat: currentPage.backgroundImageRepeat,
+            overflow: 'hidden',
+            userSelect: 'none'
+        };
+
+        const backgroundColorStyle: React.CSSProperties = {
+            position: 'fixed',
+            width: '100%',
+            height: '100%',
+            backgroundColor: currentPage.backgroundColor,
+            overflow: 'hidden',
+            userSelect: 'none'
+        };
+
         return (
-            <div style={{ flex: 1, backgroundColor: '#eee' }}>
+            <div style={{ flex: 1, display: 'flex', overflow: 'auto', zIndex: 1 }}>
+                <div style={backgroundImageStyle} />
+                <div style={backgroundColorStyle} />
                 <ResponsiveLayout
                     className="dashboard"
                     layouts={this.state.gridLayout}
                     breakpoints={currentPage.breakpoints}
+                    autoSize={false}
                     cols={currentPage.columns}
                     rowHeight={rowHeight}
                     verticalCompact={currentPage.compactVertical}
                     onLayoutChange={this.onLayoutChange}
                     isDraggable={!locked}
                     isResizable={!locked}
-                    {...this.props}
+                    style={{ flex: 1, zIndex: 1 }}
                 >
                     {Object.keys(currentPage.webParts).map((webPartId, ix) => {
                         const webPart: WebPartSettings = currentPage.webParts[webPartId];
