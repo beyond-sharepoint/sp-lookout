@@ -46,9 +46,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
             showSettingsModal: false,
             showAuthenticationRequiredModal: false,
             showInvalidOriginModal: false,
-            showNoProxyModal: false,
-            sidebarSize: 215,
-            sidebarPrevSize: 0
+            showNoProxyModal: false
         };
 
         this._appBarItems = [
@@ -180,6 +178,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
 
     public render() {
         const { settingsStore, pagesStore, fiddlesStore } = this.props;
+        const { visualSettings } = settingsStore;
         const { showAuthenticationRequiredModal, showInvalidOriginModal, showNoProxyModal } = this.state;
 
         return (
@@ -195,19 +194,16 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
                         <SplitPane
                             split="vertical"
                             className="left-sidebar"
-                            primaryPaneSize={this.state.sidebarSize}
+                            primaryPaneSize={visualSettings.sidebarWidth}
                             primaryPaneMinSize={0}
                             primaryPaneMaxSize={700}
-                            onPaneResized={(size) => { this.setState({ sidebarSize: size }); }}
+                            onPaneResized={this.updateSidebarSize}
                             onResizerDoubleClick={(paneStyle) => {
                                 if (paneStyle.flexBasis === 215) {
-                                    this.setState({ sidebarSize: 0 });
+                                    this.updateSidebarSize(0);
                                 } else {
-                                    this.setState({ sidebarSize: 215 });
+                                    this.updateSidebarSize(215);
                                 }
-                            }}
-                            onWindowResize={(ev) => {
-                                this.setState({ sidebarSize: 215 });
                             }}
                         >
                             <Aside
@@ -403,17 +399,21 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
         location.href = URI().removeQuery('splauth').hash('/').href();
     }
 
+    @action.bound
+    private updateSidebarSize(newSize: any) {
+        this.props.settingsStore.visualSettings.sidebarWidth = newSize;
+        SettingsStore.saveToLocalStorage(this.props.settingsStore);
+
+        //Trigger a resize
+        window.dispatchEvent(new Event('resize'));
+    }
+
     @autobind
     private toggleSidebar() {
-        if (this.state.sidebarSize) {
-            this.setState({
-                sidebarSize: 0,
-                sidebarPrevSize: this.state.sidebarSize
-            });
+        if (this.props.settingsStore.visualSettings.sidebarWidth === 0) {
+            this.updateSidebarSize(215);
         } else {
-            this.setState({
-                sidebarSize: this.state.sidebarPrevSize || 215
-            });
+            this.updateSidebarSize(0);
         }
     }
 }
@@ -425,8 +425,6 @@ export interface WorkspaceState {
     showNoProxyModal: boolean;
     showAuthenticationRequiredModal: boolean;
     showInvalidOriginModal: boolean;
-    sidebarSize: number;
-    sidebarPrevSize: number;
     selectedPageId?: string;
     selectedPaths?: string | string[];
     error?: string;

@@ -3,7 +3,7 @@ import { debounce, throttle, defaultsDeep, find } from 'lodash';
 import * as localforage from 'localforage';
 
 import { BaristaSettings, defaultBaristaSettings} from './BaristaSettings';
-import { VisualSettings, defaultVisualSettings } from './VisualSettings';
+import { VisualSettings } from './VisualSettings';
 
 export const SettingsLocalStorageKey = 'sp-lookout-settings';
 
@@ -22,9 +22,9 @@ export class SettingsStore {
         }
 
         if (!visualSettings) {
-            this._visualSettings = observable(defaultVisualSettings);
+            this._visualSettings = observable(new VisualSettings());
         } else {
-            this._visualSettings = observable(defaultsDeep(visualSettings, defaultVisualSettings) as VisualSettings);
+            this._visualSettings = observable(defaultsDeep(visualSettings, new VisualSettings()) as VisualSettings);
         }
     }
 

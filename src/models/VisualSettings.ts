@@ -1,7 +1,6 @@
-export interface VisualSettings {
-    asidePrimaryPaneHeight: number | string;
-}
+import { action, observable, toJS } from 'mobx';
 
-export const defaultVisualSettings = {
-    asidePrimaryPaneHeight: '60%'
-};
+export class VisualSettings {
+    sidebarWidth: number = 215;
+    asidePrimaryPaneHeight: number | string = '60%';
+}

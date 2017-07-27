@@ -78,7 +78,8 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
             backgroundSize: currentPage.backgroundImageSize,
             backgroundRepeat: currentPage.backgroundImageRepeat,
             overflow: 'hidden',
-            userSelect: 'none'
+            userSelect: 'none',
+            pointerEvents: 'none'
         };
 
         const backgroundColorStyle: React.CSSProperties = {
@@ -87,7 +88,8 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
             height: '100%',
             backgroundColor: currentPage.backgroundColor,
             overflow: 'hidden',
-            userSelect: 'none'
+            userSelect: 'none',
+            pointerEvents: 'none'
         };
 
         return (
