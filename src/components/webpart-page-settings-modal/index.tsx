@@ -105,17 +105,10 @@ export class WebPartPageSettingsModal extends React.Component<PageSettingsProps,
                                 value={currentPage.backgroundImage}
                                 onChanged={this.updateBackgroundImage}
                             />
-                            <ComboBox
+                            <TextField
                                 label="Background Size:"
-                                selectedKey={currentPage.backgroundImageSize}
+                                value={currentPage.backgroundImageSize}
                                 ariaLabel="Background Repeat"
-                                allowFreeform={true}
-                                autoComplete="on"
-                                options={[
-                                    { key: 'auto', text: 'Auto' },
-                                    { key: 'cover', text: 'Cover' },
-                                    { key: 'contain', text: 'Contain' },
-                                ]}
                                 onChanged={this.updateBackgroundImageSize}
                             />
                             <ComboBox
@@ -198,12 +191,8 @@ export class WebPartPageSettingsModal extends React.Component<PageSettingsProps,
     }
 
     @action.bound
-    private updateBackgroundImageSize(newValue?: IComboBoxOption, index?: number, value?: string) {
-        if (newValue) {
-            this.props.currentPage.backgroundImageSize = newValue.key as string;
-        } else if (value) {
-            this.props.currentPage.backgroundImageSize = value;
-        }
+    private updateBackgroundImageSize(newValue) {
+        this.props.currentPage.backgroundImageSize = newValue;
     }
 
     @action.bound
