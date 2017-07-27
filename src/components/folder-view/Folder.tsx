@@ -238,9 +238,11 @@ export class Folder extends React.Component<FolderProps, FolderState> {
                         />
                         : <span>{folder.name}</span>
                     }
-                    <span className="file-lock" style={folderLockStyle} onClick={this.onLockChanged}>
-                        <i className={'fa ' + (folder.locked ? 'fa-lock' : 'fa-unlock')} aria-hidden="true" />
-                    </span>
+                    {isSelected &&
+                        <span className="file-lock" style={folderLockStyle} onClick={this.onLockChanged}>
+                            <i className={'fa ' + (folder.locked ? 'fa-lock' : 'fa-unlock')} aria-hidden="true" />
+                        </span>
+                    }
                     {!parentFolder
                         ? (
                             <span style={{ marginLeft: 'auto' }}>
@@ -424,8 +426,10 @@ export class Folder extends React.Component<FolderProps, FolderState> {
     @autobind
     private onFolderSelected(ev: React.MouseEvent<HTMLDivElement>) {
         ev.stopPropagation();
-        const { path, folder, parentFolder, onCollapseChange, onFolderSelected } = this.props;
-        if (typeof onCollapseChange === 'function') {
+        const { path, folder, parentFolder, onCollapseChange, onFolderSelected, } = this.props;
+        const { isSelected } = this.state;
+
+        if (isSelected && typeof onCollapseChange === 'function') {
             onCollapseChange(folder, parentFolder);
         }
 
