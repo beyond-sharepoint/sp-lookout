@@ -8,7 +8,7 @@ import { Util } from '../../models';
 
 @observer
 export class NoteWebPart extends BaseWebPart<NoteWebPartProps, any> {
-
+    
     getDefaultWebPartProps() {
         return defaultNoteWebPartProps;
     }
@@ -22,7 +22,8 @@ export class NoteWebPart extends BaseWebPart<NoteWebPartProps, any> {
                     flex: '1',
                     resize: 'none',
                     border: 'none',
-                    outline: 'none'
+                    outline: 'none',
+                    backgroundColor: 'transparent'
                 }}
             />
         );

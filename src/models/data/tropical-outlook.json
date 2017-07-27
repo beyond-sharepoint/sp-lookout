@@ -4,6 +4,10 @@
     "iconClassName": "rainShowersDay",
     "isExpanded": true,
     "locked": false,
+    "backgroundColor": "#333",
+    "backgroundImage": "",
+    "backgroundImageSize": "cover",
+    "backgroundImageRepeat": "no-repeat",
     "breakpoints": {
         "lg": 1200,
         "md": 996,
@@ -338,6 +342,7 @@
             "title": "Current Time",
             "type": "clock",
             "locked": true,
+            "backgroundColor": "#ccc",
             "props": {
                 "format": "MMMM Do YYYY, h:mm:ss a"
             }
@@ -346,6 +351,7 @@
             "title": "Official 2 Day NHC Outlook",
             "type": "image",
             "locked": true,
+            "backgroundColor": "#000",
             "props": {
                 "imageUrl": "http://www.nhc.noaa.gov/xgtwo/two_atl_2d0.png",
                 "linkUrl": "http://www.nhc.noaa.gov/gtwo.php?basin=atlc&fdays=2",
@@ -359,6 +365,7 @@
             "title": "Official 5 Day NHC Outlook",
             "type": "image",
             "locked": true,
+            "backgroundColor": "#000",
             "props": {
                 "imageUrl": "http://www.nhc.noaa.gov/xgtwo/two_atl_5d0.png",
                 "linkUrl": "http://www.nhc.noaa.gov/gtwo.php?basin=atlc&fdays=5",
@@ -372,6 +379,7 @@
             "title": "NWS Active Alerts Map",
             "type": "image",
             "locked": true,
+            "backgroundColor": "#000",
             "props": {
                 "imageUrl": "http://forecast.weather.gov/wwamap/png/US.png",
                 "linkUrl": "http://www.weather.gov/largemap.php",
@@ -385,6 +393,7 @@
             "title": "Current Tornado and Severe Thunderstrom Watches:",
             "type": "image",
             "locked": true,
+            "backgroundColor": "#000",
             "props": {
                 "imageUrl": "http://www.spc.noaa.gov/products/watch/validww.png",
                 "linkUrl": "http://www.spc.noaa.gov/products/watch/validww.png",
@@ -398,6 +407,7 @@
             "title": "Today's Storm Outlook:",
             "type": "image",
             "locked": true,
+            "backgroundColor": "#000",
             "props": {
                 "imageUrl": "http://www.spc.noaa.gov/products/outlook/day1otlk.gif",
                 "linkUrl": "http://www.spc.noaa.gov/products/outlook/day1otlk.html",
@@ -411,6 +421,7 @@
             "title": "Water Sea Surface Temps",
             "type": "image",
             "locked": true,
+            "backgroundColor": "#000",
             "props": {
                 "imageUrl": "http://www.ospo.noaa.gov/data/ocean/ohc/images/sst_naQG3_ddc.gif",
                 "linkUrl": "http://www.ospo.noaa.gov/data/ocean/ohc/images/sst_naQG3_ddc.gif",
@@ -424,6 +435,7 @@
             "title": "Atlantic / Caribbean Surface Charts",
             "type": "image",
             "locked": true,
+            "backgroundColor": "#000",
             "props": {
                 "imageUrl": "http://www.opc.ncep.noaa.gov/UA/Atl_Tropics.gif",
                 "linkUrl": "http://www.opc.ncep.noaa.gov/UA/Atl_Tropics.gif",
@@ -436,6 +448,7 @@
         "QakU5QJJ": {
             "title": "Forecast",
             "type": "image",
+            "backgroundColor": "#000",
             "locked": true,
             "props": {
                 "imageUrl": "http://origin.wpc.ncep.noaa.gov/basicwx/allfcsts_loop_ndfd.gif",
@@ -450,6 +463,7 @@
             "title": "Tropical Surface Forecast",
             "type": "image",
             "locked": true,
+            "backgroundColor": "#000",
             "props": {
                 "imageUrl": "http://images.intellicast.com/WxImages/CustomGraphic/tgsfc24.gif",
                 "linkUrl": "http://images.intellicast.com/WxImages/CustomGraphic/tgsfc24.gif",

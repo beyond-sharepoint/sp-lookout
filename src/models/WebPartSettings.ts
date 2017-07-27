@@ -14,6 +14,9 @@ export class WebPartSettings {
     locked: boolean = false;
 
     @observable
+    backgroundColor: string = '#ccc';
+
+    @observable
     props: object | null = null;
 }
 

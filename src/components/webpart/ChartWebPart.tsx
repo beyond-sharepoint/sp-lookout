@@ -79,7 +79,13 @@ export class ChartWebPart extends BaseWebPart<ChartWebPartProps, any> {
                     ]}
                 />
                 <Toggle label="Maintain Aspect Ratio" checked={this.webPartProps.chartOptions.maintainAspectRatio} onChanged={this.onMaintainAspectRatioChanged} />
-                <TextField label="Chart Data" multiline={true} value={JSON.stringify(toJS(this.webPartProps.chartData), null, 4)} onChanged={this.onChartDataChanged} />
+                <TextField
+                    label="Chart Data"
+                    multiline={true}
+                    value={JSON.stringify(toJS(this.webPartProps.chartData), null, 4)}
+                    onChanged={this.onChartDataChanged}
+                    style={{ height: '30vw' }}
+                />
             </div>
         );
     }

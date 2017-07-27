@@ -3,10 +3,12 @@ import { action, observable, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import { autobind } from 'office-ui-fabric-react/lib';
 import { Panel, PanelType, IPanelProps } from 'office-ui-fabric-react/lib/Panel';
+import { Pivot, PivotItem } from 'office-ui-fabric-react/lib/Pivot';
 import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react/lib/Button';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import { Dropdown, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
 import { Checkbox } from 'office-ui-fabric-react/lib/Checkbox';
+import { ColorPicker } from 'office-ui-fabric-react/lib/ColorPicker';
 import { IRenderFunction } from 'office-ui-fabric-react/lib/Utilities';
 import { defaultsDeep, cloneDeep, pull } from 'lodash';
 
@@ -43,10 +45,12 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
     public render() {
         const { locked, settings, children } = this.props;
 
-        let containerStyle: React.CSSProperties | undefined = undefined;
+        let containerStyle: React.CSSProperties = {};
         if (typeof this.getWebPartContainerStyle === 'function') {
-            containerStyle = this.getWebPartContainerStyle();
+            containerStyle = this.getWebPartContainerStyle() || {};
         }
+
+        containerStyle.backgroundColor = settings.backgroundColor;
 
         if (this.props.disableChrome === true) {
             if (typeof this.renderWebPartContent === 'function') {
@@ -87,14 +91,13 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
                 </div>
                 <Panel
                     isOpen={this.state.showWebPartSettingsPanel}
-                    type={PanelType.smallFixedFar}
+                    type={PanelType.medium}
                     onDismiss={this.hideWebPartSettings}
                     onRenderFooterContent={this.renderWebPartSettingsFooter}
                     headerText="WebPart Settings"
                     className="web-part-settings"
                 >
                     {this.renderBaseWebPartSettings()}
-                    {typeof this.renderWebPartSettings === 'function' ? this.renderWebPartSettings() : null}
                 </Panel>
             </div>
         );
@@ -108,23 +111,36 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
     private renderBaseWebPartSettings(): JSX.Element {
         return (
             <div>
-                <TextField label="WebPart Title" value={this.props.settings.title} onChanged={this.onWebPartTitleChanged} />
-                <Dropdown
-                    label="WebPart Type"
-                    selectedKey={this.props.settings.type}
-                    onChanged={this.onWebPartTypeChanged}
-                    options={this.props.webPartTypeNames}
-                />
-                <Checkbox
-                    label="Use Script"
-                    checked={this.props.settings.attributes && this.props.settings.attributes.indexOf('useScript') > -1}
-                    onChange={this.useScriptChanged}
-                />
-                <Checkbox
-                    label="Auto Refresh"
-                    checked={this.props.settings.attributes && this.props.settings.attributes.indexOf('autoRefresh') > -1}
-                    onChange={this.autoRefreshChanged}
-                />
+                <Pivot>
+                    <PivotItem linkText="Base Web Part Settings">
+                        <TextField label="WebPart Title" value={this.props.settings.title} onChanged={this.onWebPartTitleChanged} />
+                        <Dropdown
+                            label="WebPart Type"
+                            selectedKey={this.props.settings.type}
+                            onChanged={this.onWebPartTypeChanged}
+                            options={this.props.webPartTypeNames}
+                        />
+                        <Checkbox
+                            label="Use Script"
+                            checked={this.props.settings.attributes && this.props.settings.attributes.indexOf('useScript') > -1}
+                            onChange={this.useScriptChanged}
+                        />
+                        <Checkbox
+                            label="Auto Refresh"
+                            checked={this.props.settings.attributes && this.props.settings.attributes.indexOf('autoRefresh') > -1}
+                            onChange={this.autoRefreshChanged}
+                        />
+                    </PivotItem>
+                    <PivotItem linkText="Settings">
+                        {typeof this.renderWebPartSettings === 'function' ? this.renderWebPartSettings() : <i>No Settings</i>}
+                    </PivotItem>
+                    <PivotItem linkText="Appearance">
+                        <ColorPicker
+                            color={this.props.settings.backgroundColor || '#ccc'}
+                            onColorChanged={this.updateBackgroundColor}
+                        />
+                    </PivotItem>
+                </Pivot>
             </div>
         );
     }
@@ -227,6 +243,13 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
         } else {
             pull(this.props.settings.attributes, 'autoRefresh');
         }
+
+        this.onWebPartPropertiesChanged();
+    }
+
+    @autobind
+    protected updateBackgroundColor(newColor: string) {
+        this.props.settings.backgroundColor = newColor;
 
         this.onWebPartPropertiesChanged();
     }
