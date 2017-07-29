@@ -5,7 +5,7 @@ import { observer } from 'mobx-react';
 import { PrimaryButton, DefaultButton, IButtonProps } from 'office-ui-fabric-react/lib/Button';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
 
-import { SettingsStore, BaristaSettings, VisualSettings } from '../../models';
+import { SettingsStore, SharePointSettings, LookoutSettings } from '../../models';
 
 @observer
 export class Step1 extends React.Component<Step1Props, any> {
@@ -28,7 +28,7 @@ export class Step1 extends React.Component<Step1Props, any> {
                     <TextField
                         addonString="https://"
                         label="SharePoint Tenant Url:"
-                        value={settingsStore.baristaSettings.testTenantUrl}
+                        value={settingsStore.sharePointSettings.testTenantUrl}
                         onChanged={this.updateTestTenantUrl}
                     />
                 </div>
@@ -42,7 +42,7 @@ export class Step1 extends React.Component<Step1Props, any> {
 
     @action.bound
     private isTenantUrlValid() {
-        if (this.props.settingsStore.baristaSettings.testTenantUrl.length <= 1) {
+        if (this.props.settingsStore.sharePointSettings.testTenantUrl.length <= 1) {
             return false;
         }
 
@@ -51,7 +51,7 @@ export class Step1 extends React.Component<Step1Props, any> {
 
     @action.bound
     private updateTestTenantUrl(newValue: string) {
-        this.props.settingsStore.baristaSettings.testTenantUrl = newValue;
+        this.props.settingsStore.sharePointSettings.testTenantUrl = newValue;
         SettingsStore.saveToLocalStorage(this.props.settingsStore);
     }
 }

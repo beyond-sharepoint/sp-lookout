@@ -6,7 +6,7 @@ import * as URI from 'urijs';
 import { PrimaryButton, DefaultButton, IButtonProps } from 'office-ui-fabric-react/lib/Button';
 import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
 
-import { SettingsStore, BaristaSettings, VisualSettings } from '../../models';
+import { SettingsStore, SharePointSettings, LookoutSettings } from '../../models';
 
 @observer
 export class Step2 extends React.Component<Step2Props, Step2State> {
@@ -99,7 +99,7 @@ export class Step2 extends React.Component<Step2Props, Step2State> {
         });
 
         //Compose the URL to the SharePoint authentication endpoint.
-        const sharePointBaseUrl = this.props.settingsStore.baristaSettings.testTenantUrl;
+        const sharePointBaseUrl = this.props.settingsStore.sharePointSettings.testTenantUrl;
         const authenticationEndpointWebRelativeUrl = '/_layouts/15/authenticate.aspx';
         const currentUri: uri.URI = URI();
 

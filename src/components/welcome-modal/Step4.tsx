@@ -5,7 +5,7 @@ import { observer } from 'mobx-react';
 import { PrimaryButton, DefaultButton, IButtonProps } from 'office-ui-fabric-react/lib/Button';
 import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
 
-import { SettingsStore, BaristaSettings, VisualSettings } from '../../models';
+import { SettingsStore, SharePointSettings, LookoutSettings } from '../../models';
 import { SPContext } from '../../services/spcontext';
 
 @observer
@@ -86,8 +86,8 @@ export class Step4 extends React.Component<Step4Props, Step4State> {
     @action.bound
     private async ensureSPContext() {
         try {
-            const sharepointBaseUrl = 'https://' + this.props.settingsStore.baristaSettings.testTenantUrl;
-            const context = await SPContext.getContext(sharepointBaseUrl, this.props.settingsStore.baristaSettings.spContextConfig);
+            const sharepointBaseUrl = 'https://' + this.props.settingsStore.sharePointSettings.testTenantUrl;
+            const context = await SPContext.getContext(sharepointBaseUrl, this.props.settingsStore.sharePointSettings.spContextConfig);
             await context.ensureContext();
         } catch (ex) {
             this.setState({
@@ -107,8 +107,8 @@ export class Step4 extends React.Component<Step4Props, Step4State> {
     @action.bound
     private completeConfiguration() {
         const { settingsStore } = this.props;
-        settingsStore.baristaSettings.tenantUrl = settingsStore.baristaSettings.testTenantUrl;
-        settingsStore.baristaSettings.testTenantUrl = '';
+        settingsStore.sharePointSettings.tenantUrl = settingsStore.sharePointSettings.testTenantUrl;
+        settingsStore.sharePointSettings.testTenantUrl = '';
         SettingsStore.saveToLocalStorage(settingsStore);
         this.props.onFinish();
     }

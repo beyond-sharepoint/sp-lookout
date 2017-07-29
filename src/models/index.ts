@@ -1,6 +1,6 @@
 export * from './SettingsStore';
-export * from './BaristaSettings';
-export * from './VisualSettings';
+export * from './SharePointSettings';
+export * from './LookoutSettings';
 
 export * from './FiddlesStore';
 export * from './FiddleFolder';

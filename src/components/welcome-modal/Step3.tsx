@@ -7,7 +7,7 @@ import * as FileSaver from 'file-saver';
 import { PrimaryButton, DefaultButton, IButtonProps } from 'office-ui-fabric-react/lib/Button';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
 
-import { SettingsStore, BaristaSettings, VisualSettings } from '../../models';
+import { SettingsStore, SharePointSettings, LookoutSettings } from '../../models';
 
 @observer
 export class Step3 extends React.Component<Step3Props, any> {
@@ -19,8 +19,8 @@ export class Step3 extends React.Component<Step3Props, any> {
             onNext
         } = this.props;
 
-        const targetDocumentLibrary = URI('https://' + settingsStore.baristaSettings.testTenantUrl)
-            .pathname(settingsStore.baristaSettings.spContextConfig.proxyServerRelativeUrl)
+        const targetDocumentLibrary = URI('https://' + settingsStore.sharePointSettings.testTenantUrl)
+            .pathname(settingsStore.sharePointSettings.spContextConfig.proxyServerRelativeUrl)
             .filename('')
             .href();
 
@@ -44,7 +44,7 @@ export class Step3 extends React.Component<Step3Props, any> {
                     </p>
                     <TextField
                         label="HostWebProxy Server Relative Url"
-                        value={settingsStore.baristaSettings.spContextConfig.proxyServerRelativeUrl}
+                        value={settingsStore.sharePointSettings.spContextConfig.proxyServerRelativeUrl}
                         onChanged={this.updateHostWebProxyUrl}
                     />
                     <a href={targetDocumentLibrary} target="_blank" style={{color: 'white'}}>Open HostWebProxy target library in new window.</a>
@@ -81,7 +81,7 @@ export class Step3 extends React.Component<Step3Props, any> {
 
     @action.bound
     private updateHostWebProxyUrl(newValue: string) {
-        this.props.settingsStore.baristaSettings.spContextConfig.proxyServerRelativeUrl = newValue;
+        this.props.settingsStore.sharePointSettings.spContextConfig.proxyServerRelativeUrl = newValue;
         SettingsStore.saveToLocalStorage(this.props.settingsStore);
     }
 }

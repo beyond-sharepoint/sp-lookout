@@ -153,7 +153,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
         }
 
         //If the settings store doesn't have a tenant url configured, show the welcome modal
-        if (!this.props.settingsStore.baristaSettings.tenantUrl || this.props.settingsStore.baristaSettings.tenantUrl.length < 1) {
+        if (!this.props.settingsStore.sharePointSettings.tenantUrl || this.props.settingsStore.sharePointSettings.tenantUrl.length < 1) {
             if (!this.state.welcomeSkipped) {
                 this.setState({
                     showWelcomeModal: true
@@ -180,7 +180,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
 
     public render() {
         const { settingsStore, pagesStore, fiddlesStore } = this.props;
-        const { visualSettings } = settingsStore;
+        const { lookoutSettings } = settingsStore;
         const { showAuthenticationRequiredModal, showInvalidOriginModal, showNoProxyModal } = this.state;
 
         return (
@@ -196,7 +196,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
                         <SplitPane
                             split="vertical"
                             className="left-sidebar"
-                            primaryPaneSize={visualSettings.sidebarWidth}
+                            primaryPaneSize={lookoutSettings.sidebarWidth}
                             primaryPaneMinSize={0}
                             primaryPaneMaxSize={700}
                             onPaneResized={this.updateSidebarSize}
@@ -303,7 +303,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
 
     private initializeBarista() {
         const { settingsStore } = this.props;
-        const { tenantUrl } = settingsStore.baristaSettings;
+        const { tenantUrl } = settingsStore.sharePointSettings;
         if (!tenantUrl || tenantUrl.length <= 0) {
             return;
         }
@@ -318,7 +318,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
             .href();
 
         const contextConfig: SPContextConfig = defaultsDeep(
-            toJS(settingsStore.baristaSettings.spContextConfig),
+            toJS(settingsStore.sharePointSettings.spContextConfig),
             defaultSPContextConfig
         );
 
@@ -403,7 +403,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
 
     @action.bound
     private updateSidebarSize(newSize: any) {
-        this.props.settingsStore.visualSettings.sidebarWidth = newSize;
+        this.props.settingsStore.lookoutSettings.sidebarWidth = newSize;
         SettingsStore.saveToLocalStorage(this.props.settingsStore);
 
         //Trigger a resize
@@ -416,7 +416,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
 
     @autobind
     private toggleSidebar() {
-        if (this.props.settingsStore.visualSettings.sidebarWidth === 0) {
+        if (this.props.settingsStore.lookoutSettings.sidebarWidth === 0) {
             this.updateSidebarSize(215);
         } else {
             this.updateSidebarSize(0);

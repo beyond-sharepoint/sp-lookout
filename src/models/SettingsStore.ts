@@ -2,60 +2,63 @@ import { action, observable, toJS } from 'mobx';
 import { debounce, throttle, defaultsDeep, find } from 'lodash';
 import * as localforage from 'localforage';
 
-import { BaristaSettings, defaultBaristaSettings} from './BaristaSettings';
-import { VisualSettings } from './VisualSettings';
+import { SharePointSettings} from './SharePointSettings';
+import { LookoutSettings } from './LookoutSettings';
 
 export const SettingsLocalStorageKey = 'sp-lookout-settings';
 
 export class SettingsStore {
     @observable
-    private _baristaSettings: BaristaSettings;
+    private _sharePointSettings: SharePointSettings;
 
     @observable
-    private _visualSettings: VisualSettings;
+    private _lookoutSettings: LookoutSettings;
 
-    constructor(baristaSettings?: BaristaSettings, visualSettings?: VisualSettings) {
-        if (!baristaSettings) {
-            this._baristaSettings = observable(defaultBaristaSettings);
+    constructor(sharePointSettings?: SharePointSettings, lookoutSettings?: LookoutSettings) {
+        if (!sharePointSettings) {
+            this._sharePointSettings = observable(new SharePointSettings());
         } else {
-            this._baristaSettings = observable(defaultsDeep(baristaSettings, defaultBaristaSettings) as BaristaSettings);
+            this._sharePointSettings = observable(defaultsDeep(sharePointSettings, new SharePointSettings()) as SharePointSettings);
         }
 
-        if (!visualSettings) {
-            this._visualSettings = observable(new VisualSettings());
+        if (!lookoutSettings) {
+            this._lookoutSettings = observable(new LookoutSettings());
         } else {
-            this._visualSettings = observable(defaultsDeep(visualSettings, new VisualSettings()) as VisualSettings);
+            this._lookoutSettings = observable(defaultsDeep(lookoutSettings, new LookoutSettings()) as LookoutSettings);
         }
+
+        console.dir(this);
     }
 
-    public get baristaSettings() {
-        return this._baristaSettings;
+    public get sharePointSettings() {
+        return this._sharePointSettings;
     }
 
-    public get visualSettings() {
-        return this._visualSettings;
+    public get lookoutSettings() {
+        return this._lookoutSettings;
     }
 
     static async loadFromLocalStorage(): Promise<SettingsStore> { 
         let settings: Settings = {
-            baristaSettings: undefined,
-            visualSettings: undefined
+            sharePointSettings: new SharePointSettings(),
+            lookoutSettings: new LookoutSettings()
         };
 
         const persistedSettings: Settings = await localforage.getItem(SettingsLocalStorageKey);
 
         if (persistedSettings) {
-            settings.baristaSettings = persistedSettings.baristaSettings || undefined;
-            settings.visualSettings = persistedSettings.visualSettings || undefined;
+            settings.sharePointSettings = persistedSettings.sharePointSettings || new SharePointSettings;
+            settings.lookoutSettings = persistedSettings.lookoutSettings || new LookoutSettings();
         }
 
-        return new SettingsStore(settings.baristaSettings, settings.visualSettings);
+        console.dir(settings);
+        return new SettingsStore(settings.sharePointSettings, settings.lookoutSettings);
     }
 
     @action static async saveToLocalStorage(settingsStore: SettingsStore) {
-        const settingsToPersist = {
-            baristaSettings: toJS(settingsStore._baristaSettings),
-            visualSettings: toJS(settingsStore._visualSettings)
+        const settingsToPersist: Settings = {
+            sharePointSettings: toJS(settingsStore._sharePointSettings),
+            lookoutSettings: toJS(settingsStore._lookoutSettings)
         };
 
         return localforage.setItem(SettingsLocalStorageKey, settingsToPersist);
@@ -67,6 +70,6 @@ export class SettingsStore {
 }
 
 type Settings = {
-    baristaSettings?: BaristaSettings,
-    visualSettings?: VisualSettings
+    sharePointSettings?: SharePointSettings,
+    lookoutSettings?: LookoutSettings
 };

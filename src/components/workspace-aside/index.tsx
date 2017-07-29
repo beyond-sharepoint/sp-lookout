@@ -76,7 +76,7 @@ export default class Aside extends React.Component<AsideProps, any> {
         return (
             <SplitPane
                 split="horizontal"
-                primaryPaneSize={settingsStore.visualSettings.asidePrimaryPaneHeight}
+                primaryPaneSize={settingsStore.lookoutSettings.asidePrimaryPaneHeight}
                 primaryPaneMinSize={250}
                 onPaneResized={this.onPaneResized}
                 onResizerDoubleClick={(paneStyle, e, splitPane) => {
@@ -165,7 +165,7 @@ export default class Aside extends React.Component<AsideProps, any> {
 
     @autobind
     private onPaneResized(newSize: number | string) {
-        this.props.settingsStore.visualSettings.asidePrimaryPaneHeight = newSize;
+        this.props.settingsStore.lookoutSettings.asidePrimaryPaneHeight = newSize;
     }
 
     @action.bound

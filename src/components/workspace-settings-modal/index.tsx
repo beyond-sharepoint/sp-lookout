@@ -10,7 +10,7 @@ import { Dropdown, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
 import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react/lib/Button';
 import { Toggle } from 'office-ui-fabric-react/lib/Toggle';
 
-import { SettingsStore, PagesStore, FiddlesStore, BaristaSettings, VisualSettings } from '../../models';
+import { SettingsStore, PagesStore, FiddlesStore, SharePointSettings, LookoutSettings } from '../../models';
 import './index.css';
 
 @observer
@@ -38,12 +38,12 @@ export class WorkspaceSettingsModal extends React.Component<WorkspaceSettingsPro
                             <TextField
                                 addonString="https://"
                                 label="SharePoint Tenant Url"
-                                value={settingsStore.baristaSettings.tenantUrl}
+                                value={settingsStore.sharePointSettings.tenantUrl}
                                 onChanged={this.updateTenantUrl}
                             />
                             <TextField
                                 label="HostWebProxy Server Relative Url"
-                                value={settingsStore.baristaSettings.spContextConfig.proxyServerRelativeUrl}
+                                value={settingsStore.sharePointSettings.spContextConfig.proxyServerRelativeUrl}
                                 onChanged={this.updateHostWebProxyUrl}
                             />
                         </PivotItem>
@@ -58,12 +58,12 @@ export class WorkspaceSettingsModal extends React.Component<WorkspaceSettingsPro
 
     @action.bound
     private updateTenantUrl(newValue: string) {
-        this.props.settingsStore.baristaSettings.tenantUrl = newValue;
+        this.props.settingsStore.sharePointSettings.tenantUrl = newValue;
     }
 
     @action.bound
     private updateHostWebProxyUrl(newValue: string) {
-        this.props.settingsStore.baristaSettings.spContextConfig.proxyServerRelativeUrl = newValue;
+        this.props.settingsStore.sharePointSettings.spContextConfig.proxyServerRelativeUrl = newValue;
     }
 
     @action.bound
