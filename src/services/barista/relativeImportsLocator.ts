@@ -1,7 +1,7 @@
 import * as ts from 'typescript';
 
 export const RelativeImportsLocator = (context: ts.TransformationContext): ts.Transformer<ts.SourceFile> => {
-    const relativeRegExp = /^\..*/;
+    const relativeRegExp = /^\.[\s\S]*/;
     let relativeImports: Array<string> = [];
 
     const visitor: ts.Visitor = (node: ts.Node): ts.Node => {

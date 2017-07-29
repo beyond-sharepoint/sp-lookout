@@ -10,20 +10,25 @@
   height: 100%;
 }
 
+.sp-lookout-nav .ms-CommandBarItem-link,
 .sp-lookout-nav .ms-CommandBar-primaryCommands,
 .sp-lookout-nav .ms-FocusZone {
   background-color: #0078d7;
-}
-
-.sp-lookout-nav .ms-CommandBarItem-commandText,
-.sp-lookout-nav .ms-CommandBarItem-iconColor {
   color: white;
 }
 
+.sp-lookout-nav .ms-CommandBarItem-commandText,
+.sp-lookout-nav .ms-CommandBarItem-icon,
+.sp-lookout-nav .ms-CommandBarItem-iconColor {
+  color: white !important;
+}
+
 .sp-lookout-nav .ms-CommandBarItem,
-.sp-lookout-nav .ms-CommandBarItem-text:hover,
+.sp-lookout-nav .ms-CommandBarItem-link:hover,
+.sp-lookout-nav .ms-CommandBarItem-icon:hover,
+.sp-lookout-nav .ms-CommandBarItem-iconColor:hover,
 .sp-lookout-nav .ms-CommandBarItem-commandText:hover {
-  color: #0078d7;
+  color: #0078d7 !important;
 }
 
 .left-sidebar .pane .ms-FocusZone {

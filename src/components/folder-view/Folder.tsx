@@ -395,7 +395,7 @@ export class Folder extends React.Component<FolderProps, FolderState> {
             !newName ||
             newName.length <= 0 ||
             newName.startsWith('.') ||
-            newName.indexOf('/') > -1 ||
+            /[\\\\/:*?\"<>|]/g.test(newName) ||
             !this.props.parentFolder ||
             find(this.props.parentFolder.folders, { name: newName })
         ) {

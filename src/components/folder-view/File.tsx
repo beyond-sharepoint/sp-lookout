@@ -218,7 +218,7 @@ export class File extends React.Component<FileProps, FileState> {
             !newName ||
             newName.length <= 0 ||
             newName.startsWith('.') ||
-            newName.indexOf('/') > -1 ||
+            /[\\\\/:*?\"<>|]/g.test(newName) ||
             find(this.props.parentFolder.files, { name: newName })
         ) {
             if (!shouldRename || revertOnError) {

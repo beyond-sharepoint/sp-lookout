@@ -26,8 +26,6 @@ export class SettingsStore {
         } else {
             this._lookoutSettings = observable(defaultsDeep(lookoutSettings, new LookoutSettings()) as LookoutSettings);
         }
-
-        console.dir(this);
     }
 
     public get sharePointSettings() {
@@ -51,7 +49,6 @@ export class SettingsStore {
             settings.lookoutSettings = persistedSettings.lookoutSettings || new LookoutSettings();
         }
 
-        console.dir(settings);
         return new SettingsStore(settings.sharePointSettings, settings.lookoutSettings);
     }
 

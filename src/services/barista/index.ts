@@ -62,12 +62,18 @@ export default class Barista {
         //Transpile dependencies
         const relativeImports: Array<string> = (<any>transpileResult).relativeImports;
         for (const relativePath of relativeImports) {
-            const dependencyAbsolutePath = URI(relativePath).absoluteTo(fullPath).href();
+            const dependencyAbsolutePath = decodeURI(URI(relativePath).absoluteTo(fullPath).pathname());
+            console.log(dependencyAbsolutePath);
             const dependentFiddleSettings = this._fiddlesStore.getFiddleSettingsByPath(dependencyAbsolutePath);
 
             if (dependentFiddleSettings) {
                 this.tamp(dependencyAbsolutePath, dependentFiddleSettings, allowDebuggerStatement, defines);
             }
+        }
+        
+        for(const definePath of Object.keys(defines)) {
+            const escapedPath = definePath.replace(/\'/g, '\\\'');
+            defines[definePath] = defines[definePath].replace(/^define\(\[/, `define('${escapedPath}',[`);
         }
 
         return defines;
@@ -82,7 +88,7 @@ export default class Barista {
 
         //Take Order, get the fiddle settings from the store
         const targetFiddleSettings = this._fiddlesStore.getFiddleSettingsByPath(fullPath);
-        
+
         if (!targetFiddleSettings) {
             throw Error(`A module with the specified path was not found in the associated store: '${fullPath}'`);
         }
@@ -90,6 +96,7 @@ export default class Barista {
         //Tamp, Transpile the main module and resulting dependencies.
         const defines = this.tamp(fullPath, targetFiddleSettings, allowDebuggerStatement || false);
 
+        console.dir(defines);
         //Brew
         try {
             return await spContext.brew(
@@ -149,7 +156,6 @@ export default class Barista {
     }
 
     private transpile(filename: string, input: string, allowDebuggerStatement: boolean): ts.TranspileOutput {
-
         let beforeTransformers: any = [];
         beforeTransformers.push(RelativeImportsLocator);
         if (!allowDebuggerStatement) {
@@ -170,7 +176,6 @@ export default class Barista {
         });
 
         (<any>output).relativeImports = (<any>RelativeImportsLocator).relativeImports;
-        output.outputText = output.outputText.replace('define([', `define('${filename}',[`);
         return output;
     }
 }
