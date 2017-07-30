@@ -1,7 +1,7 @@
 SP Lookout!
 ---
 
-Administrator-focused browser-based dashboard. Create personalized pages to display information stored in SharePoint and elsewhere.
+Administrator-focused browser-based dashboard. Create personalized pages to display information stored in SharePoint and elsewhere. Use scripts that you develop using typescript, via the built-in editor, to surface and manipulate content to your whim.
 
 <h1 align="center">
 	<img width="800" src="https://raw.githubusercontent.com/beyond-sharepoint/sp-lookout/master/sp-lookout.gif" alt="sp-lookout">
