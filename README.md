@@ -1,7 +1,7 @@
 SP Lookout!
 ---
 
-Administrator-focused browser-based dashboard. Create personalized pages to display information stored in SharePoint and elsewhere. Use scripts that you develop using typescript, via the built-in editor, to surface and manipulate content to your whim. If you like, surface data in dashboard pages using data provided by your scripts.
+Administrator-focused browser-based dashboard. Create personalized pages to display information stored in SharePoint and elsewhere. A central feature of SP Lookout! is the SPFiddle which allows an user to develop scripts, using typescript to surface and manipulate content contained in SharePoint via the REST services. Scripts can also be used to surface data within dashboard pages by providing the data to WebParts.
 
 <h1 align="center">
 	<img width="800" src="https://raw.githubusercontent.com/beyond-sharepoint/sp-lookout/master/sp-lookout.gif" alt="sp-lookout">
@@ -11,7 +11,7 @@ Administrator-focused browser-based dashboard. Create personalized pages to disp
 - Provide Dashboard functionality to monitor SharePoint at a glance.
 - Provide insight into SharePoint via Charts and Data Views
 - Provide UI for common tasks that SP doesn't provide. (JSLink, etc)
-- Provide fiddle to easily call SP REST services (and other REST endpoints) from the tool
+- Provide fiddle to easily call SP REST services (and other REST endpoints such as Office Graph, Functions, and so forth) from the tool
 - Surface data provided by fiddle scripts in Dashboards.
 - Allow all of the above to be configurable (and shareable)
 
