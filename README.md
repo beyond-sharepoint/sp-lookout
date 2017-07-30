@@ -1,11 +1,16 @@
 SP Lookout!
 ---
 
-Interactive administration tool to monitor and interact with SharePoint.
+Administrator-focused browser-based dashboard. Create personalized pages to display information stored in SharePoint and elsewhere.
 
 <h1 align="center">
 	<img width="800" src="https://raw.githubusercontent.com/beyond-sharepoint/sp-lookout/master/sp-lookout.gif" alt="sp-lookout">
 </h1>
+
+- Create Pages that contain WebParts that surface content.
+- Use SPFiddle to write TypeScript code that lets you directly hit SP REST Services.
+- Join data surfaced by SPFiddle Scripts on Dashboard pages.
+
 
 [Interactive Demo](https://beyond-sharepoint.github.io/sp-lookout/#/)
 
