@@ -66,11 +66,11 @@ export class Step4 extends React.Component<Step4Props, Step4State> {
                             : null
                         }
                         {!isRetrievingContext && !didSucceed
-                            ? <div>Uhoh, an error occurred:</div>
+                            ? <div style={{paddingBottom: '5px'}}>Uhoh, an error occurred:</div>
                             : null
                         }
                         {!isRetrievingContext && !didSucceed
-                            ? <div>{error}</div>
+                            ? <div style={{textAlign: 'center'}}>{error}</div>
                             : null
                         }
                     </div>
@@ -88,7 +88,7 @@ export class Step4 extends React.Component<Step4Props, Step4State> {
         try {
             const sharepointBaseUrl = 'https://' + this.props.settingsStore.sharePointSettings.testTenantUrl;
             const context = await SPContext.getContext(sharepointBaseUrl, this.props.settingsStore.sharePointSettings.spContextConfig);
-            await context.ensureContext();
+            await context.ensureContext(false);
         } catch (ex) {
             this.setState({
                 isRetrievingContext: false,

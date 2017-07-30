@@ -51,7 +51,11 @@ export class SPContext {
     /**
      * Ensures that a current context is active.
      */
-    public async ensureContext(): Promise<SPProxy> {
+    public async ensureContext(redirectOnAuthenticationFailure?: boolean): Promise<SPProxy> {
+        if (typeof redirectOnAuthenticationFailure === 'undefined') {
+            redirectOnAuthenticationFailure = true;
+        }
+
         let proxy: SPProxy;
 
         //Ensure that a SharePoint proxy is open. If it times out, redirect to the SharePoint Authentication page.
@@ -86,10 +90,16 @@ export class SPContext {
                     .normalize()
                     .toString();
 
-                const authenticationFailedError = new SPContextError(`Authentication failed, redirecting to Authentication Url: ${authUri}`);
-                authenticationFailedError.$$spcontext = 'authrequired';
-                window.open(authUri, '_top');
-                throw authenticationFailedError;
+                if (redirectOnAuthenticationFailure) {
+                    const authenticationFailedError = new SPContextError(`Authentication failed, redirecting to Authentication Url: ${authUri}`);
+                    authenticationFailedError.$$spcontext = 'authrequired';
+                    window.open(authUri, '_top');
+                    throw authenticationFailedError;
+                } else {
+                    const authenticationFailedError = new SPContextError(`Authentication failed. Ensure that you are able to log into the following location and return to SP Lookout!: ${this._webFullUrl}`);
+                    authenticationFailedError.$$spcontext = 'authrequired';
+                    throw authenticationFailedError;
+                }
             } else if (isError(ex) && ex.message && ex.message.startsWith('The specified origin is not trusted by the HostWebProxy')) {
                 const invalidOriginError = new SPContextError(`The HostWebProxy could not trust the current origin. Ensure that the current origin (${(<any>ex).invalidOrigin}) is added to ${URI((<any>ex).url).query('').href()}`);
                 invalidOriginError.$$spcontext = 'invalidorigin';
