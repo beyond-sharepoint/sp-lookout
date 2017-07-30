@@ -31,3 +31,25 @@ Host locally/develop:
 3. Via SharePoint, Upload HostWebProxy.aspx from /public to https://[YourTenant]/Shared%20Documents/
 4. Start with npm start
 
+FAQ
+---
+
+Q) What server-side technologies does SP Lookout require?
+
+A) SP Lookout! is a browser only tool. It connects to other data sources via REST services but it itself can be hosted on any static web host such as GitHub Pages (see the demo) within SharePoint itself or other CDNs (WordPress, SiteCore, etc...)
+
+Q) Why is this not a SPFx or SharePoint Addin?
+
+A) The output of the build process is static HTML/JS, thus, it can be definately be pulled into a SPFx or SharePoint Addin. It could also be part of a UWP app, or packaged within Electron and offered on the Windows or Mac App Stores. It could also be pulled into a Phone Gap/Cordova and be a iOS/Android app. These options are left to the developer.
+
+Q) How does SP Lookout! remember my changes?
+
+A) The tool uses browser-based storage to persist state - see [localforage](https://github.com/localForage/localForage)
+
+Q) What technologies are in play here?
+
+A) React, MobX, Typescript, SASS.
+
+Q) What browsers are supported?
+
+A) At this point FireFox/Chrome/Safari desktop are functioning. Safari iOS has authentication issues. Edge has authentication issues. IE11 has display (flexbox) issues. As the primary audience will probably desire Edge/IE11 support it is a goal to have it working on these browsers.
