@@ -51,7 +51,6 @@ export class FiddlesStore {
 
     public getFiddleSettingsRelativeToPath(path: string, relativePath: string): FiddleSettings | undefined {
         const targetPath = URI(relativePath).absoluteTo(path);
-        console.log(targetPath);
         return this.getFiddleSettingsByPath(targetPath.href());
     }
 

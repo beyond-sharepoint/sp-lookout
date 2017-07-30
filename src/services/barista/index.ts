@@ -63,7 +63,6 @@ export default class Barista {
         const relativeImports: Array<string> = (<any>transpileResult).relativeImports;
         for (const relativePath of relativeImports) {
             const dependencyAbsolutePath = decodeURI(URI(relativePath).absoluteTo(fullPath).pathname());
-            console.log(dependencyAbsolutePath);
             const dependentFiddleSettings = this._fiddlesStore.getFiddleSettingsByPath(dependencyAbsolutePath);
 
             if (dependentFiddleSettings) {
@@ -96,7 +95,6 @@ export default class Barista {
         //Tamp, Transpile the main module and resulting dependencies.
         const defines = this.tamp(fullPath, targetFiddleSettings, allowDebuggerStatement || false);
 
-        console.dir(defines);
         //Brew
         try {
             return await spContext.brew(

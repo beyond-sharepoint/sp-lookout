@@ -220,7 +220,6 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
                     data: 'An empty result was returned.'
                 };
             }
-            console.dir(result);
             lastBrewResult = result.data || result.transferrableData;
 
             if (this.props.currentFiddle.autoSaveArrayBufferResults === true) {
@@ -246,7 +245,6 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
                 lastBrewResultIsError,
                 lastProgressReport: null
             });
-            console.log('your brew is complete!');
         }
     }
 

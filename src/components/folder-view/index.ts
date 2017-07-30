@@ -1,15 +1,15 @@
-export interface IFolder {
+export interface Folder {
     name: string;
     description: string;
     collapsed?: boolean;
     locked?: boolean;
     starred?: boolean;
     iconClassName?: string;
-    folders: Array<IFolder>;
-    files: Array<IFile>;
+    folders: Array<Folder>;
+    files: Array<File>;
 }
 
-export interface IFile {
+export interface File {
     name: string;
     description?: string;
     locked?: boolean;

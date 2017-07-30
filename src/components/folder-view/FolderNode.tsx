@@ -3,8 +3,8 @@ import { DropTarget, DragSource } from 'react-dnd';
 import { observer } from 'mobx-react';
 import { autobind } from 'office-ui-fabric-react/lib';
 import { sortBy, find } from 'lodash';
-import { IFolder, IFile, FolderViewTypes } from './index';
-import { File } from './File';
+import { Folder, File, FolderViewTypes } from './index';
+import { FileNode } from './FileNode';
 
 const folderSource = {
     canDrag(props: FolderProps) {
@@ -103,7 +103,7 @@ const folderTarget = {
     isDragging: monitor.isDragging(),
 }))
 @observer
-export class Folder extends React.Component<FolderProps, FolderState> {
+export class FolderNode extends React.Component<FolderProps, FolderState> {
     private _input: HTMLInputElement | null;
 
     public constructor(props: FolderProps) {
@@ -264,7 +264,7 @@ export class Folder extends React.Component<FolderProps, FolderState> {
                     {
                         !folder.collapsed && folder.folders
                             ? sortBy(folder.folders, f => f.name).map((subFolder, index) => (
-                                <Folder
+                                <FolderNode
                                     key={index}
                                     parentFolder={folder}
                                     path={path ? `${path}${subFolder.name}/` : `${subFolder.name}/`}
@@ -287,7 +287,7 @@ export class Folder extends React.Component<FolderProps, FolderState> {
                     {
                         !folder.collapsed && folder.files
                             ? sortBy(folder.files, f => f.name).map((file, index) => (
-                                <File
+                                <FileNode
                                     key={index}
                                     parentFolder={folder}
                                     path={path ? `${path}${file.name}` : file.name}
@@ -490,21 +490,21 @@ export interface FolderState {
 }
 
 export interface FolderProps {
-    folder: IFolder;
-    parentFolder: IFolder | null;
+    folder: Folder;
+    parentFolder: Folder | null;
     path: string;
     depth: number;
-    onCollapseChange?: (folder: IFolder, parentFolder: IFolder | null) => void;
-    onMovedToFolder?: (sourceItem: IFolder | IFile, targetFolder: IFolder) => void;
+    onCollapseChange?: (folder: Folder, parentFolder: Folder | null) => void;
+    onMovedToFolder?: (sourceItem: Folder | File, targetFolder: Folder) => void;
     onAddFile?: () => void;
     onAddFolder?: () => void;
     onDelete?: () => void;
-    onLockChanged?: (folder: IFolder, locked: boolean) => void;
-    onFileSelected?: (file: IFile, filePath: string) => void;
-    onFolderSelected?: (folder: IFolder, folderPath: string | null) => void;
-    onFileNameChanged?: (file: IFile, filePath: string, newName: string) => void;
-    onFolderNameChanged?: (folder: IFolder, folderPath: string, newName: string) => void;
-    onFileLockChanged?: (file: IFile, locked: boolean) => void;
-    onFileStarChanged?: (file: IFile, starred: boolean) => void;
+    onLockChanged?: (folder: Folder, locked: boolean) => void;
+    onFileSelected?: (file: File, filePath: string) => void;
+    onFolderSelected?: (folder: Folder, folderPath: string | null) => void;
+    onFileNameChanged?: (file: File, filePath: string, newName: string) => void;
+    onFolderNameChanged?: (folder: Folder, folderPath: string, newName: string) => void;
+    onFileLockChanged?: (file: File, locked: boolean) => void;
+    onFileStarChanged?: (file: File, starred: boolean) => void;
     selectedPaths?: string | string[];
 }

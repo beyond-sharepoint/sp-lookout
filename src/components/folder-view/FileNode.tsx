@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import { autobind } from 'office-ui-fabric-react/lib';
 import { DragSource } from 'react-dnd';
 import { find } from 'lodash';
-import { IFolder, IFile, FolderViewTypes } from './index';
+import { Folder, File, FolderViewTypes } from './index';
 
 const FileSource = {
     canDrag(props: FileProps) {
@@ -39,7 +39,7 @@ const FileSource = {
     isDragging: monitor.isDragging(),
 }))
 @observer
-export class File extends React.Component<FileProps, FileState> {
+export class FileNode extends React.Component<FileProps, FileState> {
     private _input: HTMLInputElement | null;
 
     public constructor(props: FileProps) {
@@ -281,14 +281,14 @@ export interface FileState {
 }
 
 export interface FileProps {
-    parentFolder: IFolder;
+    parentFolder: Folder;
     path: string;
-    file: IFile;
+    file: File;
     isDragging?: boolean;
     depth: number;
-    onClick?: (file: IFile, filePath: string) => void;
-    onFileNameChanged?: (file: IFile, filePath: string, newName: string) => void;
-    onStarChanged?: (file: IFile, starred: boolean) => void;
-    onLockChanged?: (file: IFile, locked: boolean) => void;
+    onClick?: (file: File, filePath: string) => void;
+    onFileNameChanged?: (file: File, filePath: string, newName: string) => void;
+    onStarChanged?: (file: File, starred: boolean) => void;
+    onLockChanged?: (file: File, locked: boolean) => void;
     selectedPaths?: string | string[];
 }

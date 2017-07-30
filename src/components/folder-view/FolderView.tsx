@@ -5,9 +5,9 @@ import { action } from 'mobx';
 import { observer } from 'mobx-react';
 import { autobind } from 'office-ui-fabric-react/lib';
 import * as URI from 'urijs';
-import { IFolder, IFile } from './index';
-import { Folder } from './Folder';
-import { File } from './File';
+import { Folder, File } from './index';
+import { FolderNode } from './FolderNode';
+import { FileNode } from './FileNode';
 
 import './FolderView.css';
 
@@ -19,7 +19,7 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
 
         return (
             <div className="folder-view ms-fontColor-themePrimary" style={{ flex: '1', display: 'flex' }}>
-                <Folder
+                <FolderNode
                     folder={folder}
                     parentFolder={null}
                     path=""
@@ -43,19 +43,19 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
     }
 
     @action.bound
-    private onCollapseChange(folder: IFolder, parentFolder: IFolder) {
+    private onCollapseChange(folder: Folder, parentFolder: Folder) {
         folder.collapsed = !folder.collapsed;
         this.props.onChange(this.props.folder);
     }
 
     @action.bound
-    private onLockChanged(folder: IFolder, locked: boolean) {
+    private onLockChanged(folder: Folder, locked: boolean) {
         folder.locked = locked;
         this.props.onChange(this.props.folder);
     }
 
     @action.bound
-    private onMovedToFolder(sourceItem: any, targetFolder: IFolder) {
+    private onMovedToFolder(sourceItem: any, targetFolder: Folder) {
         const parentFolder = sourceItem.parentFolder;
         if (sourceItem.kind === 'file') {
             parentFolder.files.splice(parentFolder.files.indexOf(sourceItem.file), 1);
@@ -68,12 +68,12 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
         this.props.onChange(this.props.folder);
     }
 
-    private getFolderMap(folder: IFolder, path?: string): { [path: string]: IFolder } {
+    private getFolderMap(folder: Folder, path?: string): { [path: string]: Folder } {
         if (!folder) {
             return {};
         }
 
-        let result: { [path: string]: IFolder } = {};
+        let result: { [path: string]: Folder } = {};
         for (let f of folder.folders) {
             const currentPath = path ? `${path}${f.name}/` : `${f.name}/`;
             result[currentPath] = f;
@@ -85,12 +85,12 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
         return result;
     }
 
-    private getFileMap(folder: IFolder, folderMap?: { [path: string]: IFolder }): { [path: string]: IFile } {
+    private getFileMap(folder: Folder, folderMap?: { [path: string]: Folder }): { [path: string]: File } {
         if (!folder) {
             return {};
         }
 
-        let result: { [path: string]: IFile } = {};
+        let result: { [path: string]: File } = {};
         for (let currentFolderFile of folder.files) {
             result[currentFolderFile.name] = currentFolderFile;
         }
@@ -133,7 +133,7 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
 
     @action.bound
     private onAddFile() {
-        let targetFolder: IFolder | null = null;
+        let targetFolder: Folder | null = null;
         const directory = this.getDirectory(this.props.selectedPaths);
         if (directory) {
             const folderMap = this.getFolderMap(this.props.folder);
@@ -155,7 +155,7 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
 
     @action.bound
     private onAddFolder() {
-        let targetFolder: IFolder | null = null;
+        let targetFolder: Folder | null = null;
         const directory = this.getDirectory(this.props.selectedPaths);
         if (directory) {
             const folderMap = this.getFolderMap(this.props.folder);
@@ -177,7 +177,7 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
 
     @action.bound
     private onDelete() {
-        let targetFolder: IFolder = this.props.folder;
+        let targetFolder: Folder = this.props.folder;
         const folderMap = this.getFolderMap(this.props.folder);
         const directory = this.getDirectory(this.props.selectedPaths);
         if (directory) {
@@ -190,7 +190,7 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
         const pathName = this.getPathName(this.props.selectedPaths);
         if (!URI(pathName).filename()) {
             let parentFolderPath = directory.substring(0, directory.lastIndexOf('/'));
-            let parentFolder: IFolder = this.props.folder;
+            let parentFolder: Folder = this.props.folder;
             if (parentFolderPath) {
                 parentFolder = folderMap[parentFolderPath + '/'];
             }
@@ -218,7 +218,7 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
     }
 
     @action.bound
-    private onFileNameChanged(file: IFile, currentPath: string, newName: string) {
+    private onFileNameChanged(file: File, currentPath: string, newName: string) {
         const oldName = file.name;
         file.name = newName;
         this.props.onChange(this.props.folder);
@@ -229,7 +229,7 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
     }
 
     @action.bound
-    private onFolderNameChanged(folder: IFolder, currentPath: string, newName: string) {
+    private onFolderNameChanged(folder: Folder, currentPath: string, newName: string) {
         const oldName = folder.name;
         folder.name = newName;
         this.props.onChange(this.props.folder);
@@ -240,13 +240,13 @@ export class FolderView extends React.Component<FolderViewProps, FolderViewState
     }
 
     @action.bound
-    private onFileLockChanged(file: IFile, locked: boolean) {
+    private onFileLockChanged(file: File, locked: boolean) {
         file.locked = locked;
         this.props.onChange(this.props.folder);
     }
 
     @action.bound
-    private onFileStarChanged(file: IFile, starred: boolean) {
+    private onFileStarChanged(file: File, starred: boolean) {
         file.starred = starred;
         this.props.onChange(this.props.folder);
     }
@@ -256,13 +256,13 @@ export interface FolderViewState {
 }
 
 export interface FolderViewProps {
-    folder: IFolder;
-    onChange: (folder: IFolder) => void;
-    onFileSelected?: (file: IFile, filePath: string) => void;
-    onFolderSelected?: (folder: IFolder, folderPath: string) => void;
-    onAddFile?: (targetFolder: IFolder) => void;
-    onAddFolder?: (targetFolder: IFolder) => void;
-    onDeleteFile?: (parentFolder: IFolder, targetFile: IFile) => void;
-    onDeleteFolder?: (parentFolder: IFolder, targetFolder: IFolder) => void;
+    folder: Folder;
+    onChange: (folder: Folder) => void;
+    onFileSelected?: (file: File, filePath: string) => void;
+    onFolderSelected?: (folder: Folder, folderPath: string) => void;
+    onAddFile?: (targetFolder: Folder) => void;
+    onAddFolder?: (targetFolder: Folder) => void;
+    onDeleteFile?: (parentFolder: Folder, targetFile: File) => void;
+    onDeleteFolder?: (parentFolder: Folder, targetFolder: Folder) => void;
     selectedPaths?: string | string[];
 }

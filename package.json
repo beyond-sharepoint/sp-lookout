@@ -60,7 +60,8 @@
     "gh-pages": "^1.0.0",
     "npm-run-all": "^4.0.2",
     "react-scripts-ts": "2.5.0",
-    "rimraf": "^2.6.1"
+    "rimraf": "^2.6.1",
+    "source-map-support": "0.4.3"
   },
   "scripts": {
     "postinstall": "cd packages/hostwebproxy && npm install && cd ../.. && cpr node_modules/monaco-editor/min/vs public/vs -o",

@@ -7,7 +7,7 @@ import { autobind } from 'office-ui-fabric-react/lib';
 import { IContextualMenuItem } from 'office-ui-fabric-react';
 import { find, defaultsDeep } from 'lodash';
 import SplitPane from '../split-pane/SplitPane';
-import { FolderView, IFolder, IFile } from '../folder-view';
+import { FolderView, Folder, File } from '../folder-view';
 
 import {
     SettingsStore,
@@ -130,7 +130,7 @@ export default class Aside extends React.Component<AsideProps, any> {
                         : null
                     }
                     <FolderView
-                        folder={fiddlesStore.fiddleRootFolder as IFolder}
+                        folder={fiddlesStore.fiddleRootFolder as Folder}
                         onFileSelected={onFiddleSelected}
                         onFolderSelected={onFolderSelected}
                         onAddFile={this.onAddFile}
@@ -198,7 +198,7 @@ export default class Aside extends React.Component<AsideProps, any> {
     }
 
     @autobind
-    private onAddFile(targetFolder: IFolder) {
+    private onAddFile(targetFolder: Folder) {
         let newFileName = 'newFile.ts';
         let ix = 0;
         while (find(targetFolder.files, { name: newFileName })) {
@@ -211,12 +211,12 @@ export default class Aside extends React.Component<AsideProps, any> {
         });
 
         targetFolder.collapsed = false;
-        targetFolder.files.push(newFile as IFile);
+        targetFolder.files.push(newFile as File);
         FiddlesStore.saveToLocalStorage(this.props.fiddlesStore);
     }
 
     @autobind
-    private onAddFolder(targetFolder: IFolder) {
+    private onAddFolder(targetFolder: Folder) {
         let newFolderName = 'new folder';
         let ix = 0;
         while (find(targetFolder.folders, { name: newFolderName })) {
@@ -229,12 +229,12 @@ export default class Aside extends React.Component<AsideProps, any> {
         });
 
         targetFolder.collapsed = false;
-        targetFolder.folders.push(newFolder as IFolder);
+        targetFolder.folders.push(newFolder as Folder);
         FiddlesStore.saveToLocalStorage(this.props.fiddlesStore);
     }
 
     @autobind
-    private onDeleteFile(targetFolder: IFolder, targetFile: IFile) {
+    private onDeleteFile(targetFolder: Folder, targetFile: File) {
         const targetIndex = targetFolder.files.indexOf(targetFile);
         if (targetIndex < 0) {
             return;
@@ -245,7 +245,7 @@ export default class Aside extends React.Component<AsideProps, any> {
     }
 
     @autobind
-    private onDeleteFolder(parentFolder: IFolder, targetFolder: IFolder) {
+    private onDeleteFolder(parentFolder: Folder, targetFolder: Folder) {
         const targetIndex = parentFolder.folders.indexOf(targetFolder);
         if (targetIndex < 0) {
             return;
