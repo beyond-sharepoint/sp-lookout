@@ -15,9 +15,11 @@ Administrator-focused browser-based dashboard. Create personalized pages to disp
 - Surface data provided by fiddle scripts in Dashboards.
 - Allow all of the above to be configurable (and shareable)
 
-[Interactive Demo](https://beyond-sharepoint.github.io/sp-lookout/#/)
+Interactive Site
+---
+Get started with SP Lookout! right now by visiting the [GitHub Pages hosted site here](https://beyond-sharepoint.github.io/sp-lookout/#/)
 
->Note: The demo site changes frequently, if you find that it doesn't load, clear your IndexedDB in dev tools -> application or use an incognito (in-private) window.
+>Note: The SP Lookout! is undergoing rapid development. If you find that it doesn't load, clear your IndexedDB in dev tools -> application or use an incognito (in-private) window.
 
 Host locally/develop: 
 ---
@@ -26,3 +28,6 @@ Host locally/develop:
 2. Install Dependencies (npm install)
 3. Via SharePoint, Upload HostWebProxy.aspx from /public to https://[YourTenant]/Shared%20Documents/
 4. Start with npm start
+
+---
+It's a collaboration and monitoring tool for those who are responsible for maintaining your SharePoint site.
