@@ -7,9 +7,9 @@ Administrator-focused browser-based dashboard. Create personalized pages to disp
 	<img width="800" src="https://raw.githubusercontent.com/beyond-sharepoint/sp-lookout/master/sp-lookout.gif" alt="sp-lookout">
 </h1>
 
-- Create Pages that contain WebParts that surface content.
+- Create Pages that contain WebParts that form informational displays.
 - Use SPFiddle to write TypeScript code that lets you directly hit SP REST Services.
-- Join data surfaced by SPFiddle Scripts on Dashboard pages.
+- Join data provided by SPFiddle Scripts on Dashboard pages.
 
 
 [Interactive Demo](https://beyond-sharepoint.github.io/sp-lookout/#/)
