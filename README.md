@@ -8,7 +8,7 @@ Administrator-focused browser-based dashboard. Create personalized pages to disp
 </h1>
 
 - Create Pages that contain WebParts that form informational displays.
-- Use SPFiddle to write TypeScript code that lets you directly hit SP REST Services.
+- Use SPFiddle to write TypeScript code that lets you directly hit SP REST Services - and any REST services on the web.
 - Join data provided by SPFiddle Scripts on Dashboard pages.
 
 
