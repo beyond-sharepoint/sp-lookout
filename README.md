@@ -3,7 +3,11 @@ SP Lookout!
 
 Interactive administration tool to monitor and interact with SharePoint.
 
-[Demo](https://beyond-sharepoint.github.io/sp-lookout/#/)
+<h1 align="center">
+	<img width="800" src="https://raw.githubusercontent.com/beyond-sharepoint/sp-lookout/master/sp-lookout.gif" alt="sp-lookout">
+</h1>
+
+[Interactive Demo](https://beyond-sharepoint.github.io/sp-lookout/#/)
 
 >Note: The demo site changes frequently, if you find that it doesn't load, clear your IndexedDB in dev tools -> application
 
