@@ -1,7 +1,9 @@
 SP Lookout!
 ---
 
-Administrator-focused browser-based dashboard. Create personalized pages to display information stored in SharePoint and elsewhere. A central feature of SP Lookout! is the SPFiddle which allows an user to develop scripts, using typescript to surface and manipulate content contained in SharePoint via the REST services. Scripts can also be used to surface data within dashboard pages by providing the data to WebParts.
+Administrator-focused browser-based dashboard. Create personalized pages to manage and monitor information stored in SharePoint and elsewhere.
+
+A central feature of SP Lookout! is the SPFiddle which allows an user to develop scripts, using typescript to surface and manipulate content contained in SharePoint via the REST services. Scripts can also be used to surface data within dashboard pages by providing the data to WebParts.
 
 <h1 align="center">
 	<img width="800" src="https://raw.githubusercontent.com/beyond-sharepoint/sp-lookout/master/sp-lookout.gif" alt="sp-lookout">
@@ -29,5 +31,3 @@ Host locally/develop:
 3. Via SharePoint, Upload HostWebProxy.aspx from /public to https://[YourTenant]/Shared%20Documents/
 4. Start with npm start
 
----
-It's a collaboration and monitoring tool for those who are responsible for maintaining your SharePoint site.
