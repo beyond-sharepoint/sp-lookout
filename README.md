@@ -17,7 +17,7 @@ Administrator-focused browser-based dashboard. Create personalized pages to disp
 
 [Interactive Demo](https://beyond-sharepoint.github.io/sp-lookout/#/)
 
->Note: The demo site changes frequently, if you find that it doesn't load, clear your IndexedDB in dev tools -> application
+>Note: The demo site changes frequently, if you find that it doesn't load, clear your IndexedDB in dev tools -> application or use an incognito (in-private) window.
 
 Host locally/develop: 
 ---
