@@ -8,18 +8,19 @@ Administrator-focused browser-based dashboard. Create personalized pages to disp
 </h1>
 
 
-1. Provide Dashboard functionality to monitor SharePoint at a glance.
-2. Provide insight into SharePoint via Charts and Data Views
-3. Provide UI for common tasks that SP doesn't provide. (JSLink, etc)
-4. Provide fiddle to easily call SP REST services (and other REST endpoints) from the tool
-5. Surface data provided by fiddle scripts in Dashboards.
-6. Allow all of the above to be configurable (and shareable)
+- Provide Dashboard functionality to monitor SharePoint at a glance.
+- Provide insight into SharePoint via Charts and Data Views
+- Provide UI for common tasks that SP doesn't provide. (JSLink, etc)
+- Provide fiddle to easily call SP REST services (and other REST endpoints) from the tool
+- Surface data provided by fiddle scripts in Dashboards.
+- Allow all of the above to be configurable (and shareable)
 
 [Interactive Demo](https://beyond-sharepoint.github.io/sp-lookout/#/)
 
 >Note: The demo site changes frequently, if you find that it doesn't load, clear your IndexedDB in dev tools -> application
 
 Host locally/develop: 
+---
 
 1. Clone this repo
 2. Install Dependencies (npm install)
