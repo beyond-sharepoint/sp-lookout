@@ -38,9 +38,9 @@ Q) What server-side technologies does SP Lookout require?
 
 A) SP Lookout! is a browser only tool. It connects to other data sources via REST services but it itself can be hosted on any static web host such as GitHub Pages (see the demo) within SharePoint itself or other CDNs (WordPress, SiteCore, etc...)
 
-Q) Why is this not a SPFx or SharePoint Addin?
+Q) Why is this not a SPFx page or SharePoint Addin?
 
-A) The output of the build process is static HTML/JS, thus, it can be definately be pulled into a SPFx or SharePoint Addin. It could also be part of a UWP app, or packaged within Electron and offered on the Windows or Mac App Stores. It could also be pulled into a Phone Gap/Cordova and be a iOS/Android app. These options are left to the developer.
+A) The output of the build process is static HTML/JS, thus, it can be definately be pulled into a SPFx page or SharePoint Addin. It could also be part of a UWP app, or packaged within Electron and offered on the Windows or Mac App Stores. It could also be pulled into a Phone Gap/Cordova and be a iOS/Android app. These options are left to the developer.
 
 Q) How does SP Lookout! remember my changes?
 
