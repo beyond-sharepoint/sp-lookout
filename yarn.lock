@@ -197,9 +197,9 @@
   version "3.16.20-alpha"
   resolved "https://registry.yarnpkg.com/@types/z-schema/-/z-schema-3.16.20-alpha.tgz#36f588ccca27d8e86dd6bb595a973aede8803766"
 
-"@uifabric/styling@>=0.15.1 <1.0.0":
-  version "0.15.1"
-  resolved "https://registry.yarnpkg.com/@uifabric/styling/-/styling-0.15.1.tgz#6c7000a566b96bcd9b08388c67e0b1dc1ad3f126"
+"@uifabric/styling@>=0.15.2 <1.0.0":
+  version "0.15.2"
+  resolved "https://registry.yarnpkg.com/@uifabric/styling/-/styling-0.15.2.tgz#331a8ce89235511dce46ffa03bb8d9353449869b"
   dependencies:
     "@microsoft/load-themed-styles" "^1.2.2"
     "@uifabric/utilities" ">=4.8.0 <5.0.0"
@@ -4081,12 +4081,12 @@ obuf@^1.0.0, obuf@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/obuf/-/obuf-1.1.1.tgz#104124b6c602c6796881a042541d36db43a5264e"
 
-office-ui-fabric-react@^4.25.1:
-  version "4.25.1"
-  resolved "https://registry.yarnpkg.com/office-ui-fabric-react/-/office-ui-fabric-react-4.25.1.tgz#8d82f8883e3337c725720b71fadc7c905f01d183"
+office-ui-fabric-react@^4.26.0:
+  version "4.26.0"
+  resolved "https://registry.yarnpkg.com/office-ui-fabric-react/-/office-ui-fabric-react-4.26.0.tgz#12ae57722fff988c990b6ee7b9b1a82a934a954c"
   dependencies:
     "@microsoft/load-themed-styles" "^1.2.2"
-    "@uifabric/styling" ">=0.15.1 <1.0.0"
+    "@uifabric/styling" ">=0.15.2 <1.0.0"
     "@uifabric/utilities" ">=4.8.0 <5.0.0"
     prop-types "^15.5.10"
     tslib "^1.6.0"
