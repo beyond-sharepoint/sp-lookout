@@ -2,10 +2,12 @@ import * as React from 'react';
 import { matchPath } from 'react-router-dom';
 import { IObservable, action, observable } from 'mobx';
 import { observer } from 'mobx-react';
-import { Nav, INavLinkGroup, INavLink } from 'office-ui-fabric-react/lib/Nav';
-import { autobind } from 'office-ui-fabric-react/lib';
-import { IContextualMenuItem } from 'office-ui-fabric-react';
 import { find, defaultsDeep } from 'lodash';
+
+import { Nav, INavLinkGroup, INavLink } from 'office-ui-fabric-react/lib/Nav';
+import { IContextualMenuItem } from 'office-ui-fabric-react';
+import { autobind, css } from 'office-ui-fabric-react/lib/Utilities';
+
 import SplitPane from '../split-pane/SplitPane';
 import { FolderView, Folder, File } from '../folder-view';
 
@@ -68,10 +70,18 @@ export default class Aside extends React.Component<AsideProps, any> {
             alignItems: 'center'
         };
 
-        const pagesIconStyle: React.CSSProperties = {
+        const addPageIconStyle: React.CSSProperties = {
             padding: '0 5px',
             cursor: 'pointer'
         };
+
+        const addSubPageIconStyle: React.CSSProperties = {
+            ...addPageIconStyle
+        }
+
+        if (!this.props.selectedPageId) {
+            addSubPageIconStyle.color = 'grey';
+        }
 
         return (
             <SplitPane
@@ -93,10 +103,10 @@ export default class Aside extends React.Component<AsideProps, any> {
                             <span className="fa fa-th" aria-hidden="true" style={{ paddingRight: '3px' }} />
                             <span>Pages</span>
                             <div style={{ marginLeft: 'auto' }}>
-                                <span style={pagesIconStyle} onClick={this.onAddPage} title="Add Page">
+                                <span style={addPageIconStyle} onClick={this.onAddPage} title="Add Page">
                                     <i className="fa fa-plus-circle" aria-hidden="true" />
                                 </span>
-                                {/* <span style={pagesIconStyle} onClick={this.onAddSubPage} title="Add Sub Page">
+                                {/* <span style={addSubPageIconStyle} onClick={this.onAddSubPage} title="Add Sub Page">
                                     <i className="fa fa-level-down" aria-hidden="true" />
                                 </span> */}
                             </div>
@@ -106,15 +116,12 @@ export default class Aside extends React.Component<AsideProps, any> {
                         <Nav
                             className="aside"
                             groups={navGroups}
-                            expandedStateText={'expanded'}
-                            collapsedStateText={'collapsed'}
                             selectedKey={selectedPageId}
-                        //onRenderLink={this.renderNavLink} 
                         />
                     </div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                    {fiddlesStore.starred.length > 0 ?
+                    {fiddlesStore.starred.length > 0 &&
                         <div style={starredDivStyle}>
                             {fiddlesStore.starred.map((fiddleSettings, index) => {
                                 return (
@@ -127,7 +134,6 @@ export default class Aside extends React.Component<AsideProps, any> {
                             })
                             }
                         </div>
-                        : null
                     }
                     <FolderView
                         folder={fiddlesStore.fiddleRootFolder as Folder}
@@ -171,7 +177,7 @@ export default class Aside extends React.Component<AsideProps, any> {
     @action.bound
     private onAddPage() {
         const newPageSettings: PageSettings = new PageSettings('New Page');
-        
+
         this.props.pagesStore.pages.push(newPageSettings);
         PagesStore.saveToLocalStorage(this.props.pagesStore);
     }

@@ -101,28 +101,27 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
                 </Pane>
 
                 {
-                    children[1]
-                        ? <Resizer
-                            split={split}
-                            onMouseDown={this.handleMouseDown}
-                            onDoubleClick={(e) => onResizerDoubleClick ? onResizerDoubleClick(paneStyle, e, this) : undefined}
-                            ref={node => { if (node) { this.resizer = node; } }}
-                            allowResize={allowResize}
-                        />
-                        : null
+                    children[1] &&
+                    <Resizer
+                        split={split}
+                        onMouseDown={this.handleMouseDown}
+                        onDoubleClick={(e) => onResizerDoubleClick ? onResizerDoubleClick(paneStyle, e, this) : undefined}
+                        ref={node => { if (node) { this.resizer = node; } }}
+                        allowResize={allowResize}
+                    />
+
                 }
 
                 {
-                    children[1]
-                        ? <Pane
-                            className={secondaryPaneClassName || ''}
-                            split={split}
-                            style={paneStyle2}
-                            ref={node => { if (node) { this.paneSecondary = node; } }}
-                        >
-                            {children[1]}
-                        </Pane>
-                        : null
+                    children[1] &&
+                    <Pane
+                        className={secondaryPaneClassName || ''}
+                        split={split}
+                        style={paneStyle2}
+                        ref={node => { if (node) { this.paneSecondary = node; } }}
+                    >
+                        {children[1]}
+                    </Pane>
                 }
             </div>
         );
