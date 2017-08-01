@@ -171,6 +171,12 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
     protected renderWebPartSettingsFooter(props: IPanelProps): JSX.Element {
         return (
             <div>
+                <DefaultButton
+                    onClick={this.onDuplicateWebPart}
+                    style={{ 'marginRight': '8px' }}
+                >
+                    Duplicate
+                </DefaultButton>
                 <PrimaryButton
                     onClick={this.hideWebPartSettings}
                     style={{ 'marginRight': '8px' }}
@@ -221,6 +227,13 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
     private onDeleteWebPart() {
         if (typeof this.props.onDeleteWebPart === 'function') {
             this.props.onDeleteWebPart();
+        }
+    }
+
+    @autobind
+    private onDuplicateWebPart() {
+        if (typeof this.props.onDuplicateWebPart === 'function') {
+            this.props.onDuplicateWebPart(this.props.settings);
         }
     }
 
@@ -299,4 +312,5 @@ export interface BaseWebPartProps {
     webPartTypeNames: Array<{ key: string, text: string }>;
     onWebPartPropertiesChanged?: () => void;
     onDeleteWebPart?: () => void;
+    onDuplicateWebPart?: (settings: WebPartSettings) => void;
 }

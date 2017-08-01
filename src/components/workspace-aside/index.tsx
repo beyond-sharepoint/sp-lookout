@@ -77,7 +77,7 @@ export default class Aside extends React.Component<AsideProps, any> {
 
         const addSubPageIconStyle: React.CSSProperties = {
             ...addPageIconStyle
-        }
+        };
 
         if (!this.props.selectedPageId) {
             addSubPageIconStyle.color = 'grey';

@@ -136,7 +136,7 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
                     <Menu effect={'zoomin'} method={'hover'} position={'br'}>
                         <MainButton iconResting="ms-Icon ms-Icon--Add" iconActive="ms-Icon ms-Icon--Cancel" />
                         <ChildButton
-                            onClick={this.startAddWebPart}
+                            onClick={this.addWebPart}
                             icon="ms-Icon ms-Icon--Checkbox"
                             label="Add WebPart"
                         />
@@ -189,6 +189,7 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
             settings: webPartSettings,
             webPartTypeNames: WebPartTypeNames,
             onWebPartPropertiesChanged: () => { this.onWebPartPropertiesChanged(webPartSettings); },
+            onDuplicateWebPart: (webPartSettings) => { this.addWebPart(webPartSettings); },
             onDeleteWebPart: () => { this.onDeleteWebPart(webPartId); }
         };
 
@@ -211,11 +212,16 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
     }
 
     @action.bound
-    private startAddWebPart() {
+    private addWebPart(webPartSettings?: WebPartSettings) {
         const { currentPage } = this.props;
         const newWebPartId = Util.makeId(8);
+        if (!webPartSettings) {
+            webPartSettings = new WebPartSettings();
+        } else {
+            webPartSettings = observable(toJS(webPartSettings));
+        }
         extendObservable(currentPage.webParts, {
-            [newWebPartId]: new WebPartSettings()
+            [newWebPartId]: webPartSettings
         });
 
         ['lg', 'md', 'sm', 'xs', 'xxs'].forEach((breakpointName) => {
