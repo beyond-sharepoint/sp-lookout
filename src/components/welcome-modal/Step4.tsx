@@ -85,8 +85,9 @@ export class Step4 extends React.Component<Step4Props, Step4State> {
 
     @action.bound
     private async ensureSPContext() {
+        const sharepointBaseUrl = 'https://' + this.props.settingsStore.sharePointSettings.testTenantUrl;
+
         try {
-            const sharepointBaseUrl = 'https://' + this.props.settingsStore.sharePointSettings.testTenantUrl;
             const context = await SPContext.getContext(sharepointBaseUrl, this.props.settingsStore.sharePointSettings.spContextConfig);
             await context.ensureContext(false);
         } catch (ex) {
@@ -95,6 +96,8 @@ export class Step4 extends React.Component<Step4Props, Step4State> {
                 didSucceed: false,
                 error: ex.message
             });
+            
+            SPContext.removeContext(sharepointBaseUrl);
             return;
         }
 

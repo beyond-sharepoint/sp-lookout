@@ -5,6 +5,9 @@ import { observer } from 'mobx-react';
 import { Menu, MainButton, ChildButton } from 'react-mfb';
 import { unset } from 'lodash';
 
+import { Dialog, DialogType, DialogFooter } from 'office-ui-fabric-react/lib/Dialog';
+import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react/lib/Button';
+
 import { WebPartPageSettingsModal } from '../webpart-page-settings-modal';
 import { webPartTypes, BaseWebPartProps, asScriptedWebPart } from '../webpart';
 
@@ -30,6 +33,8 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
 
         this.state = {
             showPageSettingsModal: false,
+            showPageDeleteConfirmDialog: false,
+            pageId: '',
             gridLayout: this.mapWebPartLayoutToGridLayout(props.currentPage)
         };
     }
@@ -151,10 +156,28 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
                 <WebPartPageSettingsModal
                     showPageSettingsModal={this.state.showPageSettingsModal}
                     onDismiss={() => { this.setState({ showPageSettingsModal: false }); PagesStore.saveToLocalStorage(this.props.pagesStore); }}
-                    onDeletePage={(page) => { pagesStore.deletePage(page.id); PagesStore.saveToLocalStorage(this.props.pagesStore); }}
+                    onDeletePage={this.startDeletePage}
                     pagesStore={this.props.pagesStore}
                     currentPage={this.props.currentPage}
                 />
+                <Dialog
+                    hidden={!this.state.showPageDeleteConfirmDialog}
+                    onDismiss={() => this.closeDeleteConfirmDialog(false)}
+                    dialogContentProps={{
+                        type: DialogType.normal,
+                        title: 'Confirm Page Deletion',
+                        subText: 'Are you sure you wish to delete this page?'
+                    }}
+                    modalProps={{
+                        isBlocking: true,
+                        containerClassName: 'ms-dialogMainOverride'
+                    }}
+                >
+                    <DialogFooter>
+                        <PrimaryButton onClick={() => this.closeDeleteConfirmDialog(true)} text="Delete" />
+                        <DefaultButton onClick={() => this.closeDeleteConfirmDialog(false)} text="Cancel" />
+                    </DialogFooter>
+                </Dialog>
             </div>
         );
     }
@@ -240,6 +263,27 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
     }
 
     @action.bound
+    private startDeletePage(page: PageSettings) {
+        this.setState({
+            showPageDeleteConfirmDialog: true,
+            pageId: page.id
+        });
+    }
+
+    private closeDeleteConfirmDialog(shouldDelete: boolean) {
+        if (shouldDelete === true) {
+            this.props.pagesStore.deletePage(this.state.pageId);
+            PagesStore.saveToLocalStorage(this.props.pagesStore);
+            
+        }
+
+        this.setState({
+            showPageDeleteConfirmDialog: false,
+            pageId: ''
+        });
+    }
+
+    @action.bound
     private onLayoutChange(currentLayout: ReactGridLayout.Layout, allLayouts: ReactGridLayout.Layouts) {
 
         //Map of ReactGridLayout back to WebPartLayout 
@@ -274,6 +318,8 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
 
 export interface PageState {
     showPageSettingsModal: boolean;
+    showPageDeleteConfirmDialog: boolean;
+    pageId: string;
     gridLayout: ReactGridLayout.Layouts;
 }
 
