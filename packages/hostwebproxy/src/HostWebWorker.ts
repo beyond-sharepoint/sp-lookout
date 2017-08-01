@@ -173,7 +173,7 @@ class SandFiddleProcessor {
                         if ((<any>self).spLookoutInstance.isClass(value)) {
                             set(requireResult, path, value.name);
                         } else {
-                            set(requireResult, path, await Promise.resolve(value()));
+                            set(requireResult, path, 'function');
                         }
                     } catch (ex) {
                         set(requireResult, path, ex);
