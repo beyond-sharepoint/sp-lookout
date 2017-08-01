@@ -233,7 +233,7 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
     @autobind
     private onDuplicateWebPart() {
         if (typeof this.props.onDuplicateWebPart === 'function') {
-            this.props.onDuplicateWebPart(this.props.settings);
+            this.props.onDuplicateWebPart();
         }
     }
 
@@ -312,5 +312,5 @@ export interface BaseWebPartProps {
     webPartTypeNames: Array<{ key: string, text: string }>;
     onWebPartPropertiesChanged?: () => void;
     onDeleteWebPart?: () => void;
-    onDuplicateWebPart?: (settings: WebPartSettings) => void;
+    onDuplicateWebPart?: () => void;
 }

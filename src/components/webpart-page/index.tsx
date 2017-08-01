@@ -189,7 +189,7 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
             settings: webPartSettings,
             webPartTypeNames: WebPartTypeNames,
             onWebPartPropertiesChanged: () => { this.onWebPartPropertiesChanged(webPartSettings); },
-            onDuplicateWebPart: (webPartSettings) => { this.addWebPart(webPartSettings); },
+            onDuplicateWebPart: () => { this.addWebPart(webPartSettings); },
             onDeleteWebPart: () => { this.onDeleteWebPart(webPartId); }
         };
 
