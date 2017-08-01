@@ -4,9 +4,10 @@
   "description": "SharePoint Host Web Proxy",
   "private": true,
   "scripts": {
-    "build": "rimraf build && webpack -p --bail --progress --profile --config webpack.config.js && rimraf build/HostWebProxy.js && cpr build/HostWebProxy.aspx ../../public/HostWebProxy.aspx -o && cpr build/HostWebProxy.aspx ../../public/HostWebProxy.txt -o"
+    "build": "rimraf build && webpack -p --optimize-minimize --bail --progress --profile --config webpack.config.js && rimraf build/HostWebProxy.js && cpr build/HostWebProxy.aspx ../../public/HostWebProxy.aspx -o && cpr build/HostWebProxy.aspx ../../public/HostWebProxy.txt -o"
   },
   "dependencies": {
+    "lodash": "^4.17.4",
     "promise-polyfill": "^6.0.2",
     "ts-loader": "^2.3.2",
     "tslib": "^1.7.1",

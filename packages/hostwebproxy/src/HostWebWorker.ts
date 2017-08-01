@@ -1,4 +1,12 @@
 import * as tslib from 'tslib/tslib.js';
+const get = require('lodash/get.js');
+const set = require('lodash/set.js');
+const isArray = require('lodash/isArray.js');
+const isPlainObject = require('lodash/isPlainObject.js');
+const flatMap = require('lodash/flatMap.js');
+const map = require('lodash/map.js');
+const concat = require('lodash/concat.js');
+const keys = require('lodash/keys.js');
 
 class SPLookout {
     private context: any;
@@ -59,6 +67,31 @@ class SPLookout {
         }
 
         return arraybuffer;
+    }
+
+    isClass(obj) {
+        return typeof obj === 'function' && /^\s*class\s+/.test(obj.toString());
+    }
+
+    paths(obj, parentKey?) {
+        var result;
+        if (isArray(obj)) {
+            var idx = 0;
+            result = flatMap(obj, (obj) => {
+                return this.paths(obj, (parentKey || '') + '[' + idx++ + ']');
+            });
+        }
+        else if (isPlainObject(obj)) {
+            result = flatMap(keys(obj), (key) => {
+                return map(this.paths(obj[key], key), (subkey) => {
+                    return (parentKey ? parentKey + '.' : '') + subkey;
+                });
+            });
+        }
+        else {
+            result = [];
+        }
+        return concat(result, parentKey || []);
     }
 
     reportProgress(message, details) {
@@ -129,10 +162,24 @@ class SandFiddleProcessor {
 
             let requireResult = await requirePromise;
 
-            //Resolve any promises defined on exported properties of the module.
-            for (let key in requireResult) {
-                if (requireResult.hasOwnProperty(key)) {
-                    requireResult[key] = await Promise.resolve(requireResult[key]);
+            //So, to make it easier for the end user, and to avoid 'xxx could not be cloned' messages,
+            //let's go through and invoke functions and resolve any promises that we encounter.
+
+            const resultPaths = (<any>self).spLookoutInstance.paths(requireResult);
+            for (const path of resultPaths) {
+                const value = get(requireResult, path);
+                if (typeof value === 'function') {
+                    try {
+                        if ((<any>self).spLookoutInstance.isClass(value)) {
+                            set(requireResult, path, value.name);
+                        } else {
+                            set(requireResult, path, await Promise.resolve(value()));
+                        }
+                    } catch (ex) {
+                        set(requireResult, path, ex);
+                    }
+                } else {
+                    set(requireResult, path, await Promise.resolve(value));
                 }
             }
 

@@ -112,7 +112,9 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
         const spLookoutLib = monaco.languages.typescript.typescriptDefaults.addExtraLib(
             `declare module "sp-lookout" { 
                 export declare function arrayBufferToBase64(arrayBuffer: ArrayBuffer): string
-                export declar function base64ToArrayBuffer(base64: string): ArrayBuffer
+                export declare function base64ToArrayBuffer(base64: string): ArrayBuffer
+                export declare function isClass(obj: any): boolean
+                export declare function paths(obj: any): string
                 export declare function reportProgress(message: string, details?: any) :void
             }`,
             'node_modules/@types/sp-lookout/index.d.ts');
