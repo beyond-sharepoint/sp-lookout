@@ -23,6 +23,8 @@ Get started with SP Lookout! right now by visiting the [GitHub Pages hosted site
 
 >Note: The SP Lookout! is undergoing rapid development. If you find that it doesn't load, clear your IndexedDB in dev tools -> application or use an incognito (in-private) window.
 
+>Note: If deploying the HostWebProxy to the root site collection, personal site or a self-service created site, the Custom Script tenant setting must be enabled. For more information, see http://go.microsoft.com/fwlink/?LinkId=397546
+
 Host locally/develop: 
 ---
 
