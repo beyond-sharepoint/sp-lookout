@@ -34,7 +34,6 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
         this.state = {
             showPageSettingsModal: false,
             showPageDeleteConfirmDialog: false,
-            pageId: '',
             gridLayout: this.mapWebPartLayoutToGridLayout(props.currentPage)
         };
     }
@@ -263,23 +262,21 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
     }
 
     @action.bound
-    private startDeletePage(page: PageSettings) {
+    private startDeletePage() {
         this.setState({
-            showPageDeleteConfirmDialog: true,
-            pageId: page.id
+            showPageDeleteConfirmDialog: true
         });
     }
 
     private closeDeleteConfirmDialog(shouldDelete: boolean) {
         if (shouldDelete === true) {
-            this.props.pagesStore.deletePage(this.state.pageId);
+            this.props.pagesStore.deletePage(this.props.currentPage.id);
             PagesStore.saveToLocalStorage(this.props.pagesStore);
-            
+            this.props.onPageDeleted(this.props.currentPage.id);
         }
 
         this.setState({
-            showPageDeleteConfirmDialog: false,
-            pageId: ''
+            showPageDeleteConfirmDialog: false
         });
     }
 
@@ -319,7 +316,6 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
 export interface PageState {
     showPageSettingsModal: boolean;
     showPageDeleteConfirmDialog: boolean;
-    pageId: string;
     gridLayout: ReactGridLayout.Layouts;
 }
 
@@ -327,4 +323,5 @@ export interface PageProps {
     barista: Barista;
     pagesStore: PagesStore;
     currentPage: PageSettings;
+    onPageDeleted: (pageId: string) => void;
 }

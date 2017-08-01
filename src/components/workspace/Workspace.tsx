@@ -87,6 +87,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
                     barista={this._barista}
                     pagesStore={this.props.pagesStore}
                     currentPage={currentPage}
+                    onPageDeleted={this.onPageDeleted}
                 />
             );
         };
@@ -111,6 +112,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
                                 barista={this._barista}
                                 pagesStore={this.props.pagesStore}
                                 currentPage={currentPage}
+                                onPageDeleted={this.onPageDeleted}
                             />
                         );
                     }
@@ -351,6 +353,15 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
                 selectedPaths: undefined
             });
         }
+    }
+
+    @action.bound
+    private onPageDeleted(pageId: string) {
+        location.hash = '/pages/dashboard';
+        this.setState({
+            selectedPageId: 'dashboard',
+            selectedPaths: undefined
+        });
     }
 
     @action.bound
