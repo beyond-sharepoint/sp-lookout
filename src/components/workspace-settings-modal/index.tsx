@@ -2,6 +2,8 @@ import * as React from 'react';
 import { action } from 'mobx';
 import { observer } from 'mobx-react';
 import { get, set } from 'lodash';
+import * as URI from 'urijs';
+import * as FileSaver from 'file-saver';
 
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
@@ -46,6 +48,7 @@ export class WorkspaceSettingsModal extends React.Component<WorkspaceSettingsPro
                                 value={settingsStore.sharePointSettings.spContextConfig.proxyServerRelativeUrl}
                                 onChanged={this.updateHostWebProxyUrl}
                             />
+                            <DefaultButton text="Download Host Web Proxy" onClick={this.downloadHostWebProxy} />
                         </PivotItem>
                         <PivotItem linkText="Import/Export">
                             <DefaultButton text="Reset All Settings to Defaults" onClick={this.resetSettingsToDefaults} />
@@ -64,6 +67,25 @@ export class WorkspaceSettingsModal extends React.Component<WorkspaceSettingsPro
     @action.bound
     private updateHostWebProxyUrl(newValue: string) {
         this.props.settingsStore.sharePointSettings.spContextConfig.proxyServerRelativeUrl = newValue;
+    }
+
+    @action.bound
+    private async downloadHostWebProxy() {
+        const hostWebProxyUrl = require('file-loader@../../../public/HostWebProxy.txt');
+        const response = await fetch(hostWebProxyUrl);
+        const hostWebProxyData = await response.text();
+
+        const expression = `
+        window.hostWebProxyConfig = {
+                "responseOrigin": "*",
+                "trustedOriginAuthorities": [
+                    "${URI().origin()}"
+                ]
+            }`;
+
+        const trustedHostWebProxyData = hostWebProxyData.replace(/(\/\/ @\}-,--`--> Start HostWebProxyConfig)([\s\S]*)(\/\/ @\}-,--`--> End HostWebProxyConfig)/, `$1\n${expression}\n$3`);
+        const blob = new Blob([trustedHostWebProxyData], { type: 'text/plain;charset=utf-8' });
+        FileSaver.saveAs(blob, 'HostWebProxy.aspx');
     }
 
     @action.bound
