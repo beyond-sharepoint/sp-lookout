@@ -11,6 +11,7 @@ import { observer } from 'mobx-react';
 import * as localforage from 'localforage';
 import { autobind } from 'office-ui-fabric-react/lib';
 import { CommandBar } from 'office-ui-fabric-react/lib/CommandBar';
+import { IContextualMenuItem } from 'office-ui-fabric-react/lib/ContextualMenu';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { INavLink, INavLinkGroup } from 'office-ui-fabric-react/lib/Nav';
 import SplitPane from '../split-pane/SplitPane';
@@ -30,8 +31,8 @@ import './Workspace.css';
 
 @observer
 export default class Workspace extends React.Component<WorkspaceProps, WorkspaceState> {
-    private _appBarItems;
-    private _appBarFarItems;
+    private _appBarItems: Array<IContextualMenuItem>;
+    private _appBarFarItems: Array<IContextualMenuItem>;
     private _barista: Barista;
     private _routes: Array<any>;
 
@@ -51,10 +52,12 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
 
         this._appBarItems = [
             {
+                key: 'toggleSidebar',
                 icon: 'SidePanel',
                 onClick: this.toggleSidebar,
             },
             {
+                key: 'headerText',
                 name: 'SP Lookout!',
                 className: 'sp-lookout-nav',
                 href: './#/',
@@ -66,6 +69,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
 
         this._appBarFarItems = [
             {
+                key: 'settings',
                 icon: 'settings',
                 title: 'Settings',
                 onClick: this.showSettings,

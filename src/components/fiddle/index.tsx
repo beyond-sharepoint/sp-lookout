@@ -9,7 +9,7 @@ import * as URI from 'urijs';
 import * as FileSaver from 'file-saver';
 import { autobind } from 'office-ui-fabric-react/lib';
 import { CommandBar } from 'office-ui-fabric-react/lib/CommandBar';
-import { IContextualMenuItem } from 'office-ui-fabric-react';
+import { IContextualMenuItem } from 'office-ui-fabric-react/lib/ContextualMenu';
 import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
 import { ObjectInspector } from 'react-inspector';
 import SplitPane from '../split-pane/SplitPane';
@@ -24,8 +24,8 @@ import './index.css';
 @observer
 export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
     private editorOptions;
-    private commandBarItems: IContextualMenuItem[];
-    private commandBarFarItems;
+    private commandBarItems: Array<IContextualMenuItem>;
+    private commandBarFarItems: Array<IContextualMenuItem>;
     private _mousetrap: MousetrapInstance;
     private _extraLibs: Array<monaco.IDisposable>;
 
@@ -56,6 +56,7 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
 
         this.commandBarFarItems = [
             {
+                key: 'settings',
                 icon: 'settings',
                 title: 'Customize current fiddle settings.',
                 ariaLabel: 'Customize current fiddle settings.',
