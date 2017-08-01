@@ -28,6 +28,8 @@ for (const key of Object.keys(webPartTypes)) {
 
 @observer
 export default class WebPartPage extends React.Component<PageProps, PageState> {
+    private webPartInstances = {};
+
     public constructor(props: PageProps) {
         super(props);
 
@@ -184,11 +186,15 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
     private renderWebPart(webPartId: string, webPartSettings: WebPartSettings) {
         const { currentPage } = this.props;
 
+        if (this.webPartInstances[webPartId]) {
+            return this.webPartInstances[webPartId];
+        }
+
         const webPartProps: BaseWebPartProps = {
             locked: currentPage.locked,
             settings: webPartSettings,
             webPartTypeNames: WebPartTypeNames,
-            onWebPartPropertiesChanged: () => { this.onWebPartPropertiesChanged(webPartSettings); },
+            onWebPartPropertiesChanged: (volatile) => { this.onWebPartPropertiesChanged(webPartId, webPartSettings, volatile); },
             onDuplicateWebPart: () => { this.addWebPart(webPartSettings); },
             onDeleteWebPart: () => { this.onDeleteWebPart(webPartId); }
         };
@@ -201,10 +207,10 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
         let WebPart = webPartDef.type;
 
         if (webPartSettings.attributes && webPartSettings.attributes.indexOf('useScript') > -1) {
-            WebPart = asScriptedWebPart(this.props.barista, WebPart);
+            WebPart = observer(asScriptedWebPart(this.props.barista, WebPart));
         }
 
-        return (
+        return this.webPartInstances[webPartId] = (
             <WebPart
                 {...webPartProps}
             />
@@ -245,6 +251,7 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
             return;
         }
 
+        unset(this.webPartInstances, webPartId);
         unset(currentPage.webParts, webPartId);
         for (const size of Object.keys(currentPage.layouts)) {
             unset(currentPage.layouts[size], webPartId);
@@ -311,7 +318,11 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
     }
 
     @action.bound
-    private onWebPartPropertiesChanged(settings: WebPartSettings) {
+    private onWebPartPropertiesChanged(webPartId: string, settings: WebPartSettings, volatile?: boolean) {
+        if (volatile === true) {
+            unset(this.webPartInstances, webPartId);
+        }
+        
         PagesStore.saveToLocalStorage(this.props.pagesStore);
         this.setState({
             gridLayout: this.mapWebPartLayoutToGridLayout(this.props.currentPage)

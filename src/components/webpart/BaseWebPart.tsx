@@ -253,7 +253,7 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
     private onWebPartTypeChanged(dropDownOption: IDropdownOption) {
         (this.props.settings.type as any) = dropDownOption.key;
         this.initializeWebPartProperties(this.props);
-        this.onWebPartPropertiesChanged();
+        this.onWebPartPropertiesChanged(true);
     }
 
     @autobind
@@ -265,7 +265,7 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
             pull(this.props.settings.attributes, 'useScript');
         }
 
-        this.onWebPartPropertiesChanged();
+        this.onWebPartPropertiesChanged(true);
     }
 
     @autobind
@@ -277,7 +277,7 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
             pull(this.props.settings.attributes, 'autoRefresh');
         }
 
-        this.onWebPartPropertiesChanged();
+        this.onWebPartPropertiesChanged(true);
     }
 
     @autobind
@@ -294,9 +294,9 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
     }
 
     @autobind
-    protected onWebPartPropertiesChanged() {
+    protected onWebPartPropertiesChanged(volatile?: boolean) {
         if (typeof this.props.onWebPartPropertiesChanged === 'function') {
-            this.props.onWebPartPropertiesChanged();
+            this.props.onWebPartPropertiesChanged(volatile);
         }
     }
 }
@@ -310,7 +310,7 @@ export interface BaseWebPartProps {
     disableChrome?: boolean;
     settings: WebPartSettings;
     webPartTypeNames: Array<{ key: string, text: string }>;
-    onWebPartPropertiesChanged?: () => void;
+    onWebPartPropertiesChanged?: (volatile?: boolean) => void;
     onDeleteWebPart?: () => void;
     onDuplicateWebPart?: () => void;
 }

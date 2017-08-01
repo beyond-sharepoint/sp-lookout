@@ -15,9 +15,8 @@ import Barista from '../../services/barista/';
 
 import { get, assign } from 'lodash';
 
-export function asScriptedWebPart<P extends object, S extends BaseWebPartState, WP extends BaseWebPart<P, S>>(barista: Barista, webPart: WP) {
+const asScriptedWebPart = function <P extends object, S extends BaseWebPartState, WP extends BaseWebPart<P, S>>(barista: Barista, webPart: WP) {
     return class ScriptedWebPart extends BaseWebPart<ScriptedWebPartProps, ScriptedWebPartState> {
-        private _innerWebPart;
         private _disposed = false;
 
         public constructor(props: ScriptedWebPartProps) {
@@ -47,56 +46,62 @@ export function asScriptedWebPart<P extends object, S extends BaseWebPartState, 
             });
         }
 
-        componentDidMount() {
+        private async performBaristaCall() {
             this.setState({
                 isLoading: true
             });
 
-            if (barista) {
-                barista.brew(
+            if (!barista) {
+                this.setState({
+                    isLoading: false,
+                    lastResultWasError: true,
+                    lastResult: 'Could not establish connection with SharePoint. Ensure that a tenant url has been specified.'
+                });
+
+                return;
+            }
+
+            try {
+                const result = await barista.brew(
                     {
                         fullPath: this.webPartProps.scriptPath,
                         allowDebuggerStatement: false,
                         timeout: this.webPartProps.scriptTimeout
                     },
                     this.reportProgress
-                )
-                    .then(
-                    (result) => {
-                        if (this._disposed) {
-                            return;
-                        }
-                        const propsToApply = get(result.data, this.webPartProps.resultPropertyPath);
-                        assign(this.webPartProps, propsToApply);
-                        this.setState({
-                            lastResultWasError: false,
-                            lastResult: result.data
-                        });
-                    })
-                    .catch(err => {
-                        if (this._disposed) {
-                            return;
-                        }
-                        this.setState({
-                            lastResultWasError: true,
-                            lastResult: err.message
-                        });
-                    })
-                    .then(() => {
-                        if (this._disposed) {
-                            return;
-                        }
-                        this.setState({
-                            isLoading: false
-                        });
-                    });
-            } else {
+                );
+
+                if (this._disposed) {
+                    return;
+                }
+
+                const propsToApply = get(result.data, this.webPartProps.resultPropertyPath);
+                assign(this.webPartProps, propsToApply);
                 this.setState({
-                    isLoading: false,
+                    lastResultWasError: false,
+                    lastResult: result.data
+                });
+
+            } catch (ex) {
+                if (this._disposed) {
+                    return;
+                }
+                this.setState({
                     lastResultWasError: true,
-                    lastResult: 'Could not establish connection with SharePoint. Ensure that a tenant url has been specified.'
+                    lastResult: ex.message
+                });
+            } finally {
+                if (this._disposed) {
+                    return;
+                }
+                this.setState({
+                    isLoading: false
                 });
             }
+        }
+
+        componentDidMount() {
+            this.performBaristaCall();
         }
 
         componentWillUnmount() {
@@ -196,17 +201,17 @@ export function asScriptedWebPart<P extends object, S extends BaseWebPartState, 
 
         private onScriptPathChanged(newValue: IComboBoxOption) {
             this.webPartProps.scriptPath = newValue.key as string;
-            super.onWebPartPropertiesChanged();
+            this.onWebPartPropertiesChanged(true);
         }
 
         private onResultPropertyPathChanged(newValue: string) {
             this.webPartProps.resultPropertyPath = newValue;
-            super.onWebPartPropertiesChanged();
+            this.onWebPartPropertiesChanged(true);
         }
 
         private onScriptTimeoutChanged(newValue: string) {
             this.webPartProps.scriptTimeout = parseInt(newValue, 10);
-            super.onWebPartPropertiesChanged();
+            this.onWebPartPropertiesChanged(true);
         }
     };
 
@@ -222,4 +227,6 @@ export function asScriptedWebPart<P extends object, S extends BaseWebPartState, 
         resultPropertyPath: string;
         scriptTimeout: number;
     }
-}
+};
+
+export { asScriptedWebPart };
