@@ -27,7 +27,7 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
     private commandBarItems: Array<IContextualMenuItem>;
     private commandBarFarItems: Array<IContextualMenuItem>;
     private _mousetrap: MousetrapInstance;
-    private _extraLibs: Array<monaco.IDisposable>;
+    private _extraLibs: { [libName: string]: monaco.IDisposable };
 
     public constructor(props: FiddleProps) {
         super(props);
@@ -75,8 +75,8 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
         };
 
         //Ensure that the fiddle store isn't updated more than once every second.
-        this.persistFiddleStoreToLocalStorage = debounce(this.persistFiddleStoreToLocalStorage, 1000)
-            .bind(this);
+        this.persistFiddleStoreToLocalStorage = debounce(this.persistFiddleStoreToLocalStorage, 1000).bind(this);
+        this.ensureImportedLibs = debounce(this.ensureImportedLibs, 1000).bind(this);
     }
 
     private async loadTypescriptDefinitions() {
@@ -96,16 +96,18 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
             'sp-pnp-js': require('file-loader!./types/sp-pnp-js.d.html'),
         };
 
-        this._extraLibs = [];
+        this._extraLibs = {};
 
         for (let name of Object.keys(typeDefs)) {
             const fileResponse = await fetch(typeDefs[name]);
             const fileContents = await fileResponse.text();
+            const libName = `node_modules/@types/${name}/index.d.ts`;
             const lib = monaco.languages.typescript.typescriptDefaults.addExtraLib(
                 fileContents,
-                `node_modules/@types/${name}/index.d.ts`);
+                libName
+            );
 
-            this._extraLibs.push(lib);
+            this._extraLibs[libName] = lib;
         }
 
         // define sp-lookout
@@ -119,7 +121,13 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
             }`,
             'node_modules/@types/sp-lookout/index.d.ts');
 
-        this._extraLibs.push(spLookoutLib);
+        //We can get the current typescript worker using the following... 
+        //  const worker = await monaco.languages.typescript.getTypeScriptWorker();
+        //  const client = await worker(this.props.currentFiddleFullPath);
+        //  const result = await client.getEmitOutput(this.props.currentFiddleFullPath);
+        this._extraLibs['node_modules/@types/sp-lookout/index.d.ts'] = spLookoutLib;
+
+        this.ensureImportedLibs();
     }
 
     @autobind
@@ -157,7 +165,8 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
 
     @autobind
     private editorWillDispose(editor: monaco.editor.ICodeEditor) {
-        for (let lib of this._extraLibs) {
+        for (let libName of Object.keys(this._extraLibs)) {
+            const lib = this._extraLibs[libName];
             lib.dispose();
         }
     }
@@ -252,6 +261,7 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
     }
 
     public componentDidMount() {
+
         const thisElement = ReactDOM.findDOMNode(this);
         this._mousetrap = new Mousetrap(
             thisElement
@@ -264,6 +274,12 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
         this._mousetrap.bind(['ctrl+shift+return', 'f5'], () => {
             this.debug();
         });
+    }
+
+    public componentWillReceiveProps(nextProps: FiddleProps) {
+        if (this.props.currentFiddleFullPath !== nextProps.currentFiddleFullPath) {
+            this.ensureImportedLibs();
+        }
     }
 
     public render() {
@@ -325,7 +341,7 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
                                 value={code}
                                 theme={theme}
                                 language={language}
-                                filename={currentFiddle.name}
+                                filename={this.props.currentFiddleFullPath}
                                 onChange={this.updateCode}
                                 editorWillMount={this.editorWillMount}
                                 editorWillDispose={this.editorWillDispose}
@@ -358,9 +374,30 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
         return this.brew(true, 0);
     }
 
+    private ensureImportedLibs() {
+        if (this.props.barista) {
+            const imports = this.props.barista.getImports(this.props.currentFiddleFullPath, this.props.currentFiddle);
+            for (const importPath of Object.keys(imports)) {
+                if (this._extraLibs[importPath]) {
+                    this._extraLibs[importPath].dispose();
+                    delete this._extraLibs[importPath];
+                }
+
+                const lib = monaco.languages.typescript.typescriptDefaults.addExtraLib(
+                    imports[importPath].code,
+                    importPath
+                );
+
+                this._extraLibs[importPath] = lib;
+            }
+        }
+    }
+
     @action.bound
     private updateCode(code: string) {
-        this.props.currentFiddle.code = code;
+        const { currentFiddle, currentFiddleFullPath } = this.props;
+
+        currentFiddle.code = code;
         this.persistFiddleStoreToLocalStorage();
     }
 

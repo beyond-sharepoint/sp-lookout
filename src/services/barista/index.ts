@@ -44,6 +44,27 @@ export default class Barista {
         return this._spContextConfig;
     }
 
+    public getImports(fullPath: string, targetFiddleSettings: FiddleSettings): { [fileName: string]: FiddleSettings } {
+        const result = ts.preProcessFile(targetFiddleSettings.code, true, true);
+
+        const importFiles = {};
+        for (const importedFile of result.importedFiles) {
+            let dependencyAbsolutePath = decodeURI(URI(importedFile.fileName).absoluteTo(fullPath).pathname());
+            let dependentFiddleSettings = this._fiddlesStore.getFiddleSettingsByPath(dependencyAbsolutePath);
+
+            if (!dependentFiddleSettings) {
+                dependencyAbsolutePath = decodeURI(URI(importedFile.fileName + '.ts').absoluteTo(fullPath).pathname());
+                dependentFiddleSettings = this._fiddlesStore.getFiddleSettingsByPath(dependencyAbsolutePath);
+            }
+
+            if (dependentFiddleSettings) {
+                importFiles[dependencyAbsolutePath] = dependentFiddleSettings;
+            }
+        }
+
+        return importFiles;
+    }
+
     /**
      * Transpiles the specified typescript code and returns a map of define statements.
      */
@@ -75,8 +96,8 @@ export default class Barista {
                 this.tamp(dependencyAbsolutePath, dependentFiddleSettings, allowDebuggerStatement, defines);
             }
         }
-        
-        for(const definePath of Object.keys(defines)) {
+
+        for (const definePath of Object.keys(defines)) {
             let path = definePath.replace(/\.tsx?$/, '');
             path = path.replace(/\'/g, '\\\'');
             defines[definePath] = defines[definePath].replace(/^define\(\[/, `define('${path}',[`);
@@ -101,7 +122,7 @@ export default class Barista {
 
         //Tamp, Transpile the main module and resulting dependencies.
         const defines = this.tamp(fullPath, targetFiddleSettings, allowDebuggerStatement || false);
-        
+
         //Brew
         try {
             return await spContext.brew(
