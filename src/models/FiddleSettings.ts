@@ -7,6 +7,8 @@ export interface FiddleSettings {
     locked: boolean;
     starred: boolean;
     code: string;
+    cursorLineNumber: number;
+    cursorColumn: number;
     theme: string;
     lastResult: any;
     editorOptions: monaco.editor.IEditorOptions;
@@ -48,6 +50,8 @@ export const defaultFiddleSettings: FiddleSettings = {
     locked: false,
     starred: false,
     code: 'const foo = "Hello, world!";\nexport default foo;',
+    cursorLineNumber: 1,
+    cursorColumn: 1,
     lastResult: null,
     theme: 'vs',
     editorOptions: defaultEditorOptions,

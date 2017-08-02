@@ -23,6 +23,7 @@ import './index.css';
 
 @observer
 export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
+    private editor: monaco.editor.ICodeEditor | undefined;
     private editorOptions;
     private commandBarItems: Array<IContextualMenuItem>;
     private commandBarFarItems: Array<IContextualMenuItem>;
@@ -131,7 +132,7 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
     }
 
     @autobind
-    private async editorWillMount() {
+    private editorWillMount() {
 
         monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
             target: monaco.languages.typescript.ScriptTarget.ES2016,
@@ -164,11 +165,19 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
     }
 
     @autobind
+    private editorDidMount(editor: monaco.editor.ICodeEditor) {
+        this.editor = editor;
+        this.ensureEditorFocus(this.props);
+    }
+
+    @autobind
     private editorWillDispose(editor: monaco.editor.ICodeEditor) {
         for (let libName of Object.keys(this._extraLibs)) {
             const lib = this._extraLibs[libName];
             lib.dispose();
         }
+
+        this.editor = undefined;
     }
 
     @autobind
@@ -264,6 +273,7 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
     public componentWillReceiveProps(nextProps: FiddleProps) {
         if (this.props.currentFiddleFullPath !== nextProps.currentFiddleFullPath) {
             this.ensureImportedLibs(nextProps);
+            this.ensureEditorFocus(nextProps);
         }
     }
 
@@ -328,7 +338,9 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
                                 language={language}
                                 filename={this.props.currentFiddleFullPath}
                                 onChange={this.updateCode}
+                                onCursorPositionChange={this.onCursorPositionChange}
                                 editorWillMount={this.editorWillMount}
+                                editorDidMount={this.editorDidMount}
                                 editorWillDispose={this.editorWillDispose}
                                 options={editorOptionsJS}
                             />
@@ -380,11 +392,37 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
         }
     }
 
+    private ensureEditorFocus(props: FiddleProps) {
+        setTimeout(() => {
+            if (!this.editor) {
+                return;
+            }
+            this.editor.focus();
+            this.editor.revealLineInCenter(props.currentFiddle.cursorLineNumber);
+            this.editor.setPosition({
+                column: props.currentFiddle.cursorColumn,
+                lineNumber: props.currentFiddle.cursorLineNumber
+            });
+        }, 0);
+    }
+
     @action.bound
     private updateCode(code: string) {
         const { currentFiddle, currentFiddleFullPath } = this.props;
 
         currentFiddle.code = code;
+        this.persistFiddleStoreToLocalStorage();
+    }
+
+    @action.bound
+    private onCursorPositionChange(e: monaco.editor.ICursorPositionChangedEvent) {
+        if (e.reason !== monaco.editor.CursorChangeReason.NotSet && e.reason !== monaco.editor.CursorChangeReason.Explicit) {
+            return;
+        }
+        console.log("position changed." + e.reason + " " + e.position.column + " " + e.position.lineNumber);
+        const { currentFiddle } = this.props;
+        currentFiddle.cursorColumn = e.position.column;
+        currentFiddle.cursorLineNumber = e.position.lineNumber;
         this.persistFiddleStoreToLocalStorage();
     }
 

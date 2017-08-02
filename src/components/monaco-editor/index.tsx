@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { defaultsDeep, isEqual } from 'lodash';
+import { autobind } from 'office-ui-fabric-react/lib';
 
 export default class MonacoEditor extends React.Component<MonacoEditorProps, {}> {
     public static defaultProps: Partial<MonacoEditorProps> = {
@@ -68,6 +69,22 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps, {}>
 
         if (this.props.options && !isEqual(prevProps.options, this.props.options)) {
             this.editor.updateOptions(this.props.options);
+        }
+    }
+
+    @autobind
+    private onDidScrollChange(e: monaco.IScrollEvent) {
+        const { onScrollChange } = this.props;
+        if (typeof onScrollChange === 'function') {
+            onScrollChange(e);
+        }
+    }
+
+    @autobind
+    private onDidChangeCursorPosition(e: monaco.editor.ICursorPositionChangedEvent) {
+        const { onCursorPositionChange } = this.props;
+        if (typeof onCursorPositionChange === 'function') {
+            onCursorPositionChange(e);
         }
     }
 
@@ -185,6 +202,10 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps, {}>
 
         // After initializing monaco editor
         this.editorDidMount(this.editor, context.monaco);
+
+        // Wire up events.
+        this.editor.onDidScrollChange(this.onDidScrollChange);
+        this.editor.onDidChangeCursorPosition(this.onDidChangeCursorPosition);
     }
 
     private destroyMonaco() {
@@ -235,5 +256,7 @@ export interface MonacoEditorProps {
     editorWillMount?: Function;
     editorWillDispose?: Function;
     onChange?: Function;
+    onCursorPositionChange?: (e: monaco.editor.ICursorPositionChangedEvent) => void;
+    onScrollChange?: (e: monaco.IScrollEvent) => void;
     requireConfig?: any;
 }
