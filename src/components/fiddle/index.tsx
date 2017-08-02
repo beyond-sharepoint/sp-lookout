@@ -14,7 +14,7 @@ import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
 import { ObjectInspector } from 'react-inspector';
 import SplitPane from '../split-pane/SplitPane';
 import MonacoEditor from '../monaco-editor';
-import { get, set, cloneDeep, defaultsDeep, debounce } from 'lodash';
+import { get, set, cloneDeep, defaultsDeep, debounce, throttle } from 'lodash';
 import { FiddleSettingsModal } from '../fiddle-settings-modal';
 
 import Barista, { BrewSettings } from '../../services/barista';
@@ -76,7 +76,7 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
 
         //Ensure that the fiddle store isn't updated more than once every second.
         this.persistFiddleStoreToLocalStorage = debounce(this.persistFiddleStoreToLocalStorage, 1000).bind(this);
-        this.ensureImportedLibs = debounce(this.ensureImportedLibs, 1000).bind(this);
+        this.ensureImportedLibs = throttle(this.ensureImportedLibs, 1000).bind(this);
     }
 
     private async loadTypescriptDefinitions() {
@@ -127,7 +127,7 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
         //  const result = await client.getEmitOutput(this.props.currentFiddleFullPath);
         this._extraLibs['node_modules/@types/sp-lookout/index.d.ts'] = spLookoutLib;
 
-        this.ensureImportedLibs();
+        this.ensureImportedLibs(this.props);
     }
 
     @autobind
@@ -169,21 +169,6 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
             const lib = this._extraLibs[libName];
             lib.dispose();
         }
-    }
-
-    private reloadEditor() {
-        this.setState({
-            showEditor: false
-        });
-
-        setTimeout(
-            () => {
-                this.setState({
-                    showEditor: true
-                });
-            },
-            1000
-        );
     }
 
     @autobind
@@ -278,7 +263,7 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
 
     public componentWillReceiveProps(nextProps: FiddleProps) {
         if (this.props.currentFiddleFullPath !== nextProps.currentFiddleFullPath) {
-            this.ensureImportedLibs();
+            this.ensureImportedLibs(nextProps);
         }
     }
 
@@ -336,7 +321,7 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
                         farItems={this.commandBarFarItems}
                     />
                     <div style={{ flex: '1', display: 'flex' }}>
-                        {showEditor ?
+                        {showEditor &&
                             <MonacoEditor
                                 value={code}
                                 theme={theme}
@@ -347,7 +332,6 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
                                 editorWillDispose={this.editorWillDispose}
                                 options={editorOptionsJS}
                             />
-                            : null
                         }
                         <FiddleSettingsModal
                             showFiddleSettingsModal={this.state.showFiddleSettingsModal}
@@ -358,12 +342,12 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
                     </div>
                 </div>
                 <div className="fiddle-results" style={{ backgroundColor: theme.endsWith('dark') ? 'black' : null }}>
-                    {isBrewing ?
+                    {isBrewing &&
                         <Spinner size={SpinnerSize.large} label={brewingLabel} ariaLive="assertive" />
-                        : null}
-                    {!isBrewing ?
+                    }
+                    {!isBrewing &&
                         <ObjectInspector data={lastBrewResult} expandLevel={2} showNonenumerable={false} theme={theme.endsWith('dark') ? 'chromeDark' : 'chromeLight'} />
-                        : null}
+                    }
                 </div>
             </SplitPane>
         );
@@ -374,22 +358,25 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
         return this.brew(true, 0);
     }
 
-    private ensureImportedLibs() {
-        if (this.props.barista) {
-            const imports = this.props.barista.getImports(this.props.currentFiddleFullPath, this.props.currentFiddle);
-            for (const importPath of Object.keys(imports)) {
-                if (this._extraLibs[importPath]) {
-                    this._extraLibs[importPath].dispose();
-                    delete this._extraLibs[importPath];
-                }
+    private ensureImportedLibs(props: FiddleProps) {
+        if (!props.barista) {
+            return;
+        }
 
-                const lib = monaco.languages.typescript.typescriptDefaults.addExtraLib(
-                    imports[importPath].code,
-                    importPath
-                );
+        const imports = props.barista.getImports(props.currentFiddleFullPath, props.currentFiddle);
 
-                this._extraLibs[importPath] = lib;
+        for (const importPath of Object.keys(imports)) {
+            if (this._extraLibs[importPath]) {
+                this._extraLibs[importPath].dispose();
+                delete this._extraLibs[importPath];
             }
+
+            const lib = monaco.languages.typescript.typescriptDefaults.addExtraLib(
+                toJS(imports[importPath].code),
+                importPath
+            );
+
+            this._extraLibs[importPath] = lib;
         }
     }
 

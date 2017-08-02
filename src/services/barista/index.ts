@@ -44,11 +44,15 @@ export default class Barista {
         return this._spContextConfig;
     }
 
-    public getImports(fullPath: string, targetFiddleSettings: FiddleSettings): { [fileName: string]: FiddleSettings } {
-        const result = ts.preProcessFile(targetFiddleSettings.code, true, true);
+    public getImports(fullPath: string, fiddleSettings: FiddleSettings, imports?: { [path: string]: FiddleSettings }): { [path: string]: FiddleSettings } {
 
-        const importFiles = {};
-        for (const importedFile of result.importedFiles) {
+        if (!imports) {
+            imports = {};
+        }
+
+        const preProcessResult = ts.preProcessFile(fiddleSettings.code, true, true);
+        
+        for (const importedFile of preProcessResult.importedFiles) {
             let dependencyAbsolutePath = decodeURI(URI(importedFile.fileName).absoluteTo(fullPath).pathname());
             let dependentFiddleSettings = this._fiddlesStore.getFiddleSettingsByPath(dependencyAbsolutePath);
 
@@ -58,11 +62,14 @@ export default class Barista {
             }
 
             if (dependentFiddleSettings) {
-                importFiles[dependencyAbsolutePath] = dependentFiddleSettings;
+                if (!imports[dependencyAbsolutePath]) {
+                    imports[dependencyAbsolutePath] = dependentFiddleSettings;
+                    this.getImports(dependencyAbsolutePath, dependentFiddleSettings, imports);
+                }
             }
         }
 
-        return importFiles;
+        return imports;
     }
 
     /**
