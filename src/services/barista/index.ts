@@ -62,8 +62,14 @@ export default class Barista {
         //Transpile dependencies
         const relativeImports: Array<string> = (<any>transpileResult).relativeImports;
         for (const relativePath of relativeImports) {
-            const dependencyAbsolutePath = decodeURI(URI(relativePath).absoluteTo(fullPath).pathname());
-            const dependentFiddleSettings = this._fiddlesStore.getFiddleSettingsByPath(dependencyAbsolutePath);
+            let dependencyAbsolutePath = decodeURI(URI(relativePath).absoluteTo(fullPath).pathname());
+            let dependentFiddleSettings = this._fiddlesStore.getFiddleSettingsByPath(dependencyAbsolutePath);
+
+            //Check for .ts files too.
+            if (!dependentFiddleSettings) {
+                dependencyAbsolutePath = decodeURI(URI(relativePath + '.ts').absoluteTo(fullPath).pathname());
+                dependentFiddleSettings = this._fiddlesStore.getFiddleSettingsByPath(dependencyAbsolutePath);
+            }
 
             if (dependentFiddleSettings) {
                 this.tamp(dependencyAbsolutePath, dependentFiddleSettings, allowDebuggerStatement, defines);
@@ -71,8 +77,9 @@ export default class Barista {
         }
         
         for(const definePath of Object.keys(defines)) {
-            const escapedPath = definePath.replace(/\'/g, '\\\'');
-            defines[definePath] = defines[definePath].replace(/^define\(\[/, `define('${escapedPath}',[`);
+            let path = definePath.replace(/\.tsx?$/, '');
+            path = path.replace(/\'/g, '\\\'');
+            defines[definePath] = defines[definePath].replace(/^define\(\[/, `define('${path}',[`);
         }
 
         return defines;
@@ -94,14 +101,14 @@ export default class Barista {
 
         //Tamp, Transpile the main module and resulting dependencies.
         const defines = this.tamp(fullPath, targetFiddleSettings, allowDebuggerStatement || false);
-
+        
         //Brew
         try {
             return await spContext.brew(
                 {
                     requireConfig: targetFiddleSettings.requireConfig,
                     defines: defines,
-                    entryPointId: fullPath,
+                    entryPointId: fullPath.replace(/\.tsx?$/, ''),
                     timeout
                 },
                 timeout,
