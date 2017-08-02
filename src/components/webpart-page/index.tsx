@@ -3,28 +3,20 @@ import * as ReactGridLayout from 'react-grid-layout';
 import { action, extendObservable, computed, observable, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import { Menu, MainButton, ChildButton } from 'react-mfb';
-import { unset } from 'lodash';
+import { unset, find } from 'lodash';
 
 import { Dialog, DialogType, DialogFooter } from 'office-ui-fabric-react/lib/Dialog';
 import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react/lib/Button';
 
 import { WebPartPageSettingsModal } from '../webpart-page-settings-modal';
-import { webPartTypes, BaseWebPartProps, asScriptedWebPart } from '../webpart';
+import { BaseWebPartProps, asScriptedWebPart, webPartTypeOptions } from '../webpart';
 
-import { PagesStore, PageSettings, ResponsivePageLayouts, WebPartLayout, WebPartSettings, WebPartType, Util } from '../../models';
+import { PagesStore, PageSettings, ResponsivePageLayouts, WebPartLayout, WebPartSettings, Util } from '../../models';
 import Barista from '../../services/barista';
 
 import './index.css';
 
 const ResponsiveLayout = ReactGridLayout.WidthProvider(ReactGridLayout.Responsive);
-
-const WebPartTypeNames: Array<{ key: string, text: string }> = [];
-for (const key of Object.keys(webPartTypes)) {
-    WebPartTypeNames.push({
-        key: key,
-        text: webPartTypes[key].name
-    });
-}
 
 @observer
 export default class WebPartPage extends React.Component<PageProps, PageState> {
@@ -184,30 +176,31 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
     }
 
     private renderWebPart(webPartId: string, webPartSettings: WebPartSettings) {
-        const { currentPage } = this.props;
+        const { currentPage, barista } = this.props;
 
         if (this.webPartInstances[webPartId]) {
             return this.webPartInstances[webPartId];
         }
 
         const webPartProps: BaseWebPartProps = {
+            barista: barista,
             locked: currentPage.locked,
             settings: webPartSettings,
-            webPartTypeNames: WebPartTypeNames,
+            webPartTypeOptions: webPartTypeOptions,
             onWebPartPropertiesChanged: (volatile) => { this.onWebPartPropertiesChanged(webPartId, webPartSettings, volatile); },
             onDuplicateWebPart: () => { this.addWebPart(webPartSettings); },
             onDeleteWebPart: () => { this.onDeleteWebPart(webPartId); }
         };
 
-        const webPartDef = webPartTypes[webPartSettings.type];
+        const webPartDef = find(webPartTypeOptions, { key: webPartSettings.type });
         if (!webPartDef) {
             throw Error(`A WebPart did not correspond to the specified type: ${webPartSettings.type}. Please check the web part mapping.`);
         }
 
-        let WebPart = webPartDef.type;
+        let WebPart = webPartDef.data;
 
         if (webPartSettings.attributes && webPartSettings.attributes.indexOf('useScript') > -1) {
-            WebPart = observer(asScriptedWebPart(this.props.barista, WebPart));
+            WebPart = observer(asScriptedWebPart(barista, WebPart));
         }
 
         return this.webPartInstances[webPartId] = (
@@ -303,7 +296,7 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
 
             for (let position of currentBreakpointLayout) {
                 const webPart = this.props.currentPage.webParts[position.i];
-                const currentWebPartLayout = currentWebPartLayouts[position.i] || {};
+                const currentWebPartLayout = currentWebPartLayouts[position.i];
                 if (!webPart || !currentWebPartLayout || webPart.locked) {
                     continue;
                 }

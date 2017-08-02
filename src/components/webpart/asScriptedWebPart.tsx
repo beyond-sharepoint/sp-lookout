@@ -6,9 +6,9 @@ import { autobind } from 'office-ui-fabric-react/lib';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import { SpinButton } from 'office-ui-fabric-react/lib/SpinButton';
 import { ComboBox, IComboBoxOption } from 'office-ui-fabric-react/lib/ComboBox';
-import { ISelectableOption, SelectableOptionMenuItemType } from 'office-ui-fabric-react/lib/utilities/selectableOption/SelectableOption.Props';
 import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
 
+import { baristaScriptStoreUtils } from './baristaScriptStoreUtils';
 import { BaseWebPart, BaseWebPartState } from './BaseWebPart';
 import { FiddlesStore, Util } from '../../models';
 import Barista from '../../services/barista/';
@@ -17,15 +17,12 @@ import { get, assign } from 'lodash';
 
 const asScriptedWebPart = function <P extends object, S extends BaseWebPartState, WP extends BaseWebPart<P, S>>(barista: Barista, webPart: WP) {
     return class ScriptedWebPart extends BaseWebPart<ScriptedWebPartProps, ScriptedWebPartState> {
-        private _disposed = false;
-
         public constructor(props: ScriptedWebPartProps) {
             super(props);
 
             this.onScriptPathChanged = this.onScriptPathChanged.bind(this);
             this.onResultPropertyPathChanged = this.onResultPropertyPathChanged.bind(this);
             this.onScriptTimeoutChanged = this.onScriptTimeoutChanged.bind(this);
-            this.reportProgress = this.reportProgress.bind(this);
         }
 
         getDefaultWebPartProps() {
@@ -36,148 +33,63 @@ const asScriptedWebPart = function <P extends object, S extends BaseWebPartState
             };
         }
 
-        private reportProgress(progress: any): void {
-            if (this._disposed) {
-                return;
-            }
+        async componentDidMount() {
+            const result = await baristaScriptStoreUtils.performBaristaCall(
+                barista,
+                this.setState,
+                this.webPartProps.scriptPath,
+                this.webPartProps.scriptTimeout
+            );
 
-            this.setState({
-                lastProgress: progress
-            });
-        }
-
-        private async performBaristaCall() {
-            this.setState({
-                isLoading: true
-            });
-
-            if (!barista) {
-                this.setState({
-                    isLoading: false,
-                    lastResultWasError: true,
-                    lastResult: 'Could not establish connection with SharePoint. Ensure that a tenant url has been specified.'
-                });
-
-                return;
-            }
-
-            try {
-                const result = await barista.brew(
-                    {
-                        fullPath: this.webPartProps.scriptPath,
-                        allowDebuggerStatement: false,
-                        timeout: this.webPartProps.scriptTimeout
-                    },
-                    this.reportProgress
-                );
-
-                if (this._disposed) {
-                    return;
-                }
-
+            if (result) {
                 const propsToApply = get(result.data, this.webPartProps.resultPropertyPath);
                 assign(this.webPartProps, propsToApply);
-                this.setState({
-                    lastResultWasError: false,
-                    lastResult: result.data
-                });
-
-            } catch (ex) {
-                if (this._disposed) {
-                    return;
-                }
-                this.setState({
-                    lastResultWasError: true,
-                    lastResult: ex.message
-                });
-            } finally {
-                if (this._disposed) {
-                    return;
-                }
-                this.setState({
-                    isLoading: false
-                });
             }
-        }
-
-        componentDidMount() {
-            this.performBaristaCall();
-        }
-
-        componentWillUnmount() {
-            this._disposed = true;
         }
 
         renderWebPartContent(): JSX.Element {
-            const { isLoading, lastResultWasError, lastResult, lastProgress } = this.state;
+            const { isBrewing, lastResultWasError, lastResult, lastProgress } = this.state;
             let loadingLabel = 'Loading...';
 
             if (lastProgress && lastProgress.data && lastProgress.data.message) {
                 loadingLabel = lastProgress.data.message;
             }
 
-            if (isLoading) {
-                return (
-                    <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <Spinner size={SpinnerSize.large} label={loadingLabel} ariaLive="assertive" />
-                    </div>
-                );
-            }
-
-            if (lastResultWasError === true) {
-                return (
-                    <div>An error occurred: {JSON.stringify(lastResult)}</div>
-                );
-            }
-
             const WebPart = webPart as any;
 
-            if (typeof WebPart === 'function') {
-                return (
-                    <WebPart
-                        {...this.props}
-                        disableChrome={true}
-                    />
-                );
-            }
-
             return (
-                <div>Unexpected Error</div>
+                <div>
+                    {isBrewing === true &&
+                        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Spinner size={SpinnerSize.large} label={loadingLabel} ariaLive="assertive" />
+                        </div>
+                    }
+                    { !isBrewing && lastResultWasError === true &&
+                        <div>An error occurred: {JSON.stringify(lastResult)}</div>
+                    }
+                    {
+                        !isBrewing && !lastResultWasError && typeof WebPart === 'function'
+                            ? <WebPart
+                                {...this.props}
+                                disableChrome={true}
+                            />
+                            : !isBrewing && <div>Unexpected Error</div>
+                    }
+                </div>
             );
-        }
-
-        private getFileFolderOptions() {
-            const fileFolders = FiddlesStore.getFileFolderMap(barista.fiddlesStore.fiddleRootFolder);
-            const fileOptions: Array<any> = [];
-            const paths = Object.keys(fileFolders).sort();
-            for (const path of paths) {
-                const fileFolder = fileFolders[path];
-                if (fileFolder.type === 'folder') {
-                    fileOptions.push({
-                        key: path,
-                        text: path,
-                        itemType: SelectableOptionMenuItemType.Header
-                    });
-                } else {
-                    fileOptions.push({
-                        key: path,
-                        text: fileFolder.item.name
-                    });
-                }
-            }
-            return fileOptions;
         }
 
         public renderWebPartSettings() {
             return (
                 <div>
                     <ComboBox
-                        label="Fiddle Path:"
-                        ariaLabel="Fiddle Path"
+                        label="Script Path:"
+                        ariaLabel="Script Path"
                         allowFreeform={false}
                         autoComplete={'on'}
-                        options={this.getFileFolderOptions()}
-                        value={this.webPartProps.scriptPath}
+                        options={baristaScriptStoreUtils.getFileFolderOptions(barista)}
+                        selectedKey={this.webPartProps.scriptPath}
+                        onRenderOption={this.renderItem}
                         onChanged={this.onScriptPathChanged}
                     />
                     <TextField
@@ -192,6 +104,7 @@ const asScriptedWebPart = function <P extends object, S extends BaseWebPartState
                         max={600000}
                         step={1}
                         value={this.webPartProps.scriptTimeout.toString()}
+                        onValidate={this.onScriptTimeoutChanged}
                         onIncrement={this.onScriptTimeoutChanged}
                         onDecrement={this.onScriptTimeoutChanged}
                     />
@@ -199,24 +112,30 @@ const asScriptedWebPart = function <P extends object, S extends BaseWebPartState
             );
         }
 
+        private renderItem(option: IComboBoxOption) {
+            return (
+                <span>{(option as any).data.item.name}</span>
+            );
+        }
+
         private onScriptPathChanged(newValue: IComboBoxOption) {
             this.webPartProps.scriptPath = newValue.key as string;
-            this.onWebPartPropertiesChanged(true);
+            this.onWebPartPropertiesChanged();
         }
 
         private onResultPropertyPathChanged(newValue: string) {
             this.webPartProps.resultPropertyPath = newValue;
-            this.onWebPartPropertiesChanged(true);
+            this.onWebPartPropertiesChanged();
         }
 
         private onScriptTimeoutChanged(newValue: string) {
             this.webPartProps.scriptTimeout = parseInt(newValue, 10);
-            this.onWebPartPropertiesChanged(true);
+            this.onWebPartPropertiesChanged();
         }
     };
 
     interface ScriptedWebPartState extends BaseWebPartState {
-        isLoading: boolean;
+        isBrewing: boolean;
         lastResultWasError?: boolean;
         lastResult?: any;
         lastProgress?: any;

@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { action, observable, toJS } from 'mobx';
 import { observer } from 'mobx-react';
+import { defaultsDeep, cloneDeep, pull } from 'lodash';
+
 import { autobind } from 'office-ui-fabric-react/lib';
 import { Panel, PanelType, IPanelProps } from 'office-ui-fabric-react/lib/Panel';
 import { Pivot, PivotItem } from 'office-ui-fabric-react/lib/Pivot';
@@ -10,9 +12,9 @@ import { Dropdown, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
 import { Checkbox } from 'office-ui-fabric-react/lib/Checkbox';
 import { ColorPicker } from 'office-ui-fabric-react/lib/ColorPicker';
 import { IRenderFunction } from 'office-ui-fabric-react/lib/Utilities';
-import { defaultsDeep, cloneDeep, pull } from 'lodash';
 
 import { WebPartSettings } from '../../models';
+import Barista from '../../services/barista';
 
 import './index.css';
 
@@ -20,6 +22,8 @@ import './index.css';
  * Represents a component that renders a dynamic component on a Page
  */
 export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> extends React.Component<BaseWebPartProps, S> {
+    protected disposed: boolean = false;
+
     public constructor(props: any) {
         super(props);
 
@@ -28,6 +32,14 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
                 showWebPartSettingsPanel: false
             };
         }
+
+        const originalSetState = this.setState;
+        this.setState = ((...args) => {
+            if (this.disposed) {
+                return;
+            }
+            originalSetState.apply(this, args);
+        }).bind(this);
     }
 
     public get webPartProps(): P {
@@ -40,6 +52,10 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
 
     public componentWillReceiveProps(nextProps: BaseWebPartProps) {
         this.initializeWebPartProperties(nextProps);
+    }
+
+    public componentWillUnmount() {
+        this.disposed = true;
     }
 
     private renderWebPartTitle() {
@@ -129,7 +145,7 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
                             label="WebPart Type"
                             selectedKey={this.props.settings.type}
                             onChanged={this.onWebPartTypeChanged}
-                            options={this.props.webPartTypeNames}
+                            options={this.props.webPartTypeOptions}
                         />
                         <Checkbox
                             label="Use Script"
@@ -306,10 +322,11 @@ export interface BaseWebPartState {
 }
 
 export interface BaseWebPartProps {
+    barista?: Barista;
     locked: boolean;
     disableChrome?: boolean;
     settings: WebPartSettings;
-    webPartTypeNames: Array<{ key: string, text: string }>;
+    webPartTypeOptions: Array<IDropdownOption>;
     onWebPartPropertiesChanged?: (volatile?: boolean) => void;
     onDeleteWebPart?: () => void;
     onDuplicateWebPart?: () => void;

@@ -1,6 +1,6 @@
 import { observable, map, action } from 'mobx';
 import { Util } from './Util';
-import { WebPartSettings, WebPartLayout, WebPartType } from './WebPartSettings';
+import { WebPartSettings, WebPartLayout } from './WebPartSettings';
 
 export interface PageGroup {
     name: string;

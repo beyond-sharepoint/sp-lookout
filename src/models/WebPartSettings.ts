@@ -5,7 +5,7 @@ export class WebPartSettings {
     title: string = 'New WebPart';
 
     @observable
-    type: WebPartType = WebPartType.text;
+    type: string = 'text';
 
     @observable
     attributes: Array<string> = [];
@@ -28,14 +28,4 @@ export class WebPartLayout {
     y: number = 0;
     w: number = 2;
     h: number = 2;
-}
-
-export enum WebPartType {
-    chart = 'chart',
-    clock = 'clock',
-    note = 'note',
-    image = 'image',
-    scriptEditor = 'scriptEditor',
-    text = 'text',
-    viewer = 'viewer'
 }

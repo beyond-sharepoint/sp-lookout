@@ -38,17 +38,23 @@ export const defaultFiddleRootFolder: FiddleFolder = {
                 {
                     ...defaultFiddleSettings,
                     name: '01-helloWorld.ts',
+                    cursorColumn: 1,
+                    cursorLineNumber: 1,
                     code: `export default 'hello, world!';`,
                 },
                 {
                     ...defaultFiddleSettings,
                     name: '02-importLodash.ts',
+                    cursorColumn: 1,
+                    cursorLineNumber: 1,
                     code: `import * as _ from 'lodash';
 export default _.kebabCase('Hello, World!');`,
                 },
                 {
                     ...defaultFiddleSettings,
                     name: '03-getRootWeb-fetch.ts',
+                    cursorColumn: 1,
+                    cursorLineNumber: 1,
                     code: `const runner = async () => {
     const response = await fetch(location.origin + "/_api/web", {
         method: "GET",
@@ -67,6 +73,8 @@ export default runner();`,
                 {
                     ...defaultFiddleSettings,
                     name: '04-getRootWeb-sp-pnp.ts',
+                    cursorColumn: 1,
+                    cursorLineNumber: 1,
                     code: `import * as _ from 'lodash';
 import * as pnp from 'sp-pnp-js';
 
@@ -77,6 +85,8 @@ export default web.get();`,
                 {
                     ...defaultFiddleSettings,
                     name: '12-customComponents.tsx',
+                    cursorColumn: 1,
+                    cursorLineNumber: 1,
                     code: `import * as React from 'react';
 import * as ReactDOMServer from 'react-dom-server';
 
@@ -107,21 +117,29 @@ export default ReactDOMServer.renderToStaticMarkup((new MyComponent()).render())
                 {
                     ...defaultFiddleSettings,
                     name: 'node.js',
+                    cursorColumn: 1,
+                    cursorLineNumber: 1,
                     locked: true,
                 },
                 {
                     ...defaultFiddleSettings,
                     name: 'react-ui-tree.css',
+                    cursorColumn: 1,
+                    cursorLineNumber: 1,
                     locked: true,
                 },
                 {
                     ...defaultFiddleSettings,
                     name: 'react-ui-tree.js',
+                    cursorColumn: 1,
+                    cursorLineNumber: 1,
                     locked: true,
                 },
                 {
                     ...defaultFiddleSettings,
                     name: 'tree.js',
+                    cursorColumn: 1,
+                    cursorLineNumber: 1,
                     locked: true,
                 }
             ]
