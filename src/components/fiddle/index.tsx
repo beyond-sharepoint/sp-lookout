@@ -393,17 +393,20 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
     }
 
     private ensureEditorFocus(props: FiddleProps) {
-        setTimeout(() => {
-            if (!this.editor) {
-                return;
-            }
-            this.editor.focus();
-            this.editor.revealLineInCenter(props.currentFiddle.cursorLineNumber);
-            this.editor.setPosition({
-                column: props.currentFiddle.cursorColumn,
-                lineNumber: props.currentFiddle.cursorLineNumber
-            });
-        }, 0);
+        setTimeout(
+            () => {
+                if (!this.editor) {
+                    return;
+                }
+                this.editor.focus();
+                this.editor.revealLineInCenter(props.currentFiddle.cursorLineNumber);
+                this.editor.setPosition({
+                    column: props.currentFiddle.cursorColumn,
+                    lineNumber: props.currentFiddle.cursorLineNumber
+                });
+            },
+            0
+        );
     }
 
     @action.bound
@@ -419,7 +422,6 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
         if (e.reason !== monaco.editor.CursorChangeReason.NotSet && e.reason !== monaco.editor.CursorChangeReason.Explicit) {
             return;
         }
-        console.log("position changed." + e.reason + " " + e.position.column + " " + e.position.lineNumber);
         const { currentFiddle } = this.props;
         currentFiddle.cursorColumn = e.position.column;
         currentFiddle.cursorLineNumber = e.position.lineNumber;
