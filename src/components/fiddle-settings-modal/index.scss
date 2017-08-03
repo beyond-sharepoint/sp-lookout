@@ -21,4 +21,15 @@
   flex: 4 4 auto;
   padding: 5px 28px;
   overflow-y: auto;
+  display: flex;
+}
+
+.fiddle-settings-modal-body > div,
+.fiddle-settings-modal-body > div > div:nth-child(2) {
+  flex: 1;
+  display: flex;
+}
+
+.fiddle-settings-modal-body > div {
+  flex-direction: column;
 }

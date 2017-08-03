@@ -125,7 +125,7 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, Fi
                                 }
                             />
                         </PivotItem>
-                        <PivotItem linkText="RequireJS Config">
+                        <PivotItem linkText="RequireJS Config" style={{flex: 1, display: 'flex'}}>
                             <MonacoEditor
                                 value={this.state.requireConfig}
                                 language="json"
@@ -141,7 +141,7 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, Fi
                                     scrollBeyondLastLine: false,
                                     wordWrap: 'off'
                                 }}
-                                style={{ height: '275px' }}
+                                style={{height: '90%'}}
                             />
                         </PivotItem>
                         <PivotItem linkText="TypeScript Options">
