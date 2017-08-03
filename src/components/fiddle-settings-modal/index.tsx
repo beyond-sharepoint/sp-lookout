@@ -43,7 +43,7 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, Fi
                 </div>
                 <div className="fiddle-settings-modal-body">
                     <Pivot>
-                        <PivotItem linkText="Script Options">
+                        <PivotItem linkText="Script Options" style={{ flex: 1}}>
                             <TextField
                                 label="Description"
                                 multiline={true}
@@ -70,7 +70,7 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, Fi
                                 offText="Off"
                             />
                         </PivotItem>
-                        <PivotItem linkText="Editor Options">
+                        <PivotItem linkText="Editor Options" style={{ flex: 1}}>
                             <Dropdown
                                 label="Theme:"
                                 id="fiddle-theme"
@@ -144,7 +144,7 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, Fi
                                 style={{height: '90%'}}
                             />
                         </PivotItem>
-                        <PivotItem linkText="TypeScript Options">
+                        <PivotItem linkText="TypeScript Options" style={{ flex: 1}}>
                             TODO
                         </PivotItem>
                     </Pivot>
