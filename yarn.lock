@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-"@microsoft/load-themed-styles@^1.2.2":
+"@microsoft/load-themed-styles@^1.5.1":
   version "1.5.2"
   resolved "https://registry.yarnpkg.com/@microsoft/load-themed-styles/-/load-themed-styles-1.5.2.tgz#9e33e9d0782f3dc7cf207416c75025b10aa5a96c"
 
@@ -142,9 +142,9 @@
   version "6.0.64"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-6.0.64.tgz#cdc901411f6301e1437dfed23bc68f54442e4dc8"
 
-"@types/node@^8.0.17":
-  version "8.0.17"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.17.tgz#677bc8c118cfb76013febb62ede1f31d2c7222a1"
+"@types/node@^8.0.19":
+  version "8.0.19"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.19.tgz#e46e2b0243de7d03f15b26b45c59ebb84f657a4e"
 
 "@types/react-dom@^15.5.1":
   version "15.5.1"
@@ -165,13 +165,17 @@
     "@types/history" "*"
     "@types/react" "*"
 
-"@types/react@*", "@types/react@^15.6.0":
+"@types/react@*":
   version "15.6.0"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-15.6.0.tgz#3b3e92a60b65045e4df48fda324de84d83addbc4"
 
-"@types/requirejs@^2.1.29":
-  version "2.1.29"
-  resolved "https://registry.yarnpkg.com/@types/requirejs/-/requirejs-2.1.29.tgz#bc48bc833c079c2c24ba6afbca6d3a03b3f4e2f3"
+"@types/react@^16.0.0":
+  version "16.0.0"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.0.0.tgz#fec7e6302e11c1cd307129d8ce1e6d5dca4a0283"
+
+"@types/requirejs@^2.1.30":
+  version "2.1.30"
+  resolved "https://registry.yarnpkg.com/@types/requirejs/-/requirejs-2.1.30.tgz#07ca442f4a99eb787e8361431bf47a44bf42d4c1"
 
 "@types/sharepoint@^2013.1.9":
   version "2013.1.9"
@@ -193,19 +197,19 @@
   version "3.16.20-alpha"
   resolved "https://registry.yarnpkg.com/@types/z-schema/-/z-schema-3.16.20-alpha.tgz#36f588ccca27d8e86dd6bb595a973aede8803766"
 
-"@uifabric/styling@>=0.15.3 <1.0.0":
-  version "0.15.3"
-  resolved "https://registry.yarnpkg.com/@uifabric/styling/-/styling-0.15.3.tgz#8296f29d595f07d889321ca6ace4ae081f7c0df9"
+"@uifabric/styling@>=0.16.0 <1.0.0":
+  version "0.16.0"
+  resolved "https://registry.yarnpkg.com/@uifabric/styling/-/styling-0.16.0.tgz#daed04e5f324507761e9012ba7fc6cb3612a8b53"
   dependencies:
-    "@microsoft/load-themed-styles" "^1.2.2"
-    "@uifabric/utilities" ">=4.8.0 <5.0.0"
+    "@microsoft/load-themed-styles" "^1.5.1"
+    "@uifabric/utilities" ">=4.9.0 <5.0.0"
     glamor "^2.20.24"
     rtl-css-js "^1.1.1"
     tslib "^1.6.0"
 
-"@uifabric/utilities@>=4.8.0 <5.0.0":
-  version "4.8.1"
-  resolved "https://registry.yarnpkg.com/@uifabric/utilities/-/utilities-4.8.1.tgz#a35b010c8c54a3d42cf19486735fb973d9b67030"
+"@uifabric/utilities@>=4.9.0 <5.0.0":
+  version "4.9.0"
+  resolved "https://registry.yarnpkg.com/@uifabric/utilities/-/utilities-4.9.0.tgz#dd99ee7d1e3e1770b6e9b504734ec2d3512713c3"
   dependencies:
     prop-types "^15.5.10"
     tslib "^1.6.0"
@@ -4098,13 +4102,13 @@ obuf@^1.0.0, obuf@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/obuf/-/obuf-1.1.1.tgz#104124b6c602c6796881a042541d36db43a5264e"
 
-office-ui-fabric-react@^4.27.0:
-  version "4.27.0"
-  resolved "https://registry.yarnpkg.com/office-ui-fabric-react/-/office-ui-fabric-react-4.27.0.tgz#b5591aea3691c7f2ff7eaef421f92f99a3786381"
+office-ui-fabric-react@^4.29.0:
+  version "4.29.0"
+  resolved "https://registry.yarnpkg.com/office-ui-fabric-react/-/office-ui-fabric-react-4.29.0.tgz#6e30d424c7c06fadac5c734ac333f8312a6dec50"
   dependencies:
-    "@microsoft/load-themed-styles" "^1.2.2"
-    "@uifabric/styling" ">=0.15.3 <1.0.0"
-    "@uifabric/utilities" ">=4.8.0 <5.0.0"
+    "@microsoft/load-themed-styles" "^1.5.1"
+    "@uifabric/styling" ">=0.16.0 <1.0.0"
+    "@uifabric/utilities" ">=4.9.0 <5.0.0"
     prop-types "^15.5.10"
     tslib "^1.6.0"
 
