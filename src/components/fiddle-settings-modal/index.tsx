@@ -22,7 +22,7 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, Fi
 
         this.state = {
             requireConfig: JSON.stringify(props.currentFiddle.requireConfig, null, 4)
-        }
+        };
     }
     public render() {
         const {
