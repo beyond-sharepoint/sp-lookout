@@ -41,6 +41,7 @@ export const defaultPaths = {
     'bluebird': 'https://cdnjs.cloudflare.com/ajax/libs/bluebird/3.5.0/bluebird.min',
     'jszip': 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min',
     'urijs': 'https://cdnjs.cloudflare.com/ajax/libs/URI.js/1.18.10/URI.min',
+    'xlsx': 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.0/xlsx.min',
     'rrule': require('file-loader!rrule')
 };
 

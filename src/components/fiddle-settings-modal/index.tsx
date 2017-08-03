@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { action } from 'mobx';
+import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { get, set } from 'lodash';
 
@@ -10,15 +10,23 @@ import { Dropdown, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
 import { Toggle } from 'office-ui-fabric-react/lib/Toggle';
 import { SpinButton } from 'office-ui-fabric-react/lib/SpinButton';
 
+import MonacoEditor from '../monaco-editor';
+
 import { FiddlesStore, FiddleSettings, defaultFiddleSettings } from '../../models';
 import './index.css';
 
 @observer
-export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, any> {
+export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, FiddleSettingsState> {
+    constructor(props: FiddleSettingsProps) {
+        super(props);
+
+        this.state = {
+            requireConfig: JSON.stringify(props.currentFiddle.requireConfig, null, 4)
+        }
+    }
     public render() {
         const {
             showFiddleSettingsModal,
-            onDismiss,
             fiddlesStore,
             currentFiddle
         } = this.props;
@@ -26,7 +34,7 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, an
         return (
             <Modal
                 isOpen={showFiddleSettingsModal}
-                onDismiss={onDismiss}
+                onDismiss={this.onDismiss}
                 isBlocking={false}
                 containerClassName="fiddle-settings-modal-container"
             >
@@ -117,8 +125,24 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, an
                                 }
                             />
                         </PivotItem>
-                        <PivotItem linkText="Import Options">
-                            TODO
+                        <PivotItem linkText="RequireJS Config">
+                            <MonacoEditor
+                                value={this.state.requireConfig}
+                                language="json"
+                                onChange={this.updateRequireConfig}
+                                options={{
+                                    automaticLayout: true,
+                                    cursorBlinking: 'blink',
+                                    folding: true,
+                                    minimap: {
+                                        enabled: false
+                                    },
+                                    readOnly: false,
+                                    scrollBeyondLastLine: false,
+                                    wordWrap: 'off'
+                                }}
+                                style={{ height: '275px' }}
+                            />
                         </PivotItem>
                         <PivotItem linkText="TypeScript Options">
                             TODO
@@ -151,6 +175,13 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, an
     }
 
     @action.bound
+    private updateRequireConfig(newValue: string) {
+        this.setState({
+            requireConfig: newValue
+        });
+    }
+
+    @action.bound
     private updateTheme(ev: any) {
         this.props.currentFiddle.theme = ev.key;
     }
@@ -169,6 +200,25 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, an
     private updateWordWrap(ev: any) {
         this.props.currentFiddle.editorOptions.wordWrap = ev.key;
     }
+
+    @action.bound
+    private onDismiss(ev?: React.MouseEvent<HTMLButtonElement>) {
+        const { onDismiss } = this.props;
+
+        try {
+            this.props.currentFiddle.requireConfig = observable(JSON.parse(this.state.requireConfig));
+        } catch (ex) {
+            //Do nothing
+        }
+
+        if (typeof onDismiss === 'function') {
+            onDismiss(ev);
+        }
+    }
+}
+
+export interface FiddleSettingsState {
+    requireConfig: string;
 }
 
 export interface FiddleSettingsProps {

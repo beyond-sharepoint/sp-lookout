@@ -94,6 +94,7 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
             'bluebird': require('file-loader!@types/bluebird/index.d.ts'),
             'jszip': require('file-loader!@types/jszip/index.d.ts'),
             'urijs': require('file-loader!@types/urijs/index.d.ts'),
+            'xlsx': require('file-loader!xlsx/types/index.d.ts'),
             'sp-pnp-js': require('file-loader!./types/sp-pnp-js.d.html'),
         };
 

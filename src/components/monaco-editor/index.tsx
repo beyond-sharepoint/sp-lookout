@@ -234,7 +234,8 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps, {}>
         const style = {
             width: fixedWidth,
             //height: fixedHeight,
-            flex: 1
+            flex: 1,
+            ...this.props.style
         };
         return (
             <div ref={el => this._containerElement = el} style={style} className="react-monaco-editor-container" />
@@ -259,4 +260,5 @@ export interface MonacoEditorProps {
     onCursorPositionChange?: (e: monaco.editor.ICursorPositionChangedEvent) => void;
     onScrollChange?: (e: monaco.IScrollEvent) => void;
     requireConfig?: any;
+    style?: React.CSSProperties;
 }
