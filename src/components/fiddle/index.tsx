@@ -95,7 +95,8 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
             'jszip': require('file-loader!@types/jszip/index.d.ts'),
             'urijs': require('file-loader!@types/urijs/index.d.ts'),
             'xlsx': require('file-loader!xlsx/types/index.d.ts'),
-            'sp-pnp-js': require('file-loader!./types/sp-pnp-js.d.html'),
+            'sp-pnp-js': '/libs/sp-pnp-js.d.ts',
+            'sp-lookout': '/libs/sp-lookout.d.ts'
         };
 
         this._extraLibs = {};
@@ -111,23 +112,12 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
 
             this._extraLibs[libName] = lib;
         }
-
-        // define sp-lookout
-        const spLookoutLib = monaco.languages.typescript.typescriptDefaults.addExtraLib(
-            `declare module "sp-lookout" { 
-                export declare function arrayBufferToBase64(arrayBuffer: ArrayBuffer): string
-                export declare function base64ToArrayBuffer(base64: string): ArrayBuffer
-                export declare function isClass(obj: any): boolean
-                export declare function paths(obj: any): string
-                export declare function reportProgress(message: string, details?: any) :void
-            }`,
-            'node_modules/@types/sp-lookout/index.d.ts');
-
+        
         //We can get the current typescript worker using the following... 
         //  const worker = await monaco.languages.typescript.getTypeScriptWorker();
         //  const client = await worker(this.props.currentFiddleFullPath);
         //  const result = await client.getEmitOutput(this.props.currentFiddleFullPath);
-        this._extraLibs['node_modules/@types/sp-lookout/index.d.ts'] = spLookoutLib;
+        //this._extraLibs['node_modules/@types/sp-lookout/index.d.ts'] = spLookoutLib;
 
         this.ensureImportedLibs(this.props);
     }

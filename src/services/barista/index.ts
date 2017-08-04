@@ -4,11 +4,14 @@ import * as URI from 'urijs';
 import { cloneDeep, defaultsDeep } from 'lodash';
 
 import { DebuggerTransformer } from './debuggerTransformer';
-import { RelativeImportsLocator } from './relativeImportsLocator';
+import { relativeImportsLocator } from './relativeImportsLocator';
+import { nonRelativeImportsLocator } from './nonRelativeImportsLocator';
 import { SPContext, SPContextConfig, SPProxy, SPContextError, defaultSPContextConfig } from '../spcontext';
 import { FiddlesStore, FiddleSettings } from '../../models';
 
 export default class Barista {
+    private scriptMap: { [path: string]: string } = {};
+
     private _config: BaristaConfig;
     private _fiddlesStore: FiddlesStore;
     private _spContextConfig: SPContextConfig;
@@ -51,7 +54,7 @@ export default class Barista {
         }
 
         const preProcessResult = ts.preProcessFile(fiddleSettings.code, true, true);
-        
+
         for (const importedFile of preProcessResult.importedFiles) {
             let dependencyAbsolutePath = decodeURI(URI(importedFile.fileName).absoluteTo(fullPath).pathname());
             let dependentFiddleSettings = this._fiddlesStore.getFiddleSettingsByPath(dependencyAbsolutePath);
@@ -72,10 +75,19 @@ export default class Barista {
         return imports;
     }
 
+    private async getScript(scriptPath: string): Promise<string> {
+        if (this.scriptMap[scriptPath]) {
+            return this.scriptMap[scriptPath];
+        }
+
+        const fileResponse = await fetch(scriptPath);
+        return this.scriptMap[scriptPath] = await fileResponse.text();
+    }
+
     /**
      * Transpiles the specified typescript code and returns a map of define statements.
      */
-    private tamp(fullPath: string, targetFiddleSettings: FiddleSettings, allowDebuggerStatement: boolean, defines?: { [path: string]: string }): { [path: string]: string } {
+    private async tamp(fullPath: string, targetFiddleSettings: FiddleSettings, allowDebuggerStatement: boolean, defines?: { [path: string]: string }): Promise<{ [path: string]: string }> {
 
         if (!defines) {
             defines = {};
@@ -100,7 +112,36 @@ export default class Barista {
             }
 
             if (dependentFiddleSettings) {
-                this.tamp(dependencyAbsolutePath, dependentFiddleSettings, allowDebuggerStatement, defines);
+                await this.tamp(dependencyAbsolutePath, dependentFiddleSettings, allowDebuggerStatement, defines);
+            }
+        }
+
+        //Always include tslib
+        (<any>transpileResult).nonRelativeImports.unshift('tslib');
+
+        //Redirect a set of modules to import from local resources.
+        const localImports = {
+            'tslib': {
+                path: '/libs/tslib.js',
+                transpile: false
+            },
+            'sp-lookout': {
+                path: '/libs/BaristaUtils.ts',
+                transpile: true
+            }
+        };
+
+        for (let moduleName of (<any>transpileResult).nonRelativeImports) {
+            if (Object.keys(localImports).indexOf(moduleName) < 0 || defines[moduleName]) {
+                continue;
+            }
+            const moduleInfo = localImports[moduleName];
+            const fileResponse = await fetch(moduleInfo.path);
+            const fileContents = await fileResponse.text();
+            if (moduleInfo.transpile) {
+                defines[moduleName] = this.transpile(moduleName, fileContents, true).outputText;
+            } else {
+                defines[moduleName] = fileContents;
             }
         }
 
@@ -120,6 +161,18 @@ export default class Barista {
         const { fullPath, allowDebuggerStatement, timeout } = settings;
         const spContext = await SPContext.getContext(this._config.webFullUrl, this._spContextConfig);
 
+        //Ensure that barista custom commands are added to the proxy.
+        if (!(spContext as any).isBaristaContext) {
+            const localforage = await this.getScript('/libs/localforage.min.js');
+            await spContext.eval(localforage);
+
+            await spContext.setWorkerCommand('getItem', await this.getScript('/libs/workerGetItem.js'));
+            await spContext.setWorkerCommand('setItem', await this.getScript('/libs/workerSetItem.js'));
+            await spContext.setWorkerCommand('removeItem', await this.getScript('/libs/workerRemoveItem.js'));
+
+            (spContext as any).isBaristaContext = true;
+        }
+
         //Take Order, get the fiddle settings from the store
         const targetFiddleSettings = this._fiddlesStore.getFiddleSettingsByPath(fullPath);
 
@@ -127,17 +180,24 @@ export default class Barista {
             throw Error(`A module with the specified path was not found in the associated store: '${fullPath}'`);
         }
 
+        const bootstrap: Array<string> = [];
+        bootstrap.push(await this.getScript('/libs/require.min.js'));
+        bootstrap.push(await this.getScript('/libs/requireInit.js'));
+
         //Tamp, Transpile the main module and resulting dependencies.
-        const defines = this.tamp(fullPath, targetFiddleSettings, allowDebuggerStatement || false);
+        const defines = await this.tamp(fullPath, targetFiddleSettings, allowDebuggerStatement || false);
+        for (const moduleName of Object.keys(defines)) {
+            bootstrap.push(defines[moduleName]);
+        }
 
         //Brew
         try {
             return await spContext.brew(
                 {
-                    requireConfig: targetFiddleSettings.requireConfig,
-                    defines: defines,
+                    bootstrap,
                     entryPointId: fullPath.replace(/\.tsx?$/, ''),
-                    timeout
+                    timeout,
+                    requireConfig: targetFiddleSettings.requireConfig
                 },
                 timeout,
                 undefined,
@@ -190,7 +250,8 @@ export default class Barista {
 
     private transpile(filename: string, input: string, allowDebuggerStatement: boolean): ts.TranspileOutput {
         let beforeTransformers: any = [];
-        beforeTransformers.push(RelativeImportsLocator);
+        beforeTransformers.push(relativeImportsLocator);
+        beforeTransformers.push(nonRelativeImportsLocator);
         if (!allowDebuggerStatement) {
             beforeTransformers.push(DebuggerTransformer);
         }
@@ -203,12 +264,13 @@ export default class Barista {
                 target: ts.ScriptTarget.ES2015,
                 module: ts.ModuleKind.AMD,
                 jsx: ts.JsxEmit.React,
-                importHelpers: true,
+                importHelpers: true
             },
             fileName: filename
         });
 
-        (<any>output).relativeImports = (<any>RelativeImportsLocator).relativeImports;
+        (<any>output).nonRelativeImports = (<any>nonRelativeImportsLocator).nonRelativeImports;
+        (<any>output).relativeImports = (<any>relativeImportsLocator).relativeImports;
         return output;
     }
 }

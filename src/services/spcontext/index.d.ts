@@ -59,8 +59,8 @@ export interface SPContextInfo {
 }
 
 export interface BrewConfig {
-    requireConfig: any;
-    defines: { [id: string]: string };
+    bootstrap: Array<string>;
     entryPointId: string;
     timeout?: number;
+    [others: string]: any;
 }

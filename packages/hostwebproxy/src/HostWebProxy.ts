@@ -1,89 +1,18 @@
 const HostWebWorker = require('worker-loader?inline&name=HostWebWorker.js!./HostWebWorker.ts');
 
-class HostWebProxy {
-    private _hostWebProxyConfig: HostWebProxyConfig;
-    private _currentErrorHandler = (err: ErrorEvent) => { };
-
-    constructor(hostWebProxyConfig: HostWebProxyConfig) {
-        this._hostWebProxyConfig = hostWebProxyConfig;
-
-        this.errorHandler = this.errorHandler.bind(this);
-        this.messageHandler = this.messageHandler.bind(this);
-
-        //Define the requirejs errorhandler.
-        (<any>self).requirejs.onError = this.postMessageError;
+class ProxyUtil {
+    /**
+     * Gets the current hostWebProxyConfig global.
+     */
+    static get hostWebProxyConfig(): any {
+        return (<any>window).hostWebProxyConfig;
     }
 
-    public errorHandler(event: ErrorEvent): void {
-        this._currentErrorHandler(event);
-    }
-
-    public messageHandler(event: MessageEvent): void {
-        const origin = event.origin || (<any>event).originalEvent.origin;
-        const command = event.data.$$command;
-        const postMessageId = event.data.$$postMessageId;
-
-        if (!origin || !command || !postMessageId) {
-            //Something strange occurred, ignore the message.
-            return;
-        }
-
-        //Validate the requesting origin.
-        if (this._hostWebProxyConfig.trustedOriginAuthorities && this._hostWebProxyConfig.trustedOriginAuthorities.length) {
-            let trusted = false;
-            for (let trustedOriginAuthority of this._hostWebProxyConfig.trustedOriginAuthorities) {
-                if (RegExp(trustedOriginAuthority, "ig").test(origin)) {
-                    trusted = true;
-                    break;
-                }
-            }
-
-            if (!!!trusted) {
-                const message = `The specified origin is not trusted by the HostWebProxy: ${origin}`;
-                let response: ErrorResponse = {
-                    $$command: command,
-                    $$postMessageId: postMessageId,
-                    $$result: 'error',
-                    message: message,
-                    invalidOrigin: origin,
-                    url: window.location.href
-                };
-
-                this.postMessage(response);
-                throw Error(message);
-            }
-        }
-
-        this.processCommand(command, postMessageId, event.data);
-    }
-
-    private processCommand(command: string, postMessageId: string, request: any) {
-        switch (command) {
-            case "Fetch":
-                this.fetch(command, postMessageId, request);
-                break;
-            case "Ping":
-                this.postMessage({
-                    ...request,
-                    $$result: 'success',
-                    transferrableData: this.str2ab("Pong")
-                });
-                break;
-            case "Brew":
-                this.brew(command, postMessageId, request);
-                break;
-            default:
-                this.postMessage({
-                    $$command: command,
-                    $$postMessageId: postMessageId,
-                    $$result: 'error',
-                    message: `Unknown or unsupported command: ${command}`
-                } as ErrorResponse);
-                break;
-        }
-    }
-
-    private str2ab(str: string) {
+    /**
+     * Utility method to convert a string to an array buffer
+     * @param str string to convert
+     */
+    public static str2ab(str: string): ArrayBuffer {
         let len = str.length;
         let bytes = new Uint8Array(len);
         for (let i = 0; i < len; i++) {
@@ -98,8 +27,8 @@ class HostWebProxy {
      * @param timeoutMillis 
      * @param errorMessage 
      */
-    private timeout(promise: Promise<any>, timeoutMillis: number, errorMessage?: string): Promise<any> {
-        var timeout;
+    public static timeout(promise: Promise<any>, timeoutMillis: number, errorMessage?: string): Promise<any> {
+        let timeout;
 
         return Promise.race([
             promise,
@@ -120,8 +49,8 @@ class HostWebProxy {
     /**
     * Utility method to post messages back to the parent.
     */
-    private postMessage(message: CommandResponse): void {
-        const responseOrigin = this._hostWebProxyConfig.responseOrigin || '*';
+    public static postMessage(message: CommandResponse): void {
+        const responseOrigin = this.hostWebProxyConfig.responseOrigin || '*';
 
         window.parent.postMessage(message, responseOrigin, message.transferrableData ? [message.transferrableData] : undefined);
     }
@@ -131,7 +60,7 @@ class HostWebProxy {
      * @param {*} postMessageId 
      * @param {*} err 
      */
-    private postMessageError(command: string, postMessageId: string, err: any): void {
+    public static postMessageError(command: string, postMessageId: string, err: any): void {
         let errorMessage: ErrorResponse = {
             $$command: command,
             $$postMessageId: postMessageId,
@@ -159,7 +88,13 @@ class HostWebProxy {
         this.postMessage(errorMessage);
     }
 
-    private postProgress(command: string, postMessageId: string, data: any) {
+    /**
+     * Posts a progress message to the parent window.
+     * @param command 
+     * @param postMessageId 
+     * @param data 
+     */
+    public static postProgress(command: string, postMessageId: string, data: any) {
         let progressMessage: ProgressResponse = {
             $$command: command,
             $$postMessageId: postMessageId,
@@ -168,6 +103,172 @@ class HostWebProxy {
         }
 
         this.postMessage(progressMessage);
+    }
+}
+
+class HostWebProxy {
+    private currentErrorHandler = (err: ErrorEvent) => { };
+    private commandMap: {
+        [command: string]: (
+            this: HostWebProxy,
+            command: string,
+            postMessageId: string,
+            request: any
+        ) => void;
+    } = {
+        'Brew': (command, postMessageId, request) => {
+            this.brew(command, postMessageId, request);
+        },
+        'Fetch': (command, postMessageId, request) => {
+            this.fetch(command, postMessageId, request);
+        },
+        'Ping': (command, postMessageId, request) => {
+            ProxyUtil.postMessage({
+                ...request,
+                $$result: 'success',
+                transferrableData: ProxyUtil.str2ab('Pong')
+            });
+        },
+        'Eval': (command, postMessageId, request) => {
+            try {
+                const geval = eval;
+                geval(request.code);
+            } catch (ex) {
+                ProxyUtil.postMessageError(command, postMessageId, ex);
+            }
+            ProxyUtil.postMessage({
+                $$command: command,
+                $$postMessageId: postMessageId,
+                $$result: 'success'
+            });
+        },
+        'SetCommand': (command, postMessageId, request) => {
+            try {
+                this.commandMap[request.commandName] = eval(request.commandCode);
+            } catch (ex) {
+                ProxyUtil.postMessageError(command, postMessageId, ex);
+            }
+            ProxyUtil.postMessage({
+                $$command: command,
+                $$postMessageId: postMessageId,
+                $$result: 'success',
+                data: request.commandName
+            });
+        },
+        'SetWorkerCommand': (command, postMessageId, request) => {
+            try {
+                this.workerCommandMap[request.commandName] = eval(request.commandCode);
+            } catch (ex) {
+                ProxyUtil.postMessageError(command, postMessageId, ex);
+            }
+            ProxyUtil.postMessage({
+                $$command: command,
+                $$postMessageId: postMessageId,
+                $$result: 'success',
+                data: request.commandName
+            });
+        }
+    };
+    private workerCommandMap: {
+        [command: string]: (
+            this: Worker,
+            resolveWorker: (value?: any) => void,
+            rejectWorker: (reason?: any) => void,
+            eventData: any,
+            args: {
+                command: string,
+                postMessageId: string,
+                worker: any,
+                workerCommand: string
+            }
+        ) => void
+    } = {
+        'success': (resolveWorker, rejectWorker, eventData) => {
+            resolveWorker(eventData);
+        },
+        'progress': (resolveWorker, rejectWorker, eventData, args) => {
+            ProxyUtil.postProgress(args.command, args.postMessageId, eventData);
+        },
+        'error': (resolveWorker, rejectWorker, eventData) => {
+            const err = new Error(eventData.message);
+            err.name = eventData.name;
+            err.stack = eventData.stack;
+            (<any>err).originalErrorMessage = eventData;
+            rejectWorker(err);
+        }
+    };
+
+    constructor() {
+        this.errorHandler = this.errorHandler.bind(this);
+        this.messageHandler = this.messageHandler.bind(this);
+    }
+
+    public errorHandler(event: ErrorEvent): void {
+        this.currentErrorHandler(event);
+    }
+
+    public messageHandler(event: MessageEvent): void {
+        const origin = event.origin || (<any>event).originalEvent.origin;
+        const command = event.data.$$command;
+        const postMessageId = event.data.$$postMessageId;
+
+        if (!origin || !command || !postMessageId) {
+            //Something strange occurred, ignore the message.
+            return;
+        }
+
+        //Validate the requesting origin.
+        if (ProxyUtil.hostWebProxyConfig.trustedOriginAuthorities && ProxyUtil.hostWebProxyConfig.trustedOriginAuthorities.length) {
+            let trusted = false;
+            for (let trustedOriginAuthority of ProxyUtil.hostWebProxyConfig.trustedOriginAuthorities) {
+                if (RegExp(trustedOriginAuthority, "ig").test(origin)) {
+                    trusted = true;
+                    break;
+                }
+            }
+
+            if (!!!trusted) {
+                const message = `The specified origin is not trusted by the HostWebProxy: ${origin}`;
+                let response: ErrorResponse = {
+                    $$command: command,
+                    $$postMessageId: postMessageId,
+                    $$result: 'error',
+                    message: message,
+                    invalidOrigin: origin,
+                    url: window.location.href
+                };
+
+                ProxyUtil.postMessage(response);
+                throw Error(message);
+            }
+        }
+
+        this.processCommand(command, postMessageId, event.data);
+    }
+
+    /**
+     * Processes the command according to the current state of the commandMap
+     * @param command command to process
+     * @param postMessageId Id of the request
+     * @param request data of the request
+     */
+    private processCommand(command: string, postMessageId: string, request: any) {
+        if (this.commandMap[command]) {
+            try {
+                this.commandMap[command].call(this, command, postMessageId, request);
+            } catch (ex) {
+                ProxyUtil.postMessageError(command, postMessageId, ex);
+            } finally {
+                return;
+            }
+        }
+
+        ProxyUtil.postMessage({
+            $$command: command,
+            $$postMessageId: postMessageId,
+            $$result: 'error',
+            message: `Unknown or unsupported command: ${command}`
+        } as ErrorResponse);
     }
 
     private async fetch(command: string, postMessageId: string, request: any): Promise<void> {
@@ -218,21 +319,19 @@ class HostWebProxy {
                 (<any>messageResponse)[propertyKey] = response[propertyKey];
             }
 
-            this.postMessage(messageResponse);
+            ProxyUtil.postMessage(messageResponse);
         }
         catch (err) {
-            this.postMessageError(command, postMessageId, err);
+            ProxyUtil.postMessageError(command, postMessageId, err);
         }
     }
 
-    private async brew(command: string, postMessageId: string, request: any): Promise<void> {
+    private async brew(command: string, postMessageId: string, request: BrewRequest): Promise<void> {
         let worker: Worker = new HostWebWorker();
         try {
-            const requireScriptElement = document.getElementById('require.js');
-            if (!requireScriptElement) {
-                throw Error('Unable to find Require.js script element. This is highly unusual and it probably means someone edited the HostWebProxy.aspx or a hole has been torn in the fabric of the universe. That, or something just went wrong.');
+            if (!request.bootstrap) {
+                throw Error('A bootstrap script was not defined on the brew request.');
             }
-            request.requirejs = requireScriptElement.innerText;
             worker.postMessage(request, request.data ? [request.data] : undefined);
             let resolveWorker, rejectWorker;
             let workerPromise: Promise<any> = new Promise((resolve, reject) => {
@@ -241,22 +340,30 @@ class HostWebProxy {
             });
 
             worker.onmessage = (ev) => {
+                const workerCommand = ev.data.result;
                 const eventData = ev.data;
-                switch (eventData.result) {
-                    case 'success':
-                        resolveWorker(eventData);
-                        break;
-                    case 'progress':
-                        this.postProgress(command, postMessageId, eventData);
-                        break;
-                    case 'error':
-                    default:
-                        const err = new Error(eventData.message);
-                        err.name = eventData.name;
-                        err.stack = eventData.stack;
-                        (<any>err).originalErrorMessage = eventData;
-                        rejectWorker(err);
-                        break;
+                if (this.workerCommandMap[workerCommand]) {
+                    try {
+                        const args = {
+                            command,
+                            postMessageId,
+                            worker,
+                            workerCommand
+                        };
+
+                        this.workerCommandMap[workerCommand].call(
+                            worker,
+                            resolveWorker,
+                            rejectWorker,
+                            eventData,
+                            args
+                        );
+                    } catch (ex) {
+                        rejectWorker(ex);
+                    }
+                } else {
+                    const err = new Error(`Unknown or unsupported worker command: ${workerCommand}`);
+                    rejectWorker(err);
                 }
             }
 
@@ -267,12 +374,12 @@ class HostWebProxy {
 
             let result: any;
             if (timeout) {
-                result = await this.timeout(workerPromise, timeout, `A timeout occurred while invoking the Brew. (${timeout}ms)`);
+                result = await ProxyUtil.timeout(workerPromise, timeout, `A timeout occurred while invoking the Brew. (${timeout}ms)`);
             } else {
                 result = await workerPromise;
             }
 
-            let brewMessage: CommandResponse = {
+            let brewResponse: CommandResponse = {
                 $$command: command,
                 $$postMessageId: postMessageId,
                 $$result: 'success',
@@ -280,10 +387,10 @@ class HostWebProxy {
                 transferrableData: result.transferrableData
             }
 
-            this.postMessage(brewMessage);
+            ProxyUtil.postMessage(brewResponse);
         }
         catch (ex) {
-            this.postMessageError(command, postMessageId, ex);
+            ProxyUtil.postMessageError(command, postMessageId, ex);
         }
         finally {
             if (worker) {
@@ -305,6 +412,14 @@ interface CommandResponse {
     $$result: 'success' | 'error' | 'progress';
     data?: any;
     transferrableData?: ArrayBuffer;
+}
+
+interface BrewRequest extends CommandRequest {
+    $$command: 'brew';
+    bootstrap: Array<string>;
+    entryPointId: string;
+    timeout: number;
+    data: any;
 }
 
 interface FetchResponse extends CommandResponse {
@@ -337,7 +452,7 @@ interface HostWebProxyConfig {
 //When the document is ready, bind to the 'message' event to recieve messages passed
 //from the parent window via window.postMessage
 (<any>window).docReady(() => {
-    const hostWebProxyController = new HostWebProxy((<any>window).hostWebProxyConfig);
+    const hostWebProxyController = new HostWebProxy();
 
     window.addEventListener('error', hostWebProxyController.errorHandler);
     window.addEventListener('message', hostWebProxyController.messageHandler);

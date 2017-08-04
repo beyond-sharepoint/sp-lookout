@@ -223,7 +223,7 @@ export default class Aside extends React.Component<AsideProps, any> {
 
     @autobind
     private onAddFolder(targetFolder: Folder) {
-        let newFolderName = 'new folder';
+        let newFolderName = 'newFolder';
         let ix = 0;
         while (find(targetFolder.folders, { name: newFolderName })) {
             newFolderName = `new-folder-${String('00' + ++ix).slice(-2)}`;

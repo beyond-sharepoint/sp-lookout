@@ -1,16 +1,16 @@
 import * as ts from 'typescript';
 
-export const relativeImportsLocator = (context: ts.TransformationContext): ts.Transformer<ts.SourceFile> => {
-    const relativeRegExp = /^\.[\s\S]*/;
-    let relativeImports: Array<string> = [];
+export const nonRelativeImportsLocator = (context: ts.TransformationContext): ts.Transformer<ts.SourceFile> => {
+    const nonRelativeRegExp = /^[^\.][\s\S]*/;
+    let nonRelativeImports: Array<string> = [];
 
     const visitor: ts.Visitor = (node: ts.Node): ts.Node => {
         switch (node.kind) {
             case ts.SyntaxKind.ImportDeclaration:
                 const importDecl: ts.ImportDeclaration = node as ts.ImportDeclaration;
                 const moduleName = (<any>importDecl.moduleSpecifier).text;
-                if (relativeRegExp.test(moduleName)) {
-                    relativeImports.push(moduleName);
+                if (nonRelativeRegExp.test(moduleName)) {
+                    nonRelativeImports.push(moduleName);
                 }
                 return ts.visitEachChild(node, visitor, context);
             default:
@@ -19,9 +19,9 @@ export const relativeImportsLocator = (context: ts.TransformationContext): ts.Tr
     };
 
     const transformer: ts.Transformer<ts.SourceFile> = (sf: ts.SourceFile) => {
-        relativeImports = [];
+        nonRelativeImports = [];
         const result = ts.visitNode(sf, visitor);
-        (<any>relativeImportsLocator).relativeImports = relativeImports;
+        (<any>nonRelativeImportsLocator).nonRelativeImports = nonRelativeImports;
         return result;
     };
 

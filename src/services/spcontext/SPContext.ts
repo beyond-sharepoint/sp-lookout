@@ -153,6 +153,28 @@ export class SPContext {
     }
 
     /**
+     * Using an isolated web worker, returns the results of the specified entry point.
+     * @param config 
+     */
+    public async brew(config: BrewConfig, timeout?: number, transferrablePath?: string, onProgress?: (progress: any) => void) {
+        if (!config) {
+            throw Error('BrewConfig must be specified as the first argument.');
+        }
+
+        const proxy = await this.ensureContext();
+        return proxy.invoke('Brew', config, undefined, timeout, transferrablePath, onProgress);
+    }
+
+    /**
+     * Evaluates the specified code at the global scope of the HostWebProxy.
+     * @param code Code to evaluate
+     */
+    public async eval(code: string) {
+        const proxy = await this.ensureContext();
+        return proxy.invoke('Eval', { code });
+    }
+
+    /**
      * Executes http requests through a proxy.
      * @returns promise that resolves with the response.
      */
@@ -242,16 +264,23 @@ export class SPContext {
     }
 
     /**
-     * Using an isolated web worker, returns the results of the specified entry point.
-     * @param config 
+     * Sets the specified command to the results of the evaluated command code. CommandCode should evaluate to a function.
+     * @param commandName 
+     * @param commandCode 
      */
-    public async brew(config: BrewConfig, timeout?: number, transferrablePath?: string, onProgress?: (progress: any) => void) {
-        if (!config) {
-            throw Error('BrewConfig must be specified as the first argument.');
-        }
-
+    public async setCommand(commandName: string, commandCode: string) {
         const proxy = await this.ensureContext();
-        return proxy.invoke('Brew', config, undefined, timeout, transferrablePath, onProgress);
+        return proxy.invoke('SetCommand', { commandName, commandCode });
+    }
+
+    /**
+     * Sets the specified worker command to the results of the evaluated command code. CommandCode should evaluate to a function.
+     * @param commandName 
+     * @param commandCode 
+     */
+    public async setWorkerCommand(commandName: string, commandCode: string) {
+        const proxy = await this.ensureContext();
+        return proxy.invoke('SetWorkerCommand', { commandName, commandCode });
     }
 
     /**
