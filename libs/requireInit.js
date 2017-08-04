@@ -1,12 +1,12 @@
 (function (that) {
-    if (!self.requirejs) {
+    if (!requirejs) {
         throw Error('RequireJS was not found.');
     }
 
-    if (self.request.requireConfig) {
-        self.requirejs.config(request.requireConfig);
+    if (processor.request.requireConfig) {
+        requirejs.config(processor.request.requireConfig);
     }
 
     //Define the requirejs errorhandler.
-    self.requirejs.onError = self.postMessageError;
+    requirejs.onError = processor.postMessageError;
 })(this)

@@ -63,6 +63,19 @@ class BaristaUtils {
     }
     /* tslint:enable */
 
+    stringToArrayBuffer(str) {
+        if (typeof ArrayBuffer !== 'undefined') {
+            const buf = new ArrayBuffer(str.length);
+            const view = new Uint8Array(buf);
+            for (let i = 0; i != str.length; ++i) view[i] = str.charCodeAt(i) & 0xFF;
+            return buf;
+        } else {
+            const buf2 = new Array(str.length);
+            for (let i = 0; i != str.length; ++i) buf2[i] = str.charCodeAt(i) & 0xFF;
+            return buf2;
+        }
+    }
+
     async getItem(key: string): Promise<any> {
         const originalHandler = this.context.onmessage;
         let resolveWorker, rejectWorker;
