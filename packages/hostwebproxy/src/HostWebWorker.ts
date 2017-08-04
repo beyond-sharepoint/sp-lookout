@@ -34,10 +34,10 @@ class WorkerUtil {
 }
 
 class SandFiddleProcessor {
-    private context: any;
+    private context: DedicatedWorkerGlobalScope;
     private request: any;
 
-    constructor(context, request) {
+    constructor(context: DedicatedWorkerGlobalScope, request) {
         this.context = context;
         this.request = request;
 
@@ -48,20 +48,17 @@ class SandFiddleProcessor {
 
     public bootstrap() {
         // You're a wizard, Harry!
-        if (!this.request.bootstrap) {
+        if (!this.request.bootstrap || !Array.isArray(this.request.bootstrap)) {
             return;
         }
 
         for (const bootstrapScript of this.request.bootstrap) {
-            (<any>this.context).request = this.request;
             try {
                 const geval = eval;
                 geval(bootstrapScript);
             } catch (ex) {
                 this.postMessageError(ex);
                 throw (ex);
-            } finally {
-                delete (<any>this.context).request;
             }
         }
     }
@@ -131,10 +128,8 @@ class SandFiddleProcessor {
             errorMessage.name = err.name;
             errorMessage.message = err.message;
             errorMessage.stack = err.stack;
-            for (let key in err) {
-                if (err.hasOwnProperty(key)) {
-                    errorMessage[key] = err[key];
-                }
+            for (const key of Object.keys(err)) {
+                errorMessage[key] = err[key];
             }
 
             //Prevent Events and nested Errors from preventing cloning.
@@ -164,7 +159,7 @@ onmessage = (e) => {
 
     const request = e.data;
 
-    const processor = (<any>self).processor = new SandFiddleProcessor(self, request);
+    const processor = (<any>self).processor = new SandFiddleProcessor(self as any, request);
     processor.bootstrap();
     processor.initialize();
 }
