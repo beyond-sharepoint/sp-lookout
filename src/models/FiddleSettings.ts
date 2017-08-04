@@ -44,7 +44,7 @@ export const defaultPaths = {
     "IPv6": "https://cdnjs.cloudflare.com/ajax/libs/URI.js/1.18.10/IPv6.min",
     "SecondLevelDomains": "https://cdnjs.cloudflare.com/ajax/libs/URI.js/1.18.10/SecondLevelDomains.min",
     "urijs": "https://cdnjs.cloudflare.com/ajax/libs/URI.js/1.18.10/URI",
-    'xlsx': 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.0/xlsx.min',
+    'xlsx': 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.0/xlsx.full.min',
     'rrule': require('file-loader!rrule')
 };
 
