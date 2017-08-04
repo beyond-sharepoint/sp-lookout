@@ -8,6 +8,7 @@ declare module "sp-lookout" {
         reportProgress(message: string, details?: any): void;
         async removeItem(key: string): Promise<void>;
         async setItem(key: string, value: any): Promise<void>;
+        stringToArrayBuffer(str: string): ArrayBuffer;
     }
     export var spLookout: BaristaUtils;
 }
