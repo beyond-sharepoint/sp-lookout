@@ -95,8 +95,8 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
             'jszip': require('file-loader!@types/jszip/index.d.ts'),
             'urijs': require('file-loader!@types/urijs/index.d.ts'),
             'xlsx': require('file-loader!xlsx/types/index.d.ts'),
-            'sp-pnp-js': '/libs/sp-pnp-js.d.ts',
-            'sp-lookout': '/libs/sp-lookout.d.ts'
+            'sp-pnp-js': './libs/sp-pnp-js.d.tsc',
+            'sp-lookout': './libs/sp-lookout.d.tsc'
         };
 
         this._extraLibs = {};

@@ -122,11 +122,11 @@ export default class Barista {
         //Redirect a set of modules to import from local resources.
         const localImports = {
             'tslib': {
-                path: '/libs/tslib.js',
+                path: './libs/tslib.js',
                 transpile: false
             },
             'sp-lookout': {
-                path: '/libs/BaristaUtils.ts',
+                path: './libs/BaristaUtils.tsc',
                 transpile: true
             }
         };
@@ -163,12 +163,12 @@ export default class Barista {
 
         //Ensure that barista custom commands are added to the proxy.
         if (!(spContext as any).isBaristaContext) {
-            const localforage = await this.getScript('/libs/localforage.min.js');
+            const localforage = await this.getScript('./libs/localforage.min.js');
             await spContext.eval(localforage);
 
-            await spContext.setWorkerCommand('getItem', await this.getScript('/libs/workerGetItem.js'));
-            await spContext.setWorkerCommand('setItem', await this.getScript('/libs/workerSetItem.js'));
-            await spContext.setWorkerCommand('removeItem', await this.getScript('/libs/workerRemoveItem.js'));
+            await spContext.setWorkerCommand('getItem', await this.getScript('./libs/workerGetItem.js'));
+            await spContext.setWorkerCommand('setItem', await this.getScript('./libs/workerSetItem.js'));
+            await spContext.setWorkerCommand('removeItem', await this.getScript('./libs/workerRemoveItem.js'));
 
             (spContext as any).isBaristaContext = true;
         }
@@ -181,8 +181,8 @@ export default class Barista {
         }
 
         const bootstrap: Array<string> = [];
-        bootstrap.push(await this.getScript('/libs/require.min.js'));
-        bootstrap.push(await this.getScript('/libs/requireInit.js'));
+        bootstrap.push(await this.getScript('./libs/require.min.js'));
+        bootstrap.push(await this.getScript('./libs/requireInit.js'));
 
         //Tamp, Transpile the main module and resulting dependencies.
         const defines = await this.tamp(fullPath, targetFiddleSettings, allowDebuggerStatement || false);
