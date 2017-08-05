@@ -9,7 +9,7 @@ import { Dialog, DialogType, DialogFooter } from 'office-ui-fabric-react/lib/Dia
 import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react/lib/Button';
 
 import { WebPartPageSettingsModal } from '../webpart-page-settings-modal';
-import { BaseWebPartProps, asScriptedWebPart, webPartTypeOptions } from '../webpart';
+import { BaseWebPartProps, asScriptedWebPart, asAutoRefreshingWebPart, webPartTypeOptions } from '../webpart';
 
 import { PagesStore, PageSettings, ResponsivePageLayouts, WebPartLayout, WebPartSettings, Util } from '../../models';
 import Barista from '../../services/barista';
@@ -198,9 +198,19 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
         }
 
         let WebPart = webPartDef.data;
-
+        let shouldApplyObserver = false;
         if (webPartSettings.attributes && webPartSettings.attributes.indexOf('useScript') > -1) {
-            WebPart = observer(asScriptedWebPart(barista, WebPart));
+            WebPart = asScriptedWebPart(barista, WebPart);
+            shouldApplyObserver = true;
+        }
+
+        if (webPartSettings.attributes && webPartSettings.attributes.indexOf('autoRefresh') > -1) {
+            WebPart = asAutoRefreshingWebPart(WebPart);
+            shouldApplyObserver = true;
+        }
+
+        if (shouldApplyObserver) {
+            WebPart = observer(WebPart);
         }
 
         return this.webPartInstances[webPartId] = (
@@ -315,7 +325,7 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
         if (volatile === true) {
             unset(this.webPartInstances, webPartId);
         }
-        
+
         PagesStore.saveToLocalStorage(this.props.pagesStore);
         this.setState({
             gridLayout: this.mapWebPartLayoutToGridLayout(this.props.currentPage)

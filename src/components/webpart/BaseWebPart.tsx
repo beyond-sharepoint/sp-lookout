@@ -274,6 +274,11 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
 
     @autobind
     protected useScriptChanged(ev: any, checked: boolean) {
+
+        if (!this.props.settings.attributes) {
+            this.props.settings.attributes = [];
+        }
+
         if (checked === true) {
             pull(this.props.settings.attributes, 'useScript');
             this.props.settings.attributes.push('useScript');
@@ -286,6 +291,11 @@ export abstract class BaseWebPart<P extends object, S extends BaseWebPartState> 
 
     @autobind
     protected autoRefreshChanged(ev: any, checked: boolean) {
+
+        if (!this.props.settings.attributes) {
+            this.props.settings.attributes = [];
+        }
+
         if (checked === true) {
             pull(this.props.settings.attributes, 'autoRefresh');
             this.props.settings.attributes.push('autoRefresh');

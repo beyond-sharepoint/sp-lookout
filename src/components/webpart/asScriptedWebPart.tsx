@@ -64,7 +64,7 @@ const asScriptedWebPart = function <P extends object, S extends BaseWebPartState
                             <Spinner size={SpinnerSize.large} label={loadingLabel} ariaLive="assertive" />
                         </div>
                     }
-                    { !isBrewing && lastResultWasError === true &&
+                    {!isBrewing && lastResultWasError === true &&
                         <div>An error occurred: {JSON.stringify(lastResult)}</div>
                     }
                     {

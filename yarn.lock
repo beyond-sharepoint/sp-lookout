@@ -122,6 +122,10 @@
   version "0.0.33"
   resolved "https://registry.yarnpkg.com/@types/jszip/-/jszip-0.0.33.tgz#01e5f8a244aabe5f05b22f1325c4b575a6714e05"
 
+"@types/later@^1.2.3":
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/@types/later/-/later-1.2.3.tgz#7f14cdc70cc964a00dc78c5dd6eb4e34c4ccb41e"
+
 "@types/lodash@4.14.52":
   version "4.14.52"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.52.tgz#de5c7ab14da1289733233c9b0ec6f9e377db90f5"
@@ -3450,9 +3454,9 @@ klaw@^1.0.0:
   optionalDependencies:
     graceful-fs "^4.1.9"
 
-later@^1.2.0:
+later@RickCarlino/later:
   version "1.2.0"
-  resolved "https://registry.yarnpkg.com/later/-/later-1.2.0.tgz#f2cf6c4dd7956dd2f520adf0329836e9876bad0f"
+  resolved "https://codeload.github.com/RickCarlino/later/tar.gz/fc9ceb582728f75edbf9581e4f53da5fbb8cd4ac"
 
 latest-version@^2.0.0:
   version "2.0.0"
