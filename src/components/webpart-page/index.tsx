@@ -59,7 +59,7 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
     }
 
     componentWillReceiveProps(nextProps: PageProps) {
-        if (this.props.currentPage != nextProps.currentPage) {
+        if (this.props.currentPage !== nextProps.currentPage) {
             this.webPartInstances = [];
             this.setState({
                 gridLayout: this.mapWebPartLayoutToGridLayout(nextProps.currentPage)
