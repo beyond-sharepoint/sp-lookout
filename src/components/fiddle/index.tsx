@@ -112,7 +112,7 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
 
             this._extraLibs[libName] = lib;
         }
-        
+
         //We can get the current typescript worker using the following... 
         //  const worker = await monaco.languages.typescript.getTypeScriptWorker();
         //  const client = await worker(this.props.currentFiddleFullPath);
@@ -219,10 +219,12 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
             }
             lastBrewResult = result.data || result.transferrableData;
 
-            if (this.props.currentFiddle.autoSaveArrayBufferResults === true) {
-                for (let key of Object.keys(lastBrewResult)) {
-                    if (lastBrewResult[key] instanceof ArrayBuffer) {
-                        FileSaver.saveAs(new Blob([lastBrewResult[key]]), key);
+            if (lastBrewResult) {
+                if (this.props.currentFiddle.autoSaveArrayBufferResults === true) {
+                    for (let key of Object.keys(lastBrewResult)) {
+                        if (lastBrewResult[key] instanceof ArrayBuffer) {
+                            FileSaver.saveAs(new Blob([lastBrewResult[key]]), key);
+                        }
                     }
                 }
             }

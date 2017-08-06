@@ -1,4 +1,7 @@
 {
+    "files.associations": {
+        "*.tsc": "typescript"
+    },
     "files.exclude": {
         "build": true,
         "hostwebproxy/build": true,

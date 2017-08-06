@@ -75,13 +75,19 @@ export default class Barista {
         return imports;
     }
 
-    private async getScript(scriptPath: string): Promise<string> {
+    private async getScript(scriptPath: string, transpile?: boolean, moduleName?: string): Promise<string> {
         if (this.scriptMap[scriptPath]) {
             return this.scriptMap[scriptPath];
         }
 
         const fileResponse = await fetch(scriptPath);
-        return this.scriptMap[scriptPath] = await fileResponse.text();
+        let scriptText = await fileResponse.text();
+
+        if (transpile === true) {
+            scriptText = this.transpile(scriptPath, scriptText, false).outputText;
+            scriptText = scriptText.replace(/^define\(\[/, `define('${moduleName}',[`);
+        }
+        return this.scriptMap[scriptPath] = scriptText;
     }
 
     /**
@@ -182,14 +188,14 @@ export default class Barista {
 
         const bootstrap: Array<string> = [];
         bootstrap.push(await this.getScript('./libs/require.min.js'));
-        bootstrap.push(await this.getScript('./libs/requireInit.js'));
+        bootstrap.push(await this.getScript('./libs/workerInit.js'));
 
         //Tamp, Transpile the main module and resulting dependencies.
         const defines = await this.tamp(fullPath, targetFiddleSettings, allowDebuggerStatement || false);
         for (const moduleName of Object.keys(defines)) {
             bootstrap.push(defines[moduleName]);
         }
-
+        
         //Brew
         try {
             return await spContext.brew(
@@ -248,12 +254,16 @@ export default class Barista {
         });
     }
 
-    private transpile(filename: string, input: string, allowDebuggerStatement: boolean): ts.TranspileOutput {
+    private transpile(filename: string, input: string, allowDebuggerStatement: boolean, module?: ts.ModuleKind): ts.TranspileOutput {
         let beforeTransformers: any = [];
         beforeTransformers.push(relativeImportsLocator);
         beforeTransformers.push(nonRelativeImportsLocator);
         if (!allowDebuggerStatement) {
             beforeTransformers.push(DebuggerTransformer);
+        }
+
+        if (typeof module === 'undefined') {
+            module = ts.ModuleKind.AMD;
         }
 
         const output = ts.transpileModule(input, {
@@ -262,7 +272,7 @@ export default class Barista {
             },
             compilerOptions: {
                 target: ts.ScriptTarget.ES2015,
-                module: ts.ModuleKind.AMD,
+                module: module,
                 jsx: ts.JsxEmit.React,
                 importHelpers: true
             },

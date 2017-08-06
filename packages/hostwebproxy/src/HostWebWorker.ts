@@ -1,52 +1,37 @@
-const set = require('lodash/set.js');
-
-class WorkerUtil {
-    static flatten(target: object) {
-        const delimiter = '.';
-        const output = {};
-
-        const step = (object: object, prev?: string) => {
-            for (const key of Object.keys(object)) {
-                const value = object[key];
-                const isArray = Array.isArray(value);
-                const type = Object.prototype.toString.call(value);
-                const isBuffer = value instanceof ArrayBuffer;
-                const isObject = (
-                    type === '[object Object]' ||
-                    type === '[object Array]'
-                );
-
-                const newKey = prev
-                    ? prev + delimiter + key
-                    : key;
-
-                if (!isArray && !isBuffer && isObject && Object.keys(value).length) {
-                    return step(value, newKey);
-                }
-
-                output[newKey] = value;
-            }
-        };
-
-        step(target);
-        return output;
-    }
-}
-
-class SandFiddleProcessor {
+class BaristaWorker {
     private context: DedicatedWorkerGlobalScope;
     private request: any;
 
-    constructor(context: DedicatedWorkerGlobalScope, request) {
+    constructor(context: DedicatedWorkerGlobalScope, request: any) {
         this.context = context;
         this.request = request;
 
         this.bootstrap.bind(this);
-        this.initialize = this.initialize.bind(this);
+        this.startup = this.startup.bind(this);
+        this.brew = this.brew.bind(this);
+        this.processResult = this.processResult.bind(this);
         this.postMessageError = this.postMessageError.bind(this);
     }
 
-    public bootstrap() {
+    public brew(): Promise<{}> {
+        const evalPromise = new Promise((resolve, reject) => {
+            try {
+                const geval = eval;
+                resolve(geval(this.request.code));
+            }
+            catch (err) {
+                reject(err);
+            }
+        });
+
+        return evalPromise;
+    }
+
+    public processResult(result: {}): Promise<{}> {
+        return Promise.resolve(result);
+    }
+
+    private bootstrap() {
         // You're a wizard, Harry!
         if (!this.request.bootstrap || !Array.isArray(this.request.bootstrap)) {
             return;
@@ -56,51 +41,17 @@ class SandFiddleProcessor {
             try {
                 const geval = eval;
                 geval(bootstrapScript);
-            } catch (ex) {
-                this.postMessageError(ex);
-                throw (ex);
+            } catch (err) {
+                this.postMessageError(err);
+                throw err;
             }
         }
     }
 
-    public async initialize(): Promise<void> {
+    private async startup(): Promise<void> {
         try {
-            let requirePromise = new Promise((resolve, reject) => {
-                try {
-                    (<any>this.context).requirejs([this.request.entryPointId], resolve, err => {
-                        if (err instanceof Error) {
-                            reject(err);
-                        } else {
-                            reject(new Error(err));
-                        }
-                    });
-                } catch (ex) {
-                    reject(ex);
-                }
-            });
-
-            let requireResult = await requirePromise;
-
-            //So, to make it easier for the end user, and to avoid 'xxx could not be cloned' messages,
-            //let's go through and invoke functions and resolve any promises that we encounter.
-            const resultPaths = WorkerUtil.flatten(requireResult);
-            for (const path of Object.keys(resultPaths)) {
-                const value = resultPaths[path];
-                if (typeof value === 'function') {
-                    try {
-                        if ((<any>self).spLookoutInstance.isClass(value)) {
-                            set(requireResult, path, value.name);
-                        } else {
-                            set(requireResult, path, 'function');
-                        }
-                    } catch (ex) {
-                        set(requireResult, path, ex);
-                    }
-                } else {
-                    set(requireResult, path, await Promise.resolve(value));
-                }
-            }
-
+            let requireResult = await this.brew();
+            requireResult = await this.processResult(requireResult);
             this.context.postMessage({
                 result: 'success',
                 data: requireResult
@@ -140,43 +91,45 @@ class SandFiddleProcessor {
 
         this.context.postMessage(errorMessage);
     }
+
+    public static initialize() {
+        //Monkeypatch Request to resolve issues when initializing via Request("");
+        const __nativeRequest = (<any>self).Request;
+
+        (<any>self).Request = (input, init) => {
+            if (!input) {
+                input = (<any>self).location.origin;
+            }
+
+            return new __nativeRequest(input, init);
+        }
+
+        self.onmessage = (e) => {
+            const request = e.data;
+
+            const processor = (<any>self).processor = new BaristaWorker(self as any, request);
+            processor.bootstrap();
+            processor.startup();
+        }
+
+        self.onerror = (ev: any) => {
+            let errorMessage: any = {
+                result: 'error',
+                message: ev
+            }
+
+            if (ev instanceof ErrorEvent) {
+                errorMessage.data = {
+                    message: ev.message,
+                    filename: ev.filename,
+                    lineno: ev.lineno,
+                    colno: ev.colno
+                }
+            }
+            (<any>self).postMessage(errorMessage);
+        }
+    }
 }
 
 /** Entry point */
-
-//Monkeypatch Request to resolve issues when initializing via Request("");
-const __nativeRequest = (<any>self).Request;
-
-(<any>self).Request = (input, init) => {
-    if (!input) {
-        input = (<any>self).location.origin;
-    }
-
-    return new __nativeRequest(input, init);
-}
-
-onmessage = (e) => {
-
-    const request = e.data;
-
-    const processor = (<any>self).processor = new SandFiddleProcessor(self as any, request);
-    processor.bootstrap();
-    processor.initialize();
-}
-
-onerror = (ev: any) => {
-    let errorMessage: any = {
-        result: 'error',
-        message: ev
-    }
-
-    if (ev instanceof ErrorEvent) {
-        errorMessage.data = {
-            message: ev.message,
-            filename: ev.filename,
-            lineno: ev.lineno,
-            colno: ev.colno
-        }
-    }
-    (<any>self).postMessage(errorMessage);
-}
+BaristaWorker.initialize();

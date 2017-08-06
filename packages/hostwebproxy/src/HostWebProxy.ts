@@ -9,19 +9,6 @@ class ProxyUtil {
     }
 
     /**
-     * Utility method to convert a string to an array buffer
-     * @param str string to convert
-     */
-    public static str2ab(str: string): ArrayBuffer {
-        let len = str.length;
-        let bytes = new Uint8Array(len);
-        for (let i = 0; i < len; i++) {
-            bytes[i] = str.charCodeAt(i);
-        }
-        return bytes.buffer;
-    }
-
-    /**
      * Utility method to reject a promise if it does not settle within the specified timeout.
      * @param promise 
      * @param timeoutMillis 
@@ -126,7 +113,7 @@ class HostWebProxy {
             ProxyUtil.postMessage({
                 ...request,
                 $$result: 'success',
-                transferrableData: ProxyUtil.str2ab('Pong')
+                data: 'Pong'
             });
         },
         'Eval': (command, postMessageId, request) => {
@@ -386,11 +373,10 @@ class HostWebProxy {
                 data: result.data,
                 transferrableData: result.transferrableData
             }
-
             ProxyUtil.postMessage(brewResponse);
         }
-        catch (ex) {
-            ProxyUtil.postMessageError(command, postMessageId, ex);
+        catch (err) {
+            ProxyUtil.postMessageError(command, postMessageId, err);
         }
         finally {
             if (worker) {

@@ -61,6 +61,7 @@ export interface SPContextInfo {
 export interface BrewConfig {
     bootstrap: Array<string>;
     entryPointId: string;
+    props?: any;
     timeout?: number;
     [others: string]: any;
 }
