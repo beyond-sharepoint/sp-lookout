@@ -60,7 +60,7 @@
     "cpr": "^2.2.0",
     "gh-pages": "^1.0.0",
     "npm-run-all": "^4.0.2",
-    "react-scripts-ts": "2.5.0",
+    "react-scripts-ts": "beyond-sharepoint/react-scripts-ts",
     "rimraf": "^2.6.1",
     "source-map-support": "0.4.3"
   },
