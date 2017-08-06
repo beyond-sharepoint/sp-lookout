@@ -55,11 +55,7 @@
                 parsedKey;
         };
 
-        const sortedKeys = Object.keys(target).sort(function (keyA, keyB) {
-            return keyA.length - keyB.length;
-        });
-
-        sortedKeys.forEach(function (key) {
+        Object.keys(target).forEach(function (key) {
             const split = key.split(delimiter);
             let key1 = getkey(split.shift());
             let key2 = getkey(split[0]);
