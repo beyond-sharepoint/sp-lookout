@@ -1,3 +1,5 @@
+import 'promise/polyfill';
+import 'whatwg-fetch';
 const HostWebWorker = require('worker-loader?inline&name=HostWebWorker.js!./HostWebWorker.ts');
 
 class ProxyUtil {

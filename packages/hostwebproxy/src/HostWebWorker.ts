@@ -1,3 +1,6 @@
+import 'promise/polyfill';
+import 'whatwg-fetch';
+
 class BaristaWorker {
     private context: DedicatedWorkerGlobalScope;
     private request: any;

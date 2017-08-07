@@ -3,7 +3,7 @@
         const delimiter = '.';
         const output = {};
 
-        const step = (object, prev) => {
+        const step = function (object, prev) {
             for (const key of Object.keys(object)) {
                 const value = object[key];
                 const isArray = Array.isArray(value);
