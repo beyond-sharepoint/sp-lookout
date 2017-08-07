@@ -1,0 +1,11 @@
+(() => {
+    return (resolveWorker, rejectWorker, eventData, args) => {
+        (<any>window).localforage.getItem(eventData.key)
+            .then((item) => {
+                args.worker.postMessage(item);
+            })
+            .catch((err) => {
+                rejectWorker(err);
+            });
+    };
+})();

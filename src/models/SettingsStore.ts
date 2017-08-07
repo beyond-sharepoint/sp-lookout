@@ -52,7 +52,8 @@ export class SettingsStore {
         return new SettingsStore(settings.sharePointSettings, settings.lookoutSettings);
     }
 
-    @action static async saveToLocalStorage(settingsStore: SettingsStore) {
+    @action
+    static async saveToLocalStorage(settingsStore: SettingsStore) {
         const settingsToPersist: Settings = {
             sharePointSettings: toJS(settingsStore._sharePointSettings),
             lookoutSettings: toJS(settingsStore._lookoutSettings)
@@ -70,3 +71,5 @@ type Settings = {
     sharePointSettings?: SharePointSettings,
     lookoutSettings?: LookoutSettings
 };
+
+SettingsStore.saveToLocalStorage = debounce(SettingsStore.saveToLocalStorage, 1000);

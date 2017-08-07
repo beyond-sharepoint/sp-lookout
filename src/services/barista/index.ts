@@ -12,10 +12,10 @@ import { FiddlesStore, FiddleSettings } from '../../models';
 const tslib = require('raw-loader!tslib/tslib.js');
 const localforage = require('raw-loader!localforage/dist/localforage.min.js');
 const requirejs = require('raw-loader!requirejs/require.js');
-const workerInit = require('raw-loader!./libs/workerInit.js');
-const workerGetItem = require('raw-loader!./libs/workerGetItem.js');
-const workerSetItem = require('raw-loader!./libs/workerSetItem.js');
-const workerRemoveItem = require('raw-loader!./libs/workerRemoveItem.js');
+const workerInit = require('./libs/workerInit.tsc');
+const workerGetItem = require('./libs/workerGetItem.tsc');
+const workerSetItem = require('./libs/workerSetItem.tsc');
+const workerRemoveItem = require('./libs/workerRemoveItem.tsc');
 const baristaUtils = require('./libs/BaristaUtils.tsc');
 
 export default class Barista {
@@ -83,7 +83,23 @@ export default class Barista {
 
         return imports;
     }
-    
+
+    private getTranspiledLib(code: string, fileName: string): string {
+        if (this.scriptMap[fileName]) {
+            return this.scriptMap[fileName];
+        }
+
+        const transpiled = ts.transpileModule(code, {
+            compilerOptions: {
+                target: ts.ScriptTarget.ES5,
+                module: ts.ModuleKind.None
+            },
+            fileName: fileName
+        });
+
+        return this.scriptMap[fileName] = transpiled.outputText;
+    }
+
     /**
      * Transpiles the specified typescript code and returns a map of define statements.
      */
@@ -164,9 +180,9 @@ export default class Barista {
         if (!(spContext as any).isBaristaContext) {
             await spContext.eval(localforage);
 
-            await spContext.setWorkerCommand('getItem', workerGetItem);
-            await spContext.setWorkerCommand('setItem', workerSetItem);
-            await spContext.setWorkerCommand('removeItem', workerRemoveItem);
+            await spContext.setWorkerCommand('getItem', this.getTranspiledLib(workerGetItem, 'workerGetItem.ts'));
+            await spContext.setWorkerCommand('setItem', this.getTranspiledLib(workerSetItem, 'workerSetItem.ts'));
+            await spContext.setWorkerCommand('removeItem', this.getTranspiledLib(workerRemoveItem, 'workerRemoveItem.ts'));
 
             (spContext as any).isBaristaContext = true;
         }
@@ -180,14 +196,14 @@ export default class Barista {
 
         const bootstrap: Array<string> = [];
         bootstrap.push(requirejs);
-        bootstrap.push(workerInit);
+        bootstrap.push(this.getTranspiledLib(workerInit, 'workerInit.ts'));
 
         //Tamp, Transpile the main module and resulting dependencies.
         const defines = await this.tamp(fullPath, targetFiddleSettings, allowDebuggerStatement || false);
         for (const moduleName of Object.keys(defines)) {
             bootstrap.push(defines[moduleName]);
         }
-
+        
         //Brew
         try {
             return await spContext.brew(
@@ -263,7 +279,7 @@ export default class Barista {
                 before: beforeTransformers
             },
             compilerOptions: {
-                target: ts.ScriptTarget.ES2015,
+                target: ts.ScriptTarget.ES5,
                 module: module,
                 jsx: ts.JsxEmit.React,
                 importHelpers: true
