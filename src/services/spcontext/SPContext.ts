@@ -131,7 +131,9 @@ export class SPContext {
                 throw Error('A connection to the ContextInfo endpoint did not result in a transferred object.');
             }
 
-            const contentType = context.headers['content-type'];
+            //IE11/Chrome/Firefox/Safari return the actual casing of the response header.
+            //Frustratingly, MS Edge thinks it knows better.
+            const contentType = context.headers['content-type'] || context.headers['Content-Type'];
             if (!contentType || !contentType.startsWith('application/json')) {
                 throw Error(`Unexpected content type returned from the ContextInfo endpoint: ${contentType}`);
             }
