@@ -54,4 +54,4 @@ A) React, MobX, Typescript, SASS.
 
 Q) What browsers are supported?
 
-A) At this point FireFox/Chrome/Safari desktop are functioning. Safari iOS has authentication issues. Edge has authentication issues. IE11 has various display issues. As the primary audience will probably desire Edge/IE11 support it is a goal to have it working on these browsers.
+A) At this point FireFox/Chrome/Safari desktop are functioning. Safari iOS has authentication issues. MS Edge and IE11 have various display issues. As the primary audience will probably desire Edge/IE11 support it is a goal to have it working well on these browsers.
