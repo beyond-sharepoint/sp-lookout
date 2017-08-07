@@ -46,7 +46,7 @@
     "react-grid-layout": "^0.14.7",
     "react-html-parser": "^1.0.3",
     "react-inspector": "^2.1.3",
-    "react-mfb": "^0.5.0",
+    "react-mfb": "^0.6.0",
     "react-router": "^4.1.2",
     "react-router-dom": "^4.1.2",
     "requirejs": "^2.3.4",
