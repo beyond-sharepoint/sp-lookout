@@ -4,7 +4,7 @@
   "description": "SharePoint Host Web Proxy",
   "private": true,
   "scripts": {
-    "build": "rimraf build && webpack -p --optimize-minimize --bail --progress --profile --config webpack.config.js && rimraf build/HostWebProxy.js && cpr build/HostWebProxy.aspx ../../public/HostWebProxy.aspx -o && cpr build/HostWebProxy.aspx ../../public/HostWebProxy.txt -o"
+    "build": "rimraf build && webpack -p --optimize-minimize --bail --progress --profile --config webpack.config.js && rimraf build/HostWebProxy.js && cpr build/HostWebProxy.aspx ../../src/assets/HostWebProxy.html -o"
   },
   "dependencies": {
     "localforage": "^1.5.0",

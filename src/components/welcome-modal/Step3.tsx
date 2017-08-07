@@ -62,9 +62,7 @@ export class Step3 extends React.Component<Step3Props, any> {
 
     @action.bound
     private async downloadHostWebProxy() {
-        const hostWebProxyUrl = require('file-loader@../../../public/HostWebProxy.txt');
-        const response = await fetch(hostWebProxyUrl);
-        const hostWebProxyData = await response.text();
+        const hostWebProxyData = require('raw-loader!../../assets/HostWebProxy.html');
 
         const expression = `
         window.hostWebProxyConfig = {

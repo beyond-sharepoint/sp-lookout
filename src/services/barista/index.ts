@@ -9,6 +9,15 @@ import { nonRelativeImportsLocator } from './nonRelativeImportsLocator';
 import { SPContext, SPContextConfig, SPProxy, SPContextError, defaultSPContextConfig } from '../spcontext';
 import { FiddlesStore, FiddleSettings } from '../../models';
 
+const tslib = require('raw-loader!tslib/tslib.js');
+const localforage = require('raw-loader!localforage/dist/localforage.min.js');
+const requirejs = require('raw-loader!requirejs/require.js');
+const workerInit = require('raw-loader!./libs/workerInit.js');
+const workerGetItem = require('raw-loader!./libs/workerGetItem.js');
+const workerSetItem = require('raw-loader!./libs/workerSetItem.js');
+const workerRemoveItem = require('raw-loader!./libs/workerRemoveItem.js');
+const baristaUtils = require('./libs/BaristaUtils.tsc');
+
 export default class Barista {
     private scriptMap: { [path: string]: string } = {};
 
@@ -74,22 +83,7 @@ export default class Barista {
 
         return imports;
     }
-
-    private async getScript(scriptPath: string, transpile?: boolean, moduleName?: string): Promise<string> {
-        if (this.scriptMap[scriptPath]) {
-            return this.scriptMap[scriptPath];
-        }
-
-        const fileResponse = await fetch(scriptPath);
-        let scriptText = await fileResponse.text();
-
-        if (transpile === true) {
-            scriptText = this.transpile(scriptPath, scriptText, false).outputText;
-            scriptText = scriptText.replace(/^define\(\[/, `define('${moduleName}',[`);
-        }
-        return this.scriptMap[scriptPath] = scriptText;
-    }
-
+    
     /**
      * Transpiles the specified typescript code and returns a map of define statements.
      */
@@ -128,11 +122,11 @@ export default class Barista {
         //Redirect a set of modules to import from local resources.
         const localImports = {
             'tslib': {
-                path: './libs/tslib.js',
+                code: tslib,
                 transpile: false
             },
             'sp-lookout': {
-                path: './libs/BaristaUtils.tsc',
+                code: baristaUtils,
                 transpile: true
             }
         };
@@ -142,9 +136,8 @@ export default class Barista {
                 continue;
             }
             const moduleInfo = localImports[moduleName];
-            const fileResponse = await fetch(moduleInfo.path);
-            const fileContents = await fileResponse.text();
-            if (moduleInfo.transpile) {
+            const fileContents = await moduleInfo.code;
+            if (moduleInfo.transpile === true) {
                 defines[moduleName] = this.transpile(moduleName, fileContents, true).outputText;
             } else {
                 defines[moduleName] = fileContents;
@@ -169,12 +162,11 @@ export default class Barista {
 
         //Ensure that barista custom commands are added to the proxy.
         if (!(spContext as any).isBaristaContext) {
-            const localforage = await this.getScript('./libs/localforage.min.js');
             await spContext.eval(localforage);
 
-            await spContext.setWorkerCommand('getItem', await this.getScript('./libs/workerGetItem.js'));
-            await spContext.setWorkerCommand('setItem', await this.getScript('./libs/workerSetItem.js'));
-            await spContext.setWorkerCommand('removeItem', await this.getScript('./libs/workerRemoveItem.js'));
+            await spContext.setWorkerCommand('getItem', workerGetItem);
+            await spContext.setWorkerCommand('setItem', workerSetItem);
+            await spContext.setWorkerCommand('removeItem', workerRemoveItem);
 
             (spContext as any).isBaristaContext = true;
         }
@@ -187,15 +179,15 @@ export default class Barista {
         }
 
         const bootstrap: Array<string> = [];
-        bootstrap.push(await this.getScript('./libs/require.min.js'));
-        bootstrap.push(await this.getScript('./libs/workerInit.js'));
+        bootstrap.push(requirejs);
+        bootstrap.push(workerInit);
 
         //Tamp, Transpile the main module and resulting dependencies.
         const defines = await this.tamp(fullPath, targetFiddleSettings, allowDebuggerStatement || false);
         for (const moduleName of Object.keys(defines)) {
             bootstrap.push(defines[moduleName]);
         }
-        
+
         //Brew
         try {
             return await spContext.brew(
