@@ -94,7 +94,7 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
         };
 
         return (
-            <div style={{ flex: 1, display: 'flex', overflow: 'auto', zIndex: 1 }}>
+            <div style={{ flex: '1 0 0%', display: 'flex', overflow: 'auto', zIndex: 1 }}>
                 <div style={backgroundImageStyle} />
                 <div style={backgroundColorStyle} />
                 <ResponsiveLayout
@@ -108,7 +108,7 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
                     onLayoutChange={this.onLayoutChange}
                     isDraggable={!locked}
                     isResizable={!locked}
-                    style={{ flex: 1, zIndex: 1 }}
+                    style={{ flex: '1 0 0%', zIndex: 1 }}
                 >
                     {Object.keys(currentPage.webParts).map((webPartId, ix) => {
                         const webPart: WebPartSettings = currentPage.webParts[webPartId];

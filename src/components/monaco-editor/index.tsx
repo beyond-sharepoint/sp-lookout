@@ -234,7 +234,7 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps, {}>
         const style = {
             width: fixedWidth,
             //height: fixedHeight,
-            flex: 1,
+            flex: '1 0 0%',
             ...this.props.style
         };
         return (

@@ -19,7 +19,7 @@ export class NoteWebPart extends BaseWebPart<NoteWebPartProps, any> {
                 value={this.webPartProps.text}
                 onChange={this.onNoteChanged}
                 style={{
-                    flex: '1',
+                    flex: '1 0 0%',
                     resize: 'none',
                     border: 'none',
                     outline: 'none',

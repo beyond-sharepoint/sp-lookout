@@ -51,7 +51,7 @@ const asAutoRefreshingWebPart = function <P extends object, S extends BaseWebPar
             return (
                 <div>
                     {isRefreshing === true &&
-                        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div style={{ flex: '1 0 0%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <Spinner size={SpinnerSize.large} label={refreshingLabel} ariaLive="assertive" />
                         </div>
                     }

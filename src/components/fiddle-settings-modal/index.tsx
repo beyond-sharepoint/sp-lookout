@@ -43,7 +43,7 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, Fi
                 </div>
                 <div className="fiddle-settings-modal-body">
                     <Pivot>
-                        <PivotItem linkText="Script Options" style={{ flex: 1}}>
+                        <PivotItem linkText="Script Options" style={{ flex: '1 0 0%'}}>
                             <TextField
                                 label="Description"
                                 multiline={true}
@@ -70,7 +70,7 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, Fi
                                 offText="Off"
                             />
                         </PivotItem>
-                        <PivotItem linkText="Editor Options" style={{ flex: 1}}>
+                        <PivotItem linkText="Editor Options" style={{ flex: '1 0 0%'}}>
                             <Dropdown
                                 label="Theme:"
                                 id="fiddle-theme"
@@ -125,7 +125,7 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, Fi
                                 }
                             />
                         </PivotItem>
-                        <PivotItem linkText="RequireJS Config" style={{flex: 1, display: 'flex'}}>
+                        <PivotItem linkText="RequireJS Config" style={{flex: '1 0 0%', display: 'flex'}}>
                             <MonacoEditor
                                 value={this.state.requireConfig}
                                 language="json"
@@ -144,7 +144,7 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, Fi
                                 style={{height: '90%'}}
                             />
                         </PivotItem>
-                        <PivotItem linkText="TypeScript Options" style={{ flex: 1}}>
+                        <PivotItem linkText="TypeScript Options" style={{ flex: '1 0 0%'}}>
                             TODO
                         </PivotItem>
                     </Pivot>

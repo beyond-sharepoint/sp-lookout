@@ -60,7 +60,7 @@ const asScriptedWebPart = function <P extends object, S extends BaseWebPartState
             return (
                 <div>
                     {isBrewing === true &&
-                        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div style={{ flex: '1 0 0%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <Spinner size={SpinnerSize.large} label={loadingLabel} ariaLive="assertive" />
                         </div>
                     }

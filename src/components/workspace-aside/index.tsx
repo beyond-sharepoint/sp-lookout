@@ -112,7 +112,7 @@ export default class Aside extends React.Component<AsideProps, any> {
                             </div>
                         </div>
                     </div>
-                    <div style={{ flex: 1, overflow: 'auto' }}>
+                    <div style={{ flex: '1 0 0%', overflow: 'auto' }}>
                         <Nav
                             className="aside"
                             groups={navGroups}
