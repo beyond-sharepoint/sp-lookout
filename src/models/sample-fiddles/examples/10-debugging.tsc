@@ -15,4 +15,4 @@ const runner = async () => {
     return "all done!"
 }
 
-export default runner()
+export default runner();

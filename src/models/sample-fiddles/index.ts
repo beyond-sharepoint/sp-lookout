@@ -24,31 +24,8 @@ export const defaultFiddleRootFolder: FiddleFolder = {
             files: [
                 {
                     ...defaultFiddleSettings(),
-                    name: 'node.js',
-                    cursorColumn: 1,
-                    cursorLineNumber: 1,
-                    locked: true,
-                },
-                {
-                    ...defaultFiddleSettings(),
-                    name: 'react-ui-tree.css',
-                    cursorColumn: 1,
-                    cursorLineNumber: 1,
-                    locked: true,
-                },
-                {
-                    ...defaultFiddleSettings(),
-                    name: 'react-ui-tree.js',
-                    cursorColumn: 1,
-                    cursorLineNumber: 1,
-                    locked: true,
-                },
-                {
-                    ...defaultFiddleSettings(),
-                    name: 'tree.js',
-                    cursorColumn: 1,
-                    cursorLineNumber: 1,
-                    locked: true,
+                    name: 'infopathLiberator.ts',
+                    code: require('./built-ins/infopathLiberator.tsc')
                 }
             ]
         },
