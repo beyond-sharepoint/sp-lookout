@@ -1,0 +1,6 @@
+import * as _ from 'lodash';
+import * as pnp from 'sp-pnp-js';
+
+let web = new pnp.Web(location.origin);
+
+export default web.get();

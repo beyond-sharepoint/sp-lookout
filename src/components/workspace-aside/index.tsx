@@ -18,8 +18,6 @@ import {
     FiddlesStore,
     FiddleSettings,
     FiddleFolder,
-    defaultFiddleSettings,
-    defaultFiddleFolder,
     Util
 } from '../../models';
 
@@ -211,10 +209,8 @@ export default class Aside extends React.Component<AsideProps, any> {
             newFileName = `newFile-${String('00' + ++ix).slice(-2)}.ts`;
         }
 
-        let newFile: FiddleSettings = observable({
-            ...defaultFiddleSettings,
-            name: newFileName
-        });
+        let newFile = new FiddleSettings();
+        newFile.name = newFileName;
 
         targetFolder.collapsed = false;
         targetFolder.files.push(newFile as File);
@@ -229,10 +225,8 @@ export default class Aside extends React.Component<AsideProps, any> {
             newFolderName = `new-folder-${String('00' + ++ix).slice(-2)}`;
         }
 
-        let newFolder: FiddleFolder = observable({
-            ...defaultFiddleFolder,
-            name: newFolderName
-        });
+        let newFolder = new FiddleFolder();
+        newFolder.name = newFolderName;
 
         targetFolder.collapsed = false;
         targetFolder.folders.push(newFolder as Folder);

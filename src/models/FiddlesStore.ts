@@ -1,10 +1,11 @@
 import { autorun, observable, extendObservable, observe, action, computed, runInAction, toJS, IObservableObject } from 'mobx';
-import { FiddleSettings, defaultFiddleSettings } from './FiddleSettings';
-import { FiddleFolder, defaultFiddleRootFolder } from './FiddleFolder';
+import { FiddleSettings } from './FiddleSettings';
+import { FiddleFolder } from './FiddleFolder';
 import * as localforage from 'localforage';
 import * as URI from 'urijs';
 import { assign, defaultsDeep, find, filter, values, findKey } from 'lodash';
 
+import { defaultFiddleRootFolder } from './sample-fiddles';
 export const FiddlesLocalStorageKey = 'sp-lookout-fiddles';
 
 export class FiddlesStore {
@@ -27,7 +28,7 @@ export class FiddlesStore {
             const fileMap = FiddlesStore.getFileMap(fiddleRootFolder);
             for (const fileName of Object.keys(fileMap)) {
                 const file = fileMap[fileName];
-                defaultsDeep(file, defaultFiddleSettings);
+                defaultsDeep(file, new FiddleSettings());
             }
 
             this._fiddleRootFolder = observable(fiddleRootFolder);

@@ -18,7 +18,7 @@ import { get, set, cloneDeep, defaultsDeep, debounce, throttle } from 'lodash';
 import { FiddleSettingsModal } from '../fiddle-settings-modal';
 
 import Barista, { BrewSettings } from '../../services/barista';
-import { FiddlesStore, FiddleSettings, defaultFiddleSettings, Util } from '../../models';
+import { FiddlesStore, FiddleSettings, Util } from '../../models';
 import './index.css';
 
 @observer

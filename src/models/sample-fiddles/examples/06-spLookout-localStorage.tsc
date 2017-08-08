@@ -1,0 +1,11 @@
+import { spLookout } from 'sp-lookout';
+import * as bluebird from 'bluebird';
+
+const runner = async () => {
+    spLookout.reportProgress("foo");
+    await spLookout.setItem('foo', 'bar123');
+    await bluebird.delay(1000);
+    return await spLookout.getItem('foo');
+}
+
+export default runner()

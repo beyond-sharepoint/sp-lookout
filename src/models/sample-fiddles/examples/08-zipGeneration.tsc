@@ -1,0 +1,9 @@
+import * as JSZip from 'jszip';
+
+const runner = async () => {
+    const zip = new JSZip();
+    zip.file("hello.txt", "Hello World\n");
+    return await zip.generateAsync({ type: "arraybuffer" });
+};
+
+export default runner();

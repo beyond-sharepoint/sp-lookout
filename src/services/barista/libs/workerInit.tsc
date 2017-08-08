@@ -142,7 +142,7 @@
             const value = resultPaths[path];
             if (typeof value === 'function') {
                 try {
-                    if ((<any>self).spLookoutInstance.isClass(value)) {
+                    if (isClass(value)) {
                         resultPaths[path] = value.name;
                     } else {
                         resultPaths[path] = 'function';
@@ -150,7 +150,9 @@
                 } catch (ex) {
                     resultPaths[path] = ex;
                 }
-            } else {
+            } else if (value instanceof Error) {
+                throw value;
+            }else {
                 const promise = Promise.resolve(value)
                     .then((result) => {
                         resultPaths[path] = result;

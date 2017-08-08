@@ -41,6 +41,10 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
             for (const id of Object.keys(webPartLayouts)) {
                 const webPart: WebPartSettings = currentPage.webParts[id];
                 const webPartLayout: WebPartLayout = webPartLayouts[id];
+                if (!webPart || !webPartLayout) {
+                    continue;
+                }
+
                 layout.push({
                     x: webPartLayout.x,
                     y: webPartLayout.y,

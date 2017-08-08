@@ -3,8 +3,8 @@ import * as localforage from 'localforage';
 import { defaultsDeep, find, filter } from 'lodash';
 import { PageSettings } from './PageSettings';
 
-const dashboard = require('./data/dashboard.json');
-const tropicalOutlook = require('./data/tropical-outlook.json');
+import { dashboard } from './sample-pages/dashboard';
+import { tropicalOutlook } from './sample-pages/tropical-outlook';
 
 export const PagesLocalStorageKey = 'sp-lookout-pages';
 

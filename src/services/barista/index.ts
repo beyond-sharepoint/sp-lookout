@@ -1,6 +1,7 @@
 /// <reference path='../../../node_modules/@types/requirejs/index.d.ts' />
 import * as ts from 'typescript';
 import * as URI from 'urijs';
+import { toJS } from 'mobx';
 import { cloneDeep, defaultsDeep } from 'lodash';
 
 import { DebuggerTransformer } from './debuggerTransformer';
@@ -203,7 +204,8 @@ export default class Barista {
         for (const moduleName of Object.keys(defines)) {
             bootstrap.push(defines[moduleName]);
         }
-        
+
+        console.dir(bootstrap);
         //Brew
         try {
             return await spContext.brew(
@@ -211,7 +213,7 @@ export default class Barista {
                     bootstrap,
                     entryPointId: fullPath.replace(/\.tsx?$/, ''),
                     timeout,
-                    requireConfig: targetFiddleSettings.requireConfig
+                    requireConfig: toJS(targetFiddleSettings.requireConfig)
                 },
                 timeout,
                 undefined,

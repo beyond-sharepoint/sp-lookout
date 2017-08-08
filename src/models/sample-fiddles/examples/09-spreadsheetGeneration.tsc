@@ -1,0 +1,29 @@
+import { spLookout } from 'sp-lookout';
+import * as xlsx from 'xlsx';
+xlsx = XLSX;
+
+const runner = async () => {
+    const json = [
+        { one: 'red', two: 'fish', three: 'carrot' },
+        { one: 'green', two: 'dog', three: 'cow' },
+        { one: 'blue', two: 'cat', three: 'corn' }
+    ];
+
+    const sheet = xlsx.utils.json_to_sheet(json);
+    const wb: xlsx.WorkBook = {
+        SheetNames: ['My Worksheet'],
+        Sheets: {
+            'My Worksheet': sheet
+        }
+    }
+
+    const str = xlsx.write(wb, {
+        bookType: 'xlsx',
+        bookSST: true,
+        type: 'binary'
+    });
+
+    return spLookout.stringToArrayBuffer(str);
+};
+
+export default runner();

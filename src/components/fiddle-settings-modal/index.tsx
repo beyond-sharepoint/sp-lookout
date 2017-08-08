@@ -12,7 +12,7 @@ import { SpinButton } from 'office-ui-fabric-react/lib/SpinButton';
 
 import MonacoEditor from '../monaco-editor';
 
-import { FiddlesStore, FiddleSettings, defaultFiddleSettings } from '../../models';
+import { FiddlesStore, FiddleSettings } from '../../models';
 import './index.css';
 
 @observer
@@ -75,7 +75,7 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, Fi
                                 label="Theme:"
                                 id="fiddle-theme"
                                 ariaLabel="Select Fiddle Theme"
-                                selectedKey={currentFiddle.theme || defaultFiddleSettings.theme}
+                                selectedKey={currentFiddle.theme || new FiddleSettings().theme}
                                 onChanged={this.updateTheme}
                                 options={
                                     [
@@ -97,7 +97,7 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, Fi
                                 label="Wordwrap:"
                                 id="fiddle-wordwrap"
                                 ariaLabel="Select wordwrap"
-                                selectedKey={currentFiddle.editorOptions.wordWrap || defaultFiddleSettings.editorOptions.wordWrap}
+                                selectedKey={currentFiddle.editorOptions.wordWrap || new FiddleSettings().editorOptions.wordWrap}
                                 onChanged={this.updateWordWrap}
                                 options={
                                     [
@@ -112,7 +112,7 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, Fi
                                 label="Cursor Animation Style:"
                                 id="fiddle-cursor"
                                 ariaLabel="Select Cursor Animation Style"
-                                selectedKey={currentFiddle.editorOptions.cursorBlinking || defaultFiddleSettings.editorOptions.cursorBlinking}
+                                selectedKey={currentFiddle.editorOptions.cursorBlinking || new FiddleSettings().editorOptions.cursorBlinking}
                                 onChanged={this.updateCursorAnimationStyle}
                                 options={
                                     [

@@ -133,8 +133,8 @@
     "@types/react" "*"
 
 "@types/react@*", "@types/react@^16.0.0":
-  version "16.0.0"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.0.0.tgz#fec7e6302e11c1cd307129d8ce1e6d5dca4a0283"
+  version "16.0.1"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.0.1.tgz#c84c984bfa2c01e585d51e376df0ec7e13fadede"
 
 "@types/requirejs@^2.1.30":
   version "2.1.30"
@@ -160,9 +160,9 @@
   version "3.16.20-alpha"
   resolved "https://registry.yarnpkg.com/@types/z-schema/-/z-schema-3.16.20-alpha.tgz#36f588ccca27d8e86dd6bb595a973aede8803766"
 
-"@uifabric/styling@>=0.17.0 <1.0.0":
-  version "0.18.0"
-  resolved "https://registry.yarnpkg.com/@uifabric/styling/-/styling-0.18.0.tgz#c0f288acf6595fda4d67074ea6bb4a6c3f0b2015"
+"@uifabric/styling@>=0.19.0 <1.0.0":
+  version "0.19.0"
+  resolved "https://registry.yarnpkg.com/@uifabric/styling/-/styling-0.19.0.tgz#52da35831f013a421e3ad552ab3f9ca90f160e0a"
   dependencies:
     "@microsoft/load-themed-styles" "^1.5.1"
     "@uifabric/utilities" ">=4.9.0 <5.0.0"
@@ -713,8 +713,8 @@ bluebird@^3.4.7:
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.0.tgz#791420d7f551eea2897453a8a77653f96606d67c"
 
 bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.1.1, bn.js@^4.4.0:
-  version "4.11.7"
-  resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.11.7.tgz#ddb048e50d9482790094c13eb3fcfc833ce7ab46"
+  version "4.11.8"
+  resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.11.8.tgz#2cde09eb5ee341f484746bb0309b3253b1b1442f"
 
 bonjour@^3.5.0:
   version "3.5.0"
@@ -3957,8 +3957,8 @@ no-case@^2.2.0:
     lower-case "^1.1.1"
 
 node-fetch@^1.0.1:
-  version "1.7.1"
-  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-1.7.1.tgz#899cb3d0a3c92f952c47f1b876f4c8aeabd400d5"
+  version "1.7.2"
+  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-1.7.2.tgz#c54e9aac57e432875233525f3c891c4159ffefd7"
   dependencies:
     encoding "^0.1.11"
     is-stream "^1.0.1"
@@ -4190,11 +4190,11 @@ obuf@^1.0.0, obuf@^1.1.1:
   resolved "https://registry.yarnpkg.com/obuf/-/obuf-1.1.1.tgz#104124b6c602c6796881a042541d36db43a5264e"
 
 office-ui-fabric-react@^4.30.1:
-  version "4.30.1"
-  resolved "https://registry.yarnpkg.com/office-ui-fabric-react/-/office-ui-fabric-react-4.30.1.tgz#c8ea9e2875e438dc25c79db00aa7c2abf82e928a"
+  version "4.31.0"
+  resolved "https://registry.yarnpkg.com/office-ui-fabric-react/-/office-ui-fabric-react-4.31.0.tgz#cfc96a3f5443d4cd27c8fd7bc0dd5877fd6820e8"
   dependencies:
     "@microsoft/load-themed-styles" "^1.5.1"
-    "@uifabric/styling" ">=0.17.0 <1.0.0"
+    "@uifabric/styling" ">=0.19.0 <1.0.0"
     "@uifabric/utilities" ">=4.9.0 <5.0.0"
     prop-types "^15.5.10"
     tslib "^1.6.0"
@@ -5015,8 +5015,8 @@ react-html-parser@^1.0.3:
     htmlparser2 "^3.9.0"
 
 react-inspector@^2.1.3:
-  version "2.1.3"
-  resolved "https://registry.yarnpkg.com/react-inspector/-/react-inspector-2.1.3.tgz#61fc4c6b6b29b5262af3aad781a12138cd181a32"
+  version "2.1.4"
+  resolved "https://registry.yarnpkg.com/react-inspector/-/react-inspector-2.1.4.tgz#2123fab74f68ae3136fbd02392fadb764326d04d"
   dependencies:
     babel-runtime "^6.23.0"
     is-dom "^1.0.9"
@@ -5058,8 +5058,8 @@ react-router@^4.1.1, react-router@^4.1.2:
     warning "^3.0.0"
 
 react-scripts-ts@beyond-sharepoint/react-scripts-ts:
-  version "2.7.4"
-  resolved "https://codeload.github.com/beyond-sharepoint/react-scripts-ts/tar.gz/daa1bdff1b2280a214d305dad6c020f32776b6a4"
+  version "2.7.5"
+  resolved "https://codeload.github.com/beyond-sharepoint/react-scripts-ts/tar.gz/dfec66c47d0aa535cf01735b07839a015a3b377b"
   dependencies:
     app-root-path "^2.0.1"
     autoprefixer "7.1.2"
@@ -6117,8 +6117,8 @@ tslint-react@^3.2.0:
     tsutils "^2.8.0"
 
 tslint@^5.5.0:
-  version "5.5.0"
-  resolved "https://registry.yarnpkg.com/tslint/-/tslint-5.5.0.tgz#10e8dab3e3061fa61e9442e8cee3982acf20a6aa"
+  version "5.6.0"
+  resolved "https://registry.yarnpkg.com/tslint/-/tslint-5.6.0.tgz#088aa6c6026623338650b2900828ab3edf59f6cf"
   dependencies:
     babel-code-frame "^6.22.0"
     colors "^1.1.2"
@@ -6129,9 +6129,9 @@ tslint@^5.5.0:
     resolve "^1.3.2"
     semver "^5.3.0"
     tslib "^1.7.1"
-    tsutils "^2.5.1"
+    tsutils "^2.7.1"
 
-tsutils@^2.5.1, tsutils@^2.8.0:
+tsutils@^2.7.1, tsutils@^2.8.0:
   version "2.8.0"
   resolved "https://registry.yarnpkg.com/tsutils/-/tsutils-2.8.0.tgz#0160173729b3bf138628dd14a1537e00851d814a"
   dependencies:

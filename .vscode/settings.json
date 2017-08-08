@@ -1,6 +1,7 @@
 {
     "files.associations": {
-        "*.tsc": "typescript"
+        "*.tsc": "typescript",
+        "*.tsxc": "typescriptreact"
     },
     "files.exclude": {
         "build": true,

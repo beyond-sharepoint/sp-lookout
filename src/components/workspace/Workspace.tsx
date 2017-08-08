@@ -25,7 +25,7 @@ import { WelcomeModal } from '../welcome-modal';
 import { WorkspaceSettingsModal } from '../workspace-settings-modal';
 import Fiddle from '../fiddle';
 
-import { SettingsStore, PagesStore, FiddlesStore, FiddleFolder, FiddleSettings, defaultFiddleSettings, Util } from '../../models';
+import { SettingsStore, PagesStore, FiddlesStore, FiddleFolder, FiddleSettings, Util } from '../../models';
 
 import './Workspace.css';
 
@@ -125,7 +125,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
                 main: (stateProps) => {
                     const currentFiddle = this.props.fiddlesStore.getFiddleSettingsByPath(stateProps.match.params.fiddlePath);
                     if (currentFiddle) {
-                        Util.extendObjectWithDefaults(currentFiddle, defaultFiddleSettings);
+                        Util.extendObjectWithDefaults(currentFiddle, new FiddleSettings());
                         return (
                             <Fiddle
                                 fiddlesStore={this.props.fiddlesStore}

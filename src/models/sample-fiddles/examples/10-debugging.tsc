@@ -1,0 +1,18 @@
+import * as bluebird from 'bluebird';
+
+const runner = async () => {
+    await bluebird.delay(1000);
+    debugger;
+    console.log("foo");
+    debugger;
+    console.dir({ hello: 'world' });
+    debugger;
+    console.table([
+        { one: 'red', two: 'fish', three: 'carrot' },
+        { one: 'green', two: 'dog', three: 'cow' },
+        { one: 'blue', two: 'cat', three: 'corn' }
+    ]);
+    return "all done!"
+}
+
+export default runner()
