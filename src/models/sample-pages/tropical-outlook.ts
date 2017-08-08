@@ -354,7 +354,7 @@ export const tropicalOutlook: PageSettings = {
         'Pw6msi9v': {
             'title': 'Official 2 Day NHC Outlook',
             'type': 'image',
-            'attributes': [],
+            'attributes': ['autoRefresh'],
             'locked': true,
             'backgroundColor': '#000',
             'chromeStyle': 'hiddenOnPageLocked',
@@ -364,13 +364,14 @@ export const tropicalOutlook: PageSettings = {
                 'fitWidth': true,
                 'fitHeight': true,
                 'width': '',
-                'height': ''
+                'height': '',
+                'textSchedule': 'every 5 minutes'
             }
         },
         'D98ss6ln': {
             'title': 'Official 5 Day NHC Outlook',
             'type': 'image',
-            'attributes': [],
+            'attributes': ['autoRefresh'],
             'locked': true,
             'backgroundColor': '#000',
             'chromeStyle': 'hiddenOnPageLocked',
@@ -380,13 +381,14 @@ export const tropicalOutlook: PageSettings = {
                 'fitWidth': true,
                 'fitHeight': true,
                 'width': '',
-                'height': ''
+                'height': '',
+                'textSchedule': 'every 5 minutes'
             }
         },
         'LOApAHH9': {
             'title': 'NWS Active Alerts Map',
             'type': 'image',
-            'attributes': [],
+            'attributes': ['autoRefresh'],
             'locked': true,
             'backgroundColor': '#000',
             'chromeStyle': 'hiddenOnPageLocked',
@@ -396,13 +398,14 @@ export const tropicalOutlook: PageSettings = {
                 'fitWidth': true,
                 'fitHeight': true,
                 'width': '',
-                'height': ''
+                'height': '',
+                'textSchedule': 'every 5 minutes'
             }
         },
         'OknmcuH6': {
             'title': 'Current Tornado and Severe Thunderstrom Watches:',
             'type': 'image',
-            'attributes': [],
+            'attributes': ['autoRefresh'],
             'locked': true,
             'backgroundColor': '#000',
             'chromeStyle': 'hiddenOnPageLocked',
@@ -412,13 +415,14 @@ export const tropicalOutlook: PageSettings = {
                 'fitWidth': true,
                 'fitHeight': true,
                 'width': '',
-                'height': ''
+                'height': '',
+                'textSchedule': 'every 5 minutes'
             }
         },
         'NXwBQIcE': {
             'title': 'Today\'s Storm Outlook:',
             'type': 'image',
-            'attributes': [],
+            'attributes': ['autoRefresh'],
             'locked': true,
             'backgroundColor': '#000',
             'chromeStyle': 'hiddenOnPageLocked',
@@ -428,13 +432,14 @@ export const tropicalOutlook: PageSettings = {
                 'fitWidth': true,
                 'fitHeight': true,
                 'width': '',
-                'height': ''
+                'height': '',
+                'textSchedule': 'every 5 minutes'
             }
         },
         'Gg0d27WF': {
             'title': 'Water Sea Surface Temps',
             'type': 'image',
-            'attributes': [],
+            'attributes': ['autoRefresh'],
             'locked': true,
             'backgroundColor': '#000',
             'chromeStyle': 'hiddenOnPageLocked',
@@ -444,13 +449,14 @@ export const tropicalOutlook: PageSettings = {
                 'fitWidth': true,
                 'fitHeight': true,
                 'width': '',
-                'height': ''
+                'height': '',
+                'textSchedule': 'every 5 minutes'
             }
         },
         '2XK33r40': {
             'title': 'Atlantic / Caribbean Surface Charts',
             'type': 'image',
-            'attributes': [],
+            'attributes': ['autoRefresh'],
             'locked': true,
             'backgroundColor': '#000',
             'chromeStyle': 'hiddenOnPageLocked',
@@ -460,13 +466,14 @@ export const tropicalOutlook: PageSettings = {
                 'fitWidth': true,
                 'fitHeight': false,
                 'width': '',
-                'height': ''
+                'height': '',
+                'textSchedule': 'every 5 minutes'
             }
         },
         'QakU5QJJ': {
             'title': 'Forecast',
             'type': 'image',
-            'attributes': [],
+            'attributes': ['autoRefresh'],
             'backgroundColor': '#000',
             'chromeStyle': 'hiddenOnPageLocked',
             'locked': true,
@@ -476,13 +483,14 @@ export const tropicalOutlook: PageSettings = {
                 'fitWidth': true,
                 'fitHeight': true,
                 'width': '',
-                'height': ''
+                'height': '',
+                'textSchedule': 'every 5 minutes'
             }
         },
         'Iyt1KDZi': {
             'title': 'Tropical Surface Forecast',
             'type': 'image',
-            'attributes': [],
+            'attributes': ['autoRefresh'],
             'locked': true,
             'backgroundColor': '#000',
             'chromeStyle': 'hiddenOnPageLocked',
@@ -492,7 +500,8 @@ export const tropicalOutlook: PageSettings = {
                 'fitWidth': true,
                 'fitHeight': true,
                 'width': '',
-                'height': ''
+                'height': '',
+                'textSchedule': 'every 5 minutes'
             }
         }
     }
