@@ -1,0 +1,16 @@
+import * as React from 'react';
+import * as ReactDOMServer from 'react-dom-server';
+
+class MyComponent {
+    render() {
+        const foo = "Hello, world!";
+        const styles = {
+            backgroundColor: 'blue'
+        };
+        return (
+            <div style={styles}>{foo}</div>
+        )
+    }
+}
+
+export default ReactDOMServer.renderToStaticMarkup((new MyComponent()).render());
