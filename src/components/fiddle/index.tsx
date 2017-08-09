@@ -271,7 +271,7 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
     }
 
     public render() {
-        const { fiddlesStore, currentFiddle } = this.props;
+        const { fiddlesStore, currentFiddle, currentFiddleFullPath } = this.props;
         const { code, theme, editorOptions } = currentFiddle;
 
         const { isBrewing, lastBrewResult, lastBrewResultIsError, showEditor } = this.state;
@@ -329,7 +329,7 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
                                 value={code}
                                 theme={theme}
                                 language={language}
-                                filename={this.props.currentFiddleFullPath}
+                                filename={currentFiddleFullPath}
                                 onChange={this.updateCode}
                                 onCursorPositionChange={this.onCursorPositionChange}
                                 editorWillMount={this.editorWillMount}
@@ -343,6 +343,7 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
                             onDismiss={this.hideFiddleSettings}
                             fiddlesStore={fiddlesStore}
                             currentFiddle={currentFiddle}
+                            currentFiddleFullPath={currentFiddleFullPath}
                         />
                     </div>
                 </div>

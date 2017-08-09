@@ -25,6 +25,16 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, Fi
             defaultScriptProps: JSON.stringify(props.currentFiddle.defaultScriptProps, null, 4)
         };
     }
+
+    componentWillReceiveProps(nextProps: FiddleSettingsProps) {
+        if (this.props.currentFiddleFullPath !== nextProps.currentFiddleFullPath) {
+            this.setState({
+                requireConfig: JSON.stringify(nextProps.currentFiddle.requireConfig, null, 4),
+                defaultScriptProps: JSON.stringify(nextProps.currentFiddle.defaultScriptProps, null, 4)
+            });
+        }
+    }
+
     public render() {
         const {
             showFiddleSettingsModal,
@@ -44,7 +54,7 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, Fi
                 </div>
                 <div className="fiddle-settings-modal-body">
                     <Pivot>
-                        <PivotItem linkText="Script Options" style={{ flex: '1 0 0%'}}>
+                        <PivotItem linkText="Script Options" style={{ flex: '1 0 0%' }}>
                             <TextField
                                 label="Description"
                                 multiline={true}
@@ -71,7 +81,7 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, Fi
                                 offText="Off"
                             />
                         </PivotItem>
-                        <PivotItem linkText="Default Props" style={{flex: '1 0 0%', display: 'flex'}}>
+                        <PivotItem linkText="Default Props" style={{ flex: '1 0 0%', display: 'flex' }}>
                             <MonacoEditor
                                 value={this.state.defaultScriptProps}
                                 language="json"
@@ -87,10 +97,10 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, Fi
                                     scrollBeyondLastLine: false,
                                     wordWrap: 'off'
                                 }}
-                                style={{height: '90%'}}
+                                style={{ height: '90%' }}
                             />
                         </PivotItem>
-                        <PivotItem linkText="Editor Options" style={{ flex: '1 0 0%'}}>
+                        <PivotItem linkText="Editor Options" style={{ flex: '1 0 0%' }}>
                             <Dropdown
                                 label="Theme:"
                                 id="fiddle-theme"
@@ -145,7 +155,7 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, Fi
                                 }
                             />
                         </PivotItem>
-                        <PivotItem linkText="RequireJS Config" style={{flex: '1 0 0%', display: 'flex'}}>
+                        <PivotItem linkText="RequireJS Config" style={{ flex: '1 0 0%', display: 'flex' }}>
                             <MonacoEditor
                                 value={this.state.requireConfig}
                                 language="json"
@@ -161,10 +171,10 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, Fi
                                     scrollBeyondLastLine: false,
                                     wordWrap: 'off'
                                 }}
-                                style={{height: '90%'}}
+                                style={{ height: '90%' }}
                             />
                         </PivotItem>
-                        <PivotItem linkText="TypeScript Options" style={{ flex: '1 0 0%'}}>
+                        <PivotItem linkText="TypeScript Options" style={{ flex: '1 0 0%' }}>
                             TODO
                         </PivotItem>
                     </Pivot>
@@ -260,4 +270,5 @@ export interface FiddleSettingsProps {
     onDismiss: (ev?: React.MouseEvent<HTMLButtonElement>) => any;
     fiddlesStore: FiddlesStore;
     currentFiddle: FiddleSettings;
+    currentFiddleFullPath: string;
 }
