@@ -1,6 +1,13 @@
 import * as _ from 'lodash';
 import * as pnp from 'sp-pnp-js';
 
+// Necessary for SP2013 On Prem
+// pnp.setup({
+//     headers: {
+//         "Accept": "application/json;odata=verbose",
+//     }
+// });
+
 let web = new pnp.Web(location.origin);
 
 export default web.get();
