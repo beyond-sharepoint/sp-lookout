@@ -70,7 +70,10 @@ export const defaultFiddleRootFolder: FiddleFolder = {
                 {
                     ...defaultFiddleSettings(),
                     name: '07-spLookout-parameters.ts',
-                    code: require('./examples/07-spLookout-parameters.tsc')
+                    code: require('./examples/07-spLookout-parameters.tsc'),
+                    defaultScriptProps: {
+                        foo: 'bar'
+                    }
                 },
                 {
                     ...defaultFiddleSettings(),

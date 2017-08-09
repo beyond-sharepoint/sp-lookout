@@ -31,7 +31,7 @@ export const baristaScriptStoreUtils = {
         }
         return fileOptions;
     },
-    async performBaristaCall(barista: Barista | undefined, setState: Function, scriptPath: string, scriptTimeout: number) {
+    async performBaristaCall(barista: Barista | undefined, setState: Function, scriptPath: string, scriptTimeout: number, scriptProps?: any) {
         setState({
             isBrewing: true
         });
@@ -51,7 +51,8 @@ export const baristaScriptStoreUtils = {
                 {
                     fullPath: scriptPath,
                     allowDebuggerStatement: false,
-                    timeout: scriptTimeout
+                    timeout: scriptTimeout,
+                    scriptProps
                 },
                 (progress: any) => setState({ lastProgress: progress })
             );

@@ -1,1 +1,2 @@
-/** coming soon */
+import { spLookout } from 'sp-lookout';
+export default spLookout.props.foo;

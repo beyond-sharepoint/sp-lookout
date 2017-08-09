@@ -1,13 +1,14 @@
 declare module "sp-lookout" {
     export interface BaristaUtils {
+        readonly props: any;
         arrayBufferToBase64(arrayBuffer: ArrayBuffer): string;
         base64ToArrayBuffer(base64: string): ArrayBuffer;
-        async getItem(key: string): Promise<any>;
+        getItem(key: string): Promise<any>;
         isClass(obj: any): boolean;
         paths(obj: any): string;
         reportProgress(message: string, details?: any): void;
-        async removeItem(key: string): Promise<void>;
-        async setItem(key: string, value: any): Promise<void>;
+        removeItem(key: string): Promise<void>;
+        setItem(key: string, value: any): Promise<void>;
         stringToArrayBuffer(str: string): ArrayBuffer;
     }
     export var spLookout: BaristaUtils;

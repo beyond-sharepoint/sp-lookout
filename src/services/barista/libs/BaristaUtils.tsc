@@ -12,6 +12,14 @@ class BaristaUtils {
         }
     }
 
+    get props() {
+        if (this.context &&
+            this.context.processor &&
+            this.context.processor.request) {
+            return this.context.processor.request.scriptProps;
+        }
+    }
+
     /* tslint:disable */
     arrayBufferToBase64(arrayBuffer: ArrayBuffer): string {
         let bytes = new Uint8Array(arrayBuffer),
@@ -182,7 +190,6 @@ class BaristaUtils {
             message: message,
             details: details
         });
-
     }
 
     /**
@@ -192,7 +199,7 @@ class BaristaUtils {
      * @param errorMessage 
      */
     private timeout(promise: Promise<any>, timeoutMillis: number, errorMessage?: string): Promise<any> {
-        var timeout;
+        let timeout;
 
         return Promise.race([
             promise,

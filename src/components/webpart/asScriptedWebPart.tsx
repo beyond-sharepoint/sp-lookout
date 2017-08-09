@@ -5,8 +5,11 @@ import * as bluebird from 'bluebird';
 import { autobind } from 'office-ui-fabric-react/lib';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
 import { SpinButton } from 'office-ui-fabric-react/lib/SpinButton';
+import { DefaultButton, PrimaryButton } from 'office-ui-fabric-react/lib/Button';
 import { ComboBox, IComboBoxOption } from 'office-ui-fabric-react/lib/ComboBox';
 import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
+import { Modal } from 'office-ui-fabric-react/lib/Modal';
+import MonacoEditor from '../monaco-editor';
 
 import { baristaScriptStoreUtils } from './baristaScriptStoreUtils';
 import { BaseWebPart, BaseWebPartState } from './BaseWebPart';
@@ -23,13 +26,17 @@ const asScriptedWebPart = function <P extends object, S extends BaseWebPartState
             this.onScriptPathChanged = this.onScriptPathChanged.bind(this);
             this.onResultPropertyPathChanged = this.onResultPropertyPathChanged.bind(this);
             this.onScriptTimeoutChanged = this.onScriptTimeoutChanged.bind(this);
+            this.showScriptPropsEditorModal = this.showScriptPropsEditorModal.bind(this);
+            this.hideScriptPropsEditorModal = this.hideScriptPropsEditorModal.bind(this);
+            this.updateScriptPropsInEdit = this.updateScriptPropsInEdit.bind(this);
         }
 
         getDefaultWebPartProps() {
             return {
                 scriptPath: '',
                 resultPropertyPath: 'default',
-                scriptTimeout: 5000
+                scriptTimeout: 5000,
+                scriptProps: {}
             };
         }
 
@@ -37,8 +44,9 @@ const asScriptedWebPart = function <P extends object, S extends BaseWebPartState
             const result = await baristaScriptStoreUtils.performBaristaCall(
                 barista,
                 this.setState,
-                this.webPartProps.scriptPath,
-                this.webPartProps.scriptTimeout
+                toJS(this.webPartProps.scriptPath),
+                toJS(this.webPartProps.scriptTimeout),
+                toJS(this.webPartProps.scriptProps),
             );
 
             if (result) {
@@ -108,8 +116,67 @@ const asScriptedWebPart = function <P extends object, S extends BaseWebPartState
                         onIncrement={this.onScriptTimeoutChanged}
                         onDecrement={this.onScriptTimeoutChanged}
                     />
+                    <DefaultButton text="Edit Script Properties" onClick={this.showScriptPropsEditorModal} />
+                    <Modal
+                        isOpen={this.state.showScriptPropsEditorModal}
+                        onDismiss={this.hideScriptPropsEditorModal}
+                        isBlocking={true}
+                        containerClassName="script-props-editor-web-part-modal-container"
+                    >
+                        <div className="script-props-editor-web-part-modal-header">
+                            <span>Script Props Editor - Json Content</span>
+                        </div>
+                        <div className="script-editor-web-part-modal-body">
+                            <MonacoEditor
+                                value={this.state.scriptPropsInEdit}
+                                language="json"
+                                onChange={this.updateScriptPropsInEdit}
+                                options={{
+                                    automaticLayout: true,
+                                    cursorBlinking: 'blink',
+                                    folding: true,
+                                    minimap: {
+                                        enabled: false
+                                    },
+                                    readOnly: false,
+                                    scrollBeyondLastLine: false,
+                                    wordWrap: 'off'
+                                }}
+                            />
+                        </div>
+                        <div className="script-editor-web-part-modal-footer">
+                            <PrimaryButton text="OK" onClick={this.hideScriptPropsEditorModal} />
+                        </div>
+                    </Modal>
                 </div>
             );
+        }
+
+        protected showScriptPropsEditorModal() {
+            this.setState({
+                showScriptPropsEditorModal: true,
+                scriptPropsInEdit: JSON.stringify(this.webPartProps.scriptProps, null, 4)
+            });
+        }
+
+        protected hideScriptPropsEditorModal() {
+            try {
+                this.webPartProps.scriptProps = observable(JSON.parse(this.state.scriptPropsInEdit));
+            } catch (ex) {
+                //Do nothing
+            }
+            super.onWebPartPropertiesChanged();
+
+            this.setState({
+                showScriptPropsEditorModal: false,
+                scriptPropsInEdit: ''
+            });
+        }
+
+        private updateScriptPropsInEdit(newValue: string) {
+            this.setState({
+                scriptPropsInEdit: newValue
+            });
         }
 
         private renderItem(option: IComboBoxOption) {
@@ -136,6 +203,8 @@ const asScriptedWebPart = function <P extends object, S extends BaseWebPartState
 
     interface ScriptedWebPartState extends BaseWebPartState {
         isBrewing: boolean;
+        showScriptPropsEditorModal: boolean;
+        scriptPropsInEdit: string;
         lastResultWasError?: boolean;
         lastResult?: any;
         lastProgress?: any;
@@ -145,6 +214,7 @@ const asScriptedWebPart = function <P extends object, S extends BaseWebPartState
         scriptPath: string;
         resultPropertyPath: string;
         scriptTimeout: number;
+        scriptProps: any;
     }
 };
 

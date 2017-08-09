@@ -1,6 +1,6 @@
 /// <reference path="../../node_modules/@types/requirejs/index.d.ts" />
 /// <reference path="../../node_modules/monaco-editor/monaco.d.ts" />
-import { observable } from 'mobx';
+import { observable, map } from 'mobx';
 
 export class FiddleSettings {
 
@@ -18,6 +18,9 @@ export class FiddleSettings {
 
     @observable
     code: string = 'const foo = "Hello, world!";\nexport default foo;';
+
+    @observable
+    defaultScriptProps: any = {};
 
     @observable
     cursorLineNumber: number = 1;

@@ -174,7 +174,7 @@ export default class Barista {
      * Brews the specified typescript code.
      */
     public async brew(settings: BrewSettings, onProgress?: (progress: any) => void): Promise<any> {
-        const { fullPath, allowDebuggerStatement, timeout } = settings;
+        const { fullPath, allowDebuggerStatement, timeout, scriptProps } = settings;
         const spContext = await SPContext.getContext(this._config.webFullUrl, this._spContextConfig);
 
         //Ensure that barista custom commands are added to the proxy.
@@ -205,7 +205,8 @@ export default class Barista {
             bootstrap.push(defines[moduleName]);
         }
 
-        console.dir(bootstrap);
+        const mergedScriptProps = defaultsDeep(scriptProps, toJS(targetFiddleSettings.defaultScriptProps));
+
         //Brew
         try {
             return await spContext.brew(
@@ -213,6 +214,7 @@ export default class Barista {
                     bootstrap,
                     entryPointId: fullPath.replace(/\.tsx?$/, ''),
                     timeout,
+                    scriptProps: mergedScriptProps,
                     requireConfig: toJS(targetFiddleSettings.requireConfig)
                 },
                 timeout,
@@ -307,4 +309,5 @@ export interface BrewSettings {
     fullPath: string;
     allowDebuggerStatement?: boolean;
     timeout?: number;
+    scriptProps?: any;
 }

@@ -21,7 +21,8 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, Fi
         super(props);
 
         this.state = {
-            requireConfig: JSON.stringify(props.currentFiddle.requireConfig, null, 4)
+            requireConfig: JSON.stringify(props.currentFiddle.requireConfig, null, 4),
+            defaultScriptProps: JSON.stringify(props.currentFiddle.defaultScriptProps, null, 4)
         };
     }
     public render() {
@@ -68,6 +69,25 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, Fi
                                 offAriaLabel="Auto-Save is disabled. Press to enable."
                                 onText="On"
                                 offText="Off"
+                            />
+                        </PivotItem>
+                        <PivotItem linkText="Default Props" style={{flex: '1 0 0%', display: 'flex'}}>
+                            <MonacoEditor
+                                value={this.state.defaultScriptProps}
+                                language="json"
+                                onChange={this.updateDefaultProps}
+                                options={{
+                                    automaticLayout: true,
+                                    cursorBlinking: 'blink',
+                                    folding: true,
+                                    minimap: {
+                                        enabled: false
+                                    },
+                                    readOnly: false,
+                                    scrollBeyondLastLine: false,
+                                    wordWrap: 'off'
+                                }}
+                                style={{height: '90%'}}
                             />
                         </PivotItem>
                         <PivotItem linkText="Editor Options" style={{ flex: '1 0 0%'}}>
@@ -182,6 +202,13 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, Fi
     }
 
     @action.bound
+    private updateDefaultProps(newValue: string) {
+        this.setState({
+            defaultScriptProps: newValue
+        });
+    }
+
+    @action.bound
     private updateTheme(ev: any) {
         this.props.currentFiddle.theme = ev.key;
     }
@@ -211,6 +238,12 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, Fi
             //Do nothing
         }
 
+        try {
+            this.props.currentFiddle.defaultScriptProps = observable(JSON.parse(this.state.defaultScriptProps));
+        } catch (ex) {
+            //Do nothing
+        }
+
         if (typeof onDismiss === 'function') {
             onDismiss(ev);
         }
@@ -219,6 +252,7 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, Fi
 
 export interface FiddleSettingsState {
     requireConfig: string;
+    defaultScriptProps: string;
 }
 
 export interface FiddleSettingsProps {
