@@ -46,25 +46,28 @@ const asAutoRefreshingWebPart = function <P extends object, S extends BaseWebPar
             const { isRefreshing } = this.state;
             let refreshingLabel = 'Refreshing...';
 
+            if (isRefreshing) {
+                return (
+                    <div style={{ flex: '1 0 0%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Spinner size={SpinnerSize.large} label={refreshingLabel} ariaLive="assertive" />
+                    </div>
+                );
+            }
+
             const WebPart = webPart as any;
 
+            if (typeof webPart !== 'function') {
+                return (
+                    <div>Unexpected Error</div>
+                )
+            }
+
             return (
-                <div>
-                    {isRefreshing === true &&
-                        <div style={{ flex: '1 0 0%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <Spinner size={SpinnerSize.large} label={refreshingLabel} ariaLive="assertive" />
-                        </div>
-                    }
-                    {
-                        !isRefreshing && typeof WebPart === 'function'
-                            ? <WebPart
-                                ref={(innerWebPart) => { this.innerWebPart = innerWebPart; }}
-                                {...this.props}
-                                disableChrome={true}
-                            />
-                            : !isRefreshing && <div>Unexpected Error</div>
-                    }
-                </div>
+                <WebPart
+                    ref={(innerWebPart) => { this.innerWebPart = innerWebPart; }}
+                    {...this.props}
+                    disableChrome={true}
+                />
             );
         }
 

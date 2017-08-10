@@ -63,27 +63,33 @@ const asScriptedWebPart = function <P extends object, S extends BaseWebPartState
                 loadingLabel = lastProgress.data.message;
             }
 
+            if (isBrewing) {
+                return (
+                    <div style={{ flex: '1 0 0%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Spinner size={SpinnerSize.large} label={loadingLabel} ariaLive="assertive" />
+                    </div>
+                );
+            }
+
+            if (lastResultWasError) {
+                return (
+                    <div>An error occurred: {JSON.stringify(lastResult)}</div>
+                );
+            }
+
             const WebPart = webPart as any;
 
+            if (typeof webPart !== 'function') {
+                return (
+                    <div>Unexpected Error</div>
+                )
+            }
+
             return (
-                <div>
-                    {isBrewing === true &&
-                        <div style={{ flex: '1 0 0%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <Spinner size={SpinnerSize.large} label={loadingLabel} ariaLive="assertive" />
-                        </div>
-                    }
-                    {!isBrewing && lastResultWasError === true &&
-                        <div>An error occurred: {JSON.stringify(lastResult)}</div>
-                    }
-                    {
-                        !isBrewing && !lastResultWasError && typeof WebPart === 'function'
-                            ? <WebPart
-                                {...this.props}
-                                disableChrome={true}
-                            />
-                            : !isBrewing && <div>Unexpected Error</div>
-                    }
-                </div>
+                <WebPart
+                    {...this.props}
+                    disableChrome={true}
+                />
             );
         }
 
