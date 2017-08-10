@@ -25,6 +25,8 @@ Get started with SP Lookout! right now by visiting the [GitHub Pages hosted site
 
 >Note: If deploying the HostWebProxy to the root site collection, personal site or a self-service created site, the Custom Script tenant setting must be enabled. For more information, see http://go.microsoft.com/fwlink/?LinkId=397546
 
+>Note: When using a mobile (iOS or Android) Device, the HostWebProxy must be deployed to a site that has the 'Mobile Browser View' feature disabled.
+
 Host locally/develop: 
 ---
 
