@@ -59,7 +59,7 @@ const asAutoRefreshingWebPart = function <P extends object, S extends BaseWebPar
             if (typeof webPart !== 'function') {
                 return (
                     <div>Unexpected Error</div>
-                )
+                );
             }
 
             return (

@@ -82,7 +82,7 @@ const asScriptedWebPart = function <P extends object, S extends BaseWebPartState
             if (typeof webPart !== 'function') {
                 return (
                     <div>Unexpected Error</div>
-                )
+                );
             }
 
             return (
