@@ -41,8 +41,8 @@
     lodash "~4.15.0"
 
 "@microsoft/sp-module-interfaces@~1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@microsoft/sp-module-interfaces/-/sp-module-interfaces-1.1.0.tgz#616f484cee3921bb6a9e8a48a6167b732631cf9e"
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@microsoft/sp-module-interfaces/-/sp-module-interfaces-1.1.1.tgz#005026dbf46166af9084da5e9cca51b998c0b08a"
   dependencies:
     "@types/node" "6.0.64"
     "@types/z-schema" "3.16.20-alpha"
@@ -133,8 +133,8 @@
     "@types/react" "*"
 
 "@types/react@*", "@types/react@^16.0.0":
-  version "16.0.1"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.0.1.tgz#c84c984bfa2c01e585d51e376df0ec7e13fadede"
+  version "16.0.2"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.0.2.tgz#0b31a73cdde6272b719e5b05a7df6d1e2654a804"
 
 "@types/requirejs@^2.1.30":
   version "2.1.30"
