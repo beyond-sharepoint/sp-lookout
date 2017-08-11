@@ -9,14 +9,10 @@
     height: 1.5em;
     background-color: #002050;
     color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     user-select: none;
 }
 
 .webpart-title-text {
-    align-self: flex-start;
     padding-left: 5px;
     cursor: default;
     overflow: hidden;
@@ -25,10 +21,9 @@
 }
 
 .webpart-title-actions {
-    margin-left: auto;
+    float: right;
     overflow: hidden;
     white-space: nowrap;
-    flex-shrink: 0
 }
 
 .webpart-title-actions .action {

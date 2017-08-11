@@ -9,16 +9,21 @@ import { Folder, File } from './index';
 import { FolderNode } from './FolderNode';
 import { FileNode } from './FileNode';
 
-import './FolderView.css';
-
 @DragDropContext(HTML5Backend)
 @observer
 export class FolderView extends React.Component<FolderViewProps, FolderViewState> {
     public render() {
         const { folder, onFileSelected, onFolderSelected, selectedPaths } = this.props;
 
+        const style: React.CSSProperties = {
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            flex: '1 0 0%',
+            display: 'flex'
+        };
+
         return (
-            <div className="folder-view ms-fontColor-themePrimary" style={{ flex: '1 0 0%', display: 'flex' }}>
+            <div className="ms-fontColor-themePrimary" style={style}>
                 <FolderNode
                     folder={folder}
                     parentFolder={null}

@@ -19,7 +19,6 @@ import { FiddleSettingsModal } from '../fiddle-settings-modal';
 
 import Barista, { BrewSettings } from '../../services/barista';
 import { FiddlesStore, FiddleSettings, Util } from '../../models';
-import './index.css';
 
 @observer
 export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
@@ -317,7 +316,7 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
                 onResizerDoubleClick={() => { this.setState({ fiddlePaneSize: '50%' }); }}
                 onWindowResize={() => { this.setState({ fiddlePaneSize: '50%' }); }}
             >
-                <div style={{ flex: '1 0 0%', display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
+                <div style={{ flex: '1 0 0%', display: 'flex', flexDirection: 'column', maxHeight: '100%', maxWidth: '100%' }}>
                     <CommandBar
                         isSearchBoxVisible={false}
                         items={this.commandBarItems}
@@ -347,12 +346,23 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
                         />
                     </div>
                 </div>
-                <div className="fiddle-results" style={{ backgroundColor: theme.endsWith('dark') ? 'black' : null }}>
+                <div style={{ flex: '1 0 0%', padding: '5px', backgroundColor: theme.endsWith('dark') ? 'black' : null }}>
                     {isBrewing &&
-                        <Spinner size={SpinnerSize.large} label={brewingLabel} ariaLive="assertive" />
+                        <div style={{ margin: '30px' }}>
+                            <Spinner
+                                size={SpinnerSize.large}
+                                label={brewingLabel}
+                                ariaLive="assertive"
+                            />
+                        </div>
                     }
                     {!isBrewing &&
-                        <ObjectInspector data={lastBrewResult} expandLevel={2} showNonenumerable={false} theme={theme.endsWith('dark') ? 'chromeDark' : 'chromeLight'} />
+                        <ObjectInspector
+                            data={lastBrewResult}
+                            expandLevel={2}
+                            showNonenumerable={false}
+                            theme={theme.endsWith('dark') ? 'chromeDark' : 'chromeLight'}
+                        />
                     }
                 </div>
             </SplitPane>

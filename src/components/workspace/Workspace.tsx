@@ -15,7 +15,7 @@ import { IContextualMenuItem } from 'office-ui-fabric-react/lib/ContextualMenu';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { INavLink, INavLinkGroup } from 'office-ui-fabric-react/lib/Nav';
 import SplitPane from '../split-pane/SplitPane';
-import { defaultsDeep, debounce } from 'lodash';
+import { defaultsDeep } from 'lodash';
 
 import Barista from '../../services/barista';
 import { SPContextConfig, defaultSPContextConfig } from '../../services/spcontext';
@@ -140,8 +140,6 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
                 }
             }
         ];
-
-        this.triggerWindowResizeEvent = debounce(this.triggerWindowResizeEvent, 10);
     }
 
     public componentWillMount() {

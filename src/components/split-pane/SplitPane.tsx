@@ -50,10 +50,20 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
             className, primaryPaneClassName, secondaryPaneClassName,
             primaryPaneMaxSize, primaryPaneMinSize,
             primaryPaneStyle, secondaryPaneStyle,
-            onResizerDoubleClick
+            onResizerDoubleClick, style
         } = this.props;
 
         let { primaryPaneSize } = this.props;
+
+        let rootStyle: React.CSSProperties = {
+            maxWidth: '100%',
+            maxHeight: '100%'
+        };
+
+        rootStyle = {
+            ...rootStyle,
+            ...style
+        };
 
         let paneStyle, paneStyle2;
         switch (split) {
@@ -88,7 +98,7 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
         return (
             <div
                 className={`splitter ${split === 'vertical' ? 'vertical' : 'horizontal'} ${className || ''}`}
-                style={{ width: '100%', height: '100%', display: 'flex' }}
+                style={rootStyle}
                 ref={node => { if (node) { this.paneWrapper = node; } }}
             >
                 <Pane
@@ -128,14 +138,18 @@ export default class SplitPane extends React.Component<SplitPaneProps, SplitPane
     }
 
     private unFocus(document: any, window: any): void {
-        if (document.selection) {
-            document.selection.empty();
-        } else {
+        if (document.body.createTextRange) { // All versions of IE but Edge
+            const range = document.body.createTextRange();
+            range.collapse();
+            range.select();
+        } else if (window.getSelection) { // All other browsers
             try {
                 window.getSelection().removeAllRanges();
             } catch (e) {
                 console.warn(e);
             }
+        } else if (document.selection) { // IE < 9
+            document.selection.empty();
         }
     }
 
@@ -289,6 +303,7 @@ export interface SplitPaneProps {
     onResizerDoubleClick?: (paneStyle: React.CSSProperties, e: React.MouseEvent<HTMLDivElement>, splitPane: SplitPane) => void;
     onWindowResize?: (ev: UIEvent, splitPane: SplitPane) => void;
     children: React.ReactNode[];
+    style?: React.CSSProperties;
 }
 
 export interface SplitPaneState {

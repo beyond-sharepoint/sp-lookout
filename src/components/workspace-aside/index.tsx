@@ -95,22 +95,20 @@ export default class Aside extends React.Component<AsideProps, any> {
                     }
                 }}
             >
-                <div className="pages ms-fontColor-themePrimary">
-                    <div>
-                        <div className="pagesHeader" style={pagesHeaderStyle}>
-                            <span className="fa fa-th" aria-hidden="true" style={{ paddingRight: '3px' }} />
-                            <span>Pages</span>
-                            <div style={{ marginLeft: 'auto' }}>
-                                <span style={addPageIconStyle} onClick={this.onAddPage} title="Add Page">
-                                    <i className="fa fa-plus-circle" aria-hidden="true" />
-                                </span>
-                                {/* <span style={addSubPageIconStyle} onClick={this.onAddSubPage} title="Add Sub Page">
+                <div className="pages ms-fontColor-themePrimary" style={{ maxHeight: '100%' }}>
+                    <div className="pagesHeader" style={pagesHeaderStyle}>
+                        <span className="fa fa-th" aria-hidden="true" style={{ paddingRight: '3px' }} />
+                        <span>Pages</span>
+                        <div style={{ marginLeft: 'auto' }}>
+                            <span style={addPageIconStyle} onClick={this.onAddPage} title="Add Page">
+                                <i className="fa fa-plus-circle" aria-hidden="true" />
+                            </span>
+                            {/* <span style={addSubPageIconStyle} onClick={this.onAddSubPage} title="Add Sub Page">
                                     <i className="fa fa-level-down" aria-hidden="true" />
                                 </span> */}
-                            </div>
                         </div>
                     </div>
-                    <div style={{ flex: '1 0 0%', overflow: 'auto' }}>
+                    <div style={{ flex: '1 1 auto', overflow: 'auto' }}>
                         <Nav
                             className="aside"
                             groups={navGroups}
@@ -118,7 +116,7 @@ export default class Aside extends React.Component<AsideProps, any> {
                         />
                     </div>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', flex: '1 0 0%' }}>
                     {fiddlesStore.starred.length > 0 &&
                         <div style={starredDivStyle}>
                             {fiddlesStore.starred.map((fiddleSettings, index) => {

@@ -200,10 +200,11 @@ export class FolderNode extends React.Component<FolderProps, FolderState> {
             nodeStyle.flex = 1;
             nodeStyle.display = 'flex';
             nodeStyle.flexDirection = 'column';
+            nodeStyle.width = '100%';
+            nodeStyle.overflow = 'auto';
 
             folderLockStyle.color = '#0078d7';
-
-            rootSubFolderStyles.overflow = 'auto';
+            
             rootSubFolderStyles.flex = '1';
         }
 

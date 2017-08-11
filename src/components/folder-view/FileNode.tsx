@@ -65,7 +65,6 @@ export class FileNode extends React.Component<FileProps, FileState> {
         const { isEditing, isSelected } = this.state;
         const style: React.CSSProperties = {
             paddingLeft: depth * 10,
-            width: '100%',
             outline: 'none'
         };
 
