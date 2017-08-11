@@ -1,12 +1,12 @@
 @import 'office-ui-fabric-react/dist/sass/Fabric';
-
 $fa-font-path: "../node_modules/font-awesome/fonts";
 @import "font-awesome/scss/font-awesome";
-
 body {
   margin: 0;
   padding: 0;
   font-family: sans-serif;
+  position: fixed;
+  width: 100%;
 }
 
 .clearfix:after {
