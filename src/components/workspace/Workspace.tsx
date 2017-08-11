@@ -424,9 +424,14 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
     }
 
     private triggerWindowResizeEvent() {
-        const evt = window.document.createEvent('UIEvents');
-        evt.initUIEvent('resize', true, false, window, 0);
-        window.dispatchEvent(evt);
+        setTimeout(
+            () => {
+                const evt = window.document.createEvent('UIEvents');
+                evt.initUIEvent('resize', true, false, window, 0);
+                window.dispatchEvent(evt);
+            },
+            250
+        );
     }
 
     @autobind

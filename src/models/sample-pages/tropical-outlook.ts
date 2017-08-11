@@ -403,7 +403,7 @@ export const tropicalOutlook: PageSettings = {
             }
         },
         'OknmcuH6': {
-            'title': 'Current Tornado and Severe Thunderstrom Watches:',
+            'title': 'Current Tornado and Severe Thunderstorm Watches:',
             'type': 'image',
             'attributes': ['autoRefresh'],
             'locked': true,

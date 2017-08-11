@@ -182,7 +182,7 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
         );
     }
 
-    private renderWebPart(webPartId: string, webPartSettings: WebPartSettings) {
+    private renderWebPart(webPartId: string, webPartSettings: WebPartSettings): JSX.Element {
         const { currentPage, barista } = this.props;
 
         if (this.webPartInstances[webPartId]) {
@@ -275,12 +275,14 @@ export default class WebPartPage extends React.Component<PageProps, PageState> {
     @action.bound
     private lockPage() {
         this.props.currentPage.locked = true;
+        this.webPartInstances = [];
         PagesStore.saveToLocalStorage(this.props.pagesStore);
     }
 
     @action.bound
     private unlockPage() {
         this.props.currentPage.locked = false;
+        this.webPartInstances = [];
         PagesStore.saveToLocalStorage(this.props.pagesStore);
     }
 
