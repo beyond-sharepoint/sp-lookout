@@ -35,6 +35,10 @@ Host locally/develop:
 3. Via SharePoint, Upload HostWebProxy.aspx from /public to https://[YourTenant]/Shared%20Documents/
 4. Start with npm start
 
+Roadmap
+---
+Right now the goal is to reach a 'MVP' and then maintain and based on interest. The list of tasks to reach MVP is located [here]( https://github.com/beyond-sharepoint/sp-lookout/issues/1) -- please feel free to submit any suggestions you may have.
+
 FAQ
 ---
 
