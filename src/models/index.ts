@@ -1,10 +1,10 @@
 export * from './SettingsStore';
 export * from './SharePointSettings';
-export * from './LookoutSettings';
+export * from './AppSettings';
 
-export * from './FiddlesStore';
-export * from './FiddleFolder';
-export * from './FiddleSettings';
+export * from './ScriptsStore';
+export * from './ScriptFolder';
+export * from './ScriptFile';
 
 export * from './PagesStore';
 export * from './PageSettings';

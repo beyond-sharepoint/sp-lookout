@@ -25,7 +25,7 @@ import { WelcomeModal } from '../welcome-modal';
 import { WorkspaceSettingsModal } from '../workspace-settings-modal';
 import Fiddle from '../fiddle';
 
-import { SettingsStore, PagesStore, FiddlesStore, FiddleFolder, FiddleSettings, Util } from '../../models';
+import { SettingsStore, PagesStore, ScriptsStore, ScriptFolder, ScriptFile, Util } from '../../models';
 
 import './Workspace.css';
 
@@ -125,7 +125,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
                 main: (stateProps) => {
                     const currentFiddle = this.props.fiddlesStore.getFiddleSettingsByPath(stateProps.match.params.fiddlePath);
                     if (currentFiddle) {
-                        Util.extendObjectWithDefaults(currentFiddle, new FiddleSettings());
+                        Util.extendObjectWithDefaults(currentFiddle, new ScriptFile());
                         return (
                             <Fiddle
                                 fiddlesStore={this.props.fiddlesStore}
@@ -363,7 +363,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
     }
 
     @action.bound
-    private onFiddleSelected(fiddleSettings: FiddleSettings, path: string) {
+    private onFiddleSelected(fiddleSettings: ScriptFile, path: string) {
         location.hash = '/fiddle/' + path;
         this.setState({
             selectedPageId: '',
@@ -372,7 +372,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
     }
 
     @action.bound
-    private onFolderSelected(folder: FiddleFolder, path: string) {
+    private onFolderSelected(folder: ScriptFolder, path: string) {
         this.setState({
             selectedPageId: '',
             selectedPaths: path
@@ -459,5 +459,5 @@ export interface WorkspaceState {
 export interface WorkspaceProps {
     settingsStore: SettingsStore;
     pagesStore: PagesStore;
-    fiddlesStore: FiddlesStore;
+    fiddlesStore: ScriptsStore;
 }

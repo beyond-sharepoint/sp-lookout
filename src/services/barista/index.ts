@@ -8,7 +8,7 @@ import { DebuggerTransformer } from './debuggerTransformer';
 import { relativeImportsLocator } from './relativeImportsLocator';
 import { nonRelativeImportsLocator } from './nonRelativeImportsLocator';
 import { SPContext, SPContextConfig, SPProxy, SPContextError, defaultSPContextConfig } from '../spcontext';
-import { FiddlesStore, FiddleSettings } from '../../models';
+import { ScriptsStore, ScriptFile } from '../../models';
 
 const tslib = require('raw-loader!tslib/tslib.js');
 const localforage = require('raw-loader!localforage/dist/localforage.min.js');
@@ -23,10 +23,10 @@ export default class Barista {
     private scriptMap: { [path: string]: string } = {};
 
     private _config: BaristaConfig;
-    private _fiddlesStore: FiddlesStore;
+    private _fiddlesStore: ScriptsStore;
     private _spContextConfig: SPContextConfig;
 
-    constructor(config: BaristaConfig, fiddlesStore: FiddlesStore, spContextConfig?: SPContextConfig) {
+    constructor(config: BaristaConfig, fiddlesStore: ScriptsStore, spContextConfig?: SPContextConfig) {
         if (!config) {
             throw Error('Barista configuration must be specified.');
         }
@@ -49,7 +49,7 @@ export default class Barista {
         return this._config;
     }
 
-    public get fiddlesStore(): FiddlesStore {
+    public get fiddlesStore(): ScriptsStore {
         return this._fiddlesStore;
     }
 
@@ -57,7 +57,7 @@ export default class Barista {
         return this._spContextConfig;
     }
 
-    public getImports(fullPath: string, fiddleSettings: FiddleSettings, imports?: { [path: string]: FiddleSettings }): { [path: string]: FiddleSettings } {
+    public getImports(fullPath: string, fiddleSettings: ScriptFile, imports?: { [path: string]: ScriptFile }): { [path: string]: ScriptFile } {
 
         if (!imports) {
             imports = {};
@@ -104,7 +104,7 @@ export default class Barista {
     /**
      * Transpiles the specified typescript code and returns a map of define statements.
      */
-    private async tamp(fullPath: string, targetFiddleSettings: FiddleSettings, allowDebuggerStatement: boolean, defines?: { [path: string]: string }): Promise<{ [path: string]: string }> {
+    private async tamp(fullPath: string, targetFiddleSettings: ScriptFile, allowDebuggerStatement: boolean, defines?: { [path: string]: string }): Promise<{ [path: string]: string }> {
 
         if (!defines) {
             defines = {};

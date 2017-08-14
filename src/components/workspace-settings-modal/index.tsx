@@ -12,7 +12,7 @@ import { Dropdown, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
 import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react/lib/Button';
 import { Toggle } from 'office-ui-fabric-react/lib/Toggle';
 
-import { SettingsStore, PagesStore, FiddlesStore, SharePointSettings, LookoutSettings } from '../../models';
+import { SettingsStore, PagesStore, ScriptsStore, SharePointSettings, AppSettings } from '../../models';
 import './index.css';
 
 @observer
@@ -88,7 +88,7 @@ export class WorkspaceSettingsModal extends React.Component<WorkspaceSettingsPro
 
     @action.bound
     private async resetSettingsToDefaults() {
-        await FiddlesStore.removeSettings();
+        await ScriptsStore.removeSettings();
         await PagesStore.removeSettings();
         await SettingsStore.removeSettings();
 

@@ -2,7 +2,7 @@
 /// <reference path="../../node_modules/monaco-editor/monaco.d.ts" />
 import { observable, map } from 'mobx';
 
-export class FiddleSettings {
+export class ScriptFile {
 
     @observable
     name: string = '';

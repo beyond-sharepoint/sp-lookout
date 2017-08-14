@@ -12,7 +12,7 @@ import { SpinButton } from 'office-ui-fabric-react/lib/SpinButton';
 
 import MonacoEditor from '../monaco-editor';
 
-import { FiddlesStore, FiddleSettings } from '../../models';
+import { ScriptsStore, ScriptFile } from '../../models';
 import './index.css';
 
 @observer
@@ -105,7 +105,7 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, Fi
                                 label="Theme:"
                                 id="fiddle-theme"
                                 ariaLabel="Select Fiddle Theme"
-                                selectedKey={currentFiddle.theme || new FiddleSettings().theme}
+                                selectedKey={currentFiddle.theme || new ScriptFile().theme}
                                 onChanged={this.updateTheme}
                                 options={
                                     [
@@ -127,7 +127,7 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, Fi
                                 label="Wordwrap:"
                                 id="fiddle-wordwrap"
                                 ariaLabel="Select wordwrap"
-                                selectedKey={currentFiddle.editorOptions.wordWrap || new FiddleSettings().editorOptions.wordWrap}
+                                selectedKey={currentFiddle.editorOptions.wordWrap || new ScriptFile().editorOptions.wordWrap}
                                 onChanged={this.updateWordWrap}
                                 options={
                                     [
@@ -142,7 +142,7 @@ export class FiddleSettingsModal extends React.Component<FiddleSettingsProps, Fi
                                 label="Cursor Animation Style:"
                                 id="fiddle-cursor"
                                 ariaLabel="Select Cursor Animation Style"
-                                selectedKey={currentFiddle.editorOptions.cursorBlinking || new FiddleSettings().editorOptions.cursorBlinking}
+                                selectedKey={currentFiddle.editorOptions.cursorBlinking || new ScriptFile().editorOptions.cursorBlinking}
                                 onChanged={this.updateCursorAnimationStyle}
                                 options={
                                     [
@@ -268,7 +268,7 @@ export interface FiddleSettingsState {
 export interface FiddleSettingsProps {
     showFiddleSettingsModal: boolean;
     onDismiss: (ev?: React.MouseEvent<HTMLButtonElement>) => any;
-    fiddlesStore: FiddlesStore;
-    currentFiddle: FiddleSettings;
+    fiddlesStore: ScriptsStore;
+    currentFiddle: ScriptFile;
     currentFiddleFullPath: string;
 }

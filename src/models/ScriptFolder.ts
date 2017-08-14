@@ -1,7 +1,7 @@
 import { observable } from 'mobx';
-import { FiddleSettings } from './FiddleSettings';
+import { ScriptFile } from './ScriptFile';
 
-export class FiddleFolder {
+export class ScriptFolder {
     @observable
     name: string = 'SPFiddle';
 
@@ -21,8 +21,8 @@ export class FiddleFolder {
     iconClassName: string = '';
 
     @observable
-    files: Array<FiddleSettings> = [];
+    files: Array<ScriptFile> = [];
 
     @observable
-    folders: Array<FiddleFolder> = [];
+    folders: Array<ScriptFolder> = [];
 }

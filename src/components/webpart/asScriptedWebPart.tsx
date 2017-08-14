@@ -13,7 +13,7 @@ import MonacoEditor from '../monaco-editor';
 
 import { baristaScriptStoreUtils } from './baristaScriptStoreUtils';
 import { BaseWebPart, BaseWebPartState } from './BaseWebPart';
-import { FiddlesStore, Util } from '../../models';
+import { ScriptsStore, Util } from '../../models';
 import Barista from '../../services/barista/';
 
 import { get, assign } from 'lodash';

@@ -3,7 +3,7 @@ import { debounce, throttle, defaultsDeep, find } from 'lodash';
 import * as localforage from 'localforage';
 
 import { SharePointSettings} from './SharePointSettings';
-import { LookoutSettings } from './LookoutSettings';
+import { AppSettings } from './AppSettings';
 
 export const SettingsLocalStorageKey = 'sp-lookout-settings';
 
@@ -12,9 +12,9 @@ export class SettingsStore {
     private _sharePointSettings: SharePointSettings;
 
     @observable
-    private _lookoutSettings: LookoutSettings;
+    private _lookoutSettings: AppSettings;
 
-    constructor(sharePointSettings?: SharePointSettings, lookoutSettings?: LookoutSettings) {
+    constructor(sharePointSettings?: SharePointSettings, lookoutSettings?: AppSettings) {
         if (!sharePointSettings) {
             this._sharePointSettings = observable(new SharePointSettings());
         } else {
@@ -22,9 +22,9 @@ export class SettingsStore {
         }
 
         if (!lookoutSettings) {
-            this._lookoutSettings = observable(new LookoutSettings());
+            this._lookoutSettings = observable(new AppSettings());
         } else {
-            this._lookoutSettings = observable(defaultsDeep(lookoutSettings, new LookoutSettings()) as LookoutSettings);
+            this._lookoutSettings = observable(defaultsDeep(lookoutSettings, new AppSettings()) as AppSettings);
         }
     }
 
@@ -39,14 +39,14 @@ export class SettingsStore {
     static async loadFromLocalStorage(): Promise<SettingsStore> { 
         let settings: Settings = {
             sharePointSettings: new SharePointSettings(),
-            lookoutSettings: new LookoutSettings()
+            lookoutSettings: new AppSettings()
         };
 
         const persistedSettings: Settings = await localforage.getItem(SettingsLocalStorageKey);
 
         if (persistedSettings) {
             settings.sharePointSettings = persistedSettings.sharePointSettings || new SharePointSettings;
-            settings.lookoutSettings = persistedSettings.lookoutSettings || new LookoutSettings();
+            settings.lookoutSettings = persistedSettings.lookoutSettings || new AppSettings();
         }
 
         return new SettingsStore(settings.sharePointSettings, settings.lookoutSettings);
@@ -69,7 +69,7 @@ export class SettingsStore {
 
 type Settings = {
     sharePointSettings?: SharePointSettings,
-    lookoutSettings?: LookoutSettings
+    lookoutSettings?: AppSettings
 };
 
 SettingsStore.saveToLocalStorage = debounce(SettingsStore.saveToLocalStorage, 1000);

@@ -5,7 +5,7 @@ import { observer } from 'mobx-react';
 import { PrimaryButton, DefaultButton, IButtonProps } from 'office-ui-fabric-react/lib/Button';
 import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
 
-import { SettingsStore, SharePointSettings, LookoutSettings } from '../../models';
+import { SettingsStore, SharePointSettings, AppSettings } from '../../models';
 import { SPContext } from '../../services/spcontext';
 
 @observer

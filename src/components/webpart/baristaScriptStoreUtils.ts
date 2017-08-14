@@ -1,7 +1,7 @@
 import { ISelectableOption, SelectableOptionMenuItemType } from 'office-ui-fabric-react/lib/utilities/selectableOption/SelectableOption.Props';
 
 import Barista from '../../services/barista/';
-import { FiddlesStore, Util } from '../../models';
+import { ScriptsStore, Util } from '../../models';
 
 export const baristaScriptStoreUtils = {
     getFileFolderOptions(barista: Barista | undefined): Array<ISelectableOption> {
@@ -9,7 +9,7 @@ export const baristaScriptStoreUtils = {
             return [];
         }
 
-        const fileFolders = FiddlesStore.getFileFolderMap(barista.fiddlesStore.fiddleRootFolder);
+        const fileFolders = ScriptsStore.getFileFolderMap(barista.fiddlesStore.fiddleRootFolder);
         const fileOptions: Array<any> = [];
         const paths = Object.keys(fileFolders).sort();
         for (const path of paths) {

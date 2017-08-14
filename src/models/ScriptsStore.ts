@@ -1,77 +1,77 @@
 import { autorun, observable, extendObservable, observe, action, computed, runInAction, toJS, IObservableObject } from 'mobx';
-import { FiddleSettings } from './FiddleSettings';
-import { FiddleFolder } from './FiddleFolder';
+import { ScriptFile } from './ScriptFile';
+import { ScriptFolder } from './ScriptFolder';
 import * as localforage from 'localforage';
 import * as URI from 'urijs';
 import { assign, defaultsDeep, find, filter, values, findKey } from 'lodash';
 
-import { defaultFiddleRootFolder } from './sample-fiddles';
+import { defaultScriptRootFolder } from './sample-scripts';
 export const FiddlesLocalStorageKey = 'sp-lookout-fiddles';
 
-export class FiddlesStore {
+export class ScriptsStore {
     @observable
-    private _fiddleRootFolder: FiddleFolder & IObservableObject;
+    private _fiddleRootFolder: ScriptFolder & IObservableObject;
 
-    public constructor(fiddleRootFolder?: FiddleFolder) {
+    public constructor(fiddleRootFolder?: ScriptFolder) {
         if (!fiddleRootFolder) {
-            this._fiddleRootFolder = observable(defaultFiddleRootFolder);
+            this._fiddleRootFolder = observable(defaultScriptRootFolder);
         } else {
             // Make Built-Ins evergreen
 
             const builtInFolder = find(fiddleRootFolder.folders, { name: 'built-in' });
-            assign(builtInFolder, find(defaultFiddleRootFolder.folders, { name: 'built-in' }));
+            assign(builtInFolder, find(defaultScriptRootFolder.folders, { name: 'built-in' }));
 
             //Set defaults
-            defaultsDeep(fiddleRootFolder, defaultFiddleRootFolder);
+            defaultsDeep(fiddleRootFolder, defaultScriptRootFolder);
 
             //Ensure all files have default properties
-            const fileMap = FiddlesStore.getFileMap(fiddleRootFolder);
+            const fileMap = ScriptsStore.getFileMap(fiddleRootFolder);
             for (const fileName of Object.keys(fileMap)) {
                 const file = fileMap[fileName];
-                defaultsDeep(file, new FiddleSettings());
+                defaultsDeep(file, new ScriptFile());
             }
 
             this._fiddleRootFolder = observable(fiddleRootFolder);
         }
     }
 
-    public get fiddleRootFolder(): FiddleFolder & IObservableObject {
+    public get fiddleRootFolder(): ScriptFolder & IObservableObject {
         return this._fiddleRootFolder;
     }
 
     @computed
-    public get starred(): Array<FiddleSettings> {
-        const fileMap = FiddlesStore.getFileMap(this._fiddleRootFolder);
+    public get starred(): Array<ScriptFile> {
+        const fileMap = ScriptsStore.getFileMap(this._fiddleRootFolder);
         return filter(values(fileMap), (t) => t.starred);
     }
 
-    public getFiddleSettingsByPath(path: string): FiddleSettings | undefined {
-        const fileMap = FiddlesStore.getFileMap(this._fiddleRootFolder);
+    public getFiddleSettingsByPath(path: string): ScriptFile | undefined {
+        const fileMap = ScriptsStore.getFileMap(this._fiddleRootFolder);
         return fileMap[path];
     }
 
-    public getFiddleSettingsRelativeToPath(path: string, relativePath: string): FiddleSettings | undefined {
+    public getFiddleSettingsRelativeToPath(path: string, relativePath: string): ScriptFile | undefined {
         const targetPath = URI(relativePath).absoluteTo(path);
         return this.getFiddleSettingsByPath(targetPath.href());
     }
 
-    public getPathForFiddleSettings(settings: FiddleSettings): string | undefined {
-        const fileMap = FiddlesStore.getFileMap(this._fiddleRootFolder);
+    public getPathForFiddleSettings(settings: ScriptFile): string | undefined {
+        const fileMap = ScriptsStore.getFileMap(this._fiddleRootFolder);
         return findKey(fileMap, settings);
     }
 
-    public getFiddleFolderByPath(path: string): FiddleFolder | undefined {
-        const folderMap = FiddlesStore.getFolderMap(this._fiddleRootFolder);
+    public getFiddleFolderByPath(path: string): ScriptFolder | undefined {
+        const folderMap = ScriptsStore.getFolderMap(this._fiddleRootFolder);
         return folderMap[path];
     }
 
-    static async loadFromLocalStorage(): Promise<FiddlesStore> {
-        const fiddleRootFolder = await localforage.getItem(FiddlesLocalStorageKey) as FiddleFolder;
-        return new FiddlesStore(fiddleRootFolder);
+    static async loadFromLocalStorage(): Promise<ScriptsStore> {
+        const fiddleRootFolder = await localforage.getItem(FiddlesLocalStorageKey) as ScriptFolder;
+        return new ScriptsStore(fiddleRootFolder);
     }
 
     @action
-    static async saveToLocalStorage(fiddlesStore: FiddlesStore): Promise<FiddleFolder> {
+    static async saveToLocalStorage(fiddlesStore: ScriptsStore): Promise<ScriptFolder> {
         return localforage.setItem(FiddlesLocalStorageKey, toJS(fiddlesStore._fiddleRootFolder));
     }
 
@@ -79,7 +79,7 @@ export class FiddlesStore {
         return localforage.removeItem(FiddlesLocalStorageKey);
     }
 
-    public static getFileFolderMap(folder: FiddleFolder, path?: string, result?: { [path: string]: { type: 'file' | 'folder', item: FiddleFolder | FiddleSettings } }): { [path: string]: { type: 'file' | 'folder', item: FiddleFolder | FiddleSettings } } {
+    public static getFileFolderMap(folder: ScriptFolder, path?: string, result?: { [path: string]: { type: 'file' | 'folder', item: ScriptFolder | ScriptFile } }): { [path: string]: { type: 'file' | 'folder', item: ScriptFolder | ScriptFile } } {
         if (!folder) {
             return {};
         }
@@ -109,12 +109,12 @@ export class FiddlesStore {
         return result;
     }
 
-    public static getFolderMap(folder: FiddleFolder, path?: string): { [path: string]: FiddleFolder } {
+    public static getFolderMap(folder: ScriptFolder, path?: string): { [path: string]: ScriptFolder } {
         if (!folder) {
             return {};
         }
 
-        let result: { [path: string]: FiddleFolder } = {};
+        let result: { [path: string]: ScriptFolder } = {};
         for (let f of folder.folders) {
             const currentPath = path ? `${path}/${f.name}` : f.name;
             result[currentPath] = f;
@@ -126,12 +126,12 @@ export class FiddlesStore {
         return result;
     }
 
-    public static getFileMap(folder: FiddleFolder): { [path: string]: FiddleSettings } {
+    public static getFileMap(folder: ScriptFolder): { [path: string]: ScriptFile } {
         if (!folder) {
             return {};
         }
 
-        let result: { [path: string]: FiddleSettings } = {};
+        let result: { [path: string]: ScriptFile } = {};
         for (let currentFolderFile of folder.files) {
             result[currentFolderFile.name] = currentFolderFile;
         }

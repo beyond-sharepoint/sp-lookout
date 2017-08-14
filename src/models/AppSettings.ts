@@ -1,6 +1,6 @@
 import { action, observable, toJS } from 'mobx';
 
-export class LookoutSettings {
+export class AppSettings {
     @observable
     sidebarWidth: number = 215;
     @observable

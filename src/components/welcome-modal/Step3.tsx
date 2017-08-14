@@ -7,7 +7,7 @@ import * as FileSaver from 'file-saver';
 import { PrimaryButton, DefaultButton, IButtonProps } from 'office-ui-fabric-react/lib/Button';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
 
-import { SettingsStore, SharePointSettings, LookoutSettings } from '../../models';
+import { SettingsStore, SharePointSettings, AppSettings } from '../../models';
 
 @observer
 export class Step3 extends React.Component<Step3Props, any> {

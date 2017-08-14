@@ -15,9 +15,9 @@ import {
     SettingsStore,
     PagesStore,
     PageSettings,
-    FiddlesStore,
-    FiddleSettings,
-    FiddleFolder,
+    ScriptsStore,
+    ScriptFile,
+    ScriptFolder,
     Util
 } from '../../models';
 
@@ -196,7 +196,7 @@ export default class Aside extends React.Component<AsideProps, any> {
 
     @autobind
     private onFiddleChange() {
-        FiddlesStore.saveToLocalStorage(this.props.fiddlesStore);
+        ScriptsStore.saveToLocalStorage(this.props.fiddlesStore);
     }
 
     @autobind
@@ -207,12 +207,12 @@ export default class Aside extends React.Component<AsideProps, any> {
             newFileName = `newFile-${String('00' + ++ix).slice(-2)}.ts`;
         }
 
-        let newFile = new FiddleSettings();
+        let newFile = new ScriptFile();
         newFile.name = newFileName;
 
         targetFolder.collapsed = false;
         targetFolder.files.push(newFile as File);
-        FiddlesStore.saveToLocalStorage(this.props.fiddlesStore);
+        ScriptsStore.saveToLocalStorage(this.props.fiddlesStore);
     }
 
     @autobind
@@ -223,12 +223,12 @@ export default class Aside extends React.Component<AsideProps, any> {
             newFolderName = `new-folder-${String('00' + ++ix).slice(-2)}`;
         }
 
-        let newFolder = new FiddleFolder();
+        let newFolder = new ScriptFolder();
         newFolder.name = newFolderName;
 
         targetFolder.collapsed = false;
         targetFolder.folders.push(newFolder as Folder);
-        FiddlesStore.saveToLocalStorage(this.props.fiddlesStore);
+        ScriptsStore.saveToLocalStorage(this.props.fiddlesStore);
     }
 
     @autobind
@@ -239,7 +239,7 @@ export default class Aside extends React.Component<AsideProps, any> {
         }
 
         targetFolder.files.splice(targetIndex, 1);
-        FiddlesStore.saveToLocalStorage(this.props.fiddlesStore);
+        ScriptsStore.saveToLocalStorage(this.props.fiddlesStore);
     }
 
     @autobind
@@ -250,17 +250,17 @@ export default class Aside extends React.Component<AsideProps, any> {
         }
 
         parentFolder.folders.splice(targetIndex, 1);
-        FiddlesStore.saveToLocalStorage(this.props.fiddlesStore);
+        ScriptsStore.saveToLocalStorage(this.props.fiddlesStore);
     }
 }
 
 export interface AsideProps {
     settingsStore: SettingsStore;
     pagesStore: PagesStore;
-    fiddlesStore: FiddlesStore;
+    fiddlesStore: ScriptsStore;
     onPageSelected: (ev?: React.MouseEvent<HTMLElement>, item?: INavLink) => void;
-    onFolderSelected: (folder: FiddleFolder, path: string) => void;
-    onFiddleSelected: (settings: FiddleSettings, path: string) => void;
+    onFolderSelected: (folder: ScriptFolder, path: string) => void;
+    onFiddleSelected: (settings: ScriptFile, path: string) => void;
     selectedPageId?: string;
     selectedPaths?: string | string[];
 }

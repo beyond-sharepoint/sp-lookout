@@ -18,7 +18,7 @@ import { get, set, cloneDeep, defaultsDeep, debounce, throttle } from 'lodash';
 import { FiddleSettingsModal } from '../fiddle-settings-modal';
 
 import Barista, { BrewSettings } from '../../services/barista';
-import { FiddlesStore, FiddleSettings, Util } from '../../models';
+import { ScriptsStore, ScriptFile, Util } from '../../models';
 
 @observer
 export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
@@ -433,7 +433,7 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
     }
 
     private persistFiddleStoreToLocalStorage() {
-        FiddlesStore.saveToLocalStorage(this.props.fiddlesStore);
+        ScriptsStore.saveToLocalStorage(this.props.fiddlesStore);
     }
 
     @autobind
@@ -448,7 +448,7 @@ export default class Fiddle extends React.Component<FiddleProps, FiddleState> {
         this.setState({
             showFiddleSettingsModal: false
         });
-        FiddlesStore.saveToLocalStorage(this.props.fiddlesStore);
+        ScriptsStore.saveToLocalStorage(this.props.fiddlesStore);
     }
 }
 
@@ -463,8 +463,8 @@ export interface FiddleState {
 }
 
 export interface FiddleProps {
-    fiddlesStore: FiddlesStore;
+    fiddlesStore: ScriptsStore;
     barista: Barista;
-    currentFiddle: FiddleSettings;
+    currentFiddle: ScriptFile;
     currentFiddleFullPath: string;
 }

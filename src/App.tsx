@@ -3,7 +3,7 @@ import './App.css';
 import { observer } from 'mobx-react';
 import { Fabric } from 'office-ui-fabric-react';
 import Workspace from './components/workspace/Workspace';
-import { SettingsStore, PagesStore, FiddlesStore } from './models';
+import { SettingsStore, PagesStore, ScriptsStore } from './models';
 
 @observer
 export default class App extends React.Component<any, AppStoreState> {
@@ -14,7 +14,7 @@ export default class App extends React.Component<any, AppStoreState> {
       isLoading: true
     };
 
-    Promise.all([SettingsStore.loadFromLocalStorage(), PagesStore.loadFromLocalStorage(), FiddlesStore.loadFromLocalStorage()])
+    Promise.all([SettingsStore.loadFromLocalStorage(), PagesStore.loadFromLocalStorage(), ScriptsStore.loadFromLocalStorage()])
       .then(results => {
         this.setState({
           isLoading: false,
@@ -42,5 +42,5 @@ export interface AppStoreState {
   isLoading: boolean;
   settingsStore?: SettingsStore;
   pagesStore?: PagesStore;
-  fiddlesStore?: FiddlesStore;
+  fiddlesStore?: ScriptsStore;
 }

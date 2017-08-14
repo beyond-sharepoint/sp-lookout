@@ -6,7 +6,7 @@ import * as URI from 'urijs';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { PrimaryButton, DefaultButton, IButtonProps } from 'office-ui-fabric-react/lib/Button';
 
-import { SettingsStore, SharePointSettings, LookoutSettings } from '../../models';
+import { SettingsStore, SharePointSettings, AppSettings } from '../../models';
 import { Step0 } from './Step0';
 import { Step1 } from './Step1';
 import { Step2 } from './Step2';
