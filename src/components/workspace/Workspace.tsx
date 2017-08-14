@@ -393,6 +393,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
         });
         this.initializeBarista();
         AppSettingsStore.saveToLocalStorage(this.props.appSettingsStore);
+        SharePointSettingsStore.saveToLocalStorage(this.props.sharePointSettingsStore);
     }
 
     @autobind
@@ -410,6 +411,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
         });
         this.initializeBarista();
         AppSettingsStore.saveToLocalStorage(this.props.appSettingsStore);
+        SharePointSettingsStore.saveToLocalStorage(this.props.sharePointSettingsStore);
 
         location.href = URI().removeQuery('splauth').hash('/').href();
     }
