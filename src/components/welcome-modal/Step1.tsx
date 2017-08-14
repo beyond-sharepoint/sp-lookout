@@ -5,13 +5,13 @@ import { observer } from 'mobx-react';
 import { PrimaryButton, DefaultButton, IButtonProps } from 'office-ui-fabric-react/lib/Button';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
 
-import { SettingsStore, SharePointSettings, AppSettings } from '../../models';
+import { SharePointSettingsStore, SharePointSettings } from '../../models';
 
 @observer
 export class Step1 extends React.Component<Step1Props, any> {
     public render() {
         const {
-            settingsStore,
+            sharePointSettingsStore,
             onPrev,
             onNext
         } = this.props;
@@ -28,7 +28,7 @@ export class Step1 extends React.Component<Step1Props, any> {
                     <TextField
                         addonString="https://"
                         label="SharePoint Tenant Url:"
-                        value={settingsStore.sharePointSettings.testTenantUrl}
+                        value={sharePointSettingsStore.sharePointSettings.testTenantUrl}
                         onChanged={this.updateTestTenantUrl}
                     />
                 </div>
@@ -42,7 +42,7 @@ export class Step1 extends React.Component<Step1Props, any> {
 
     @action.bound
     private isTenantUrlValid() {
-        if (this.props.settingsStore.sharePointSettings.testTenantUrl.length <= 1) {
+        if (this.props.sharePointSettingsStore.sharePointSettings.testTenantUrl.length <= 1) {
             return false;
         }
 
@@ -51,13 +51,13 @@ export class Step1 extends React.Component<Step1Props, any> {
 
     @action.bound
     private updateTestTenantUrl(newValue: string) {
-        this.props.settingsStore.sharePointSettings.testTenantUrl = newValue;
-        SettingsStore.saveToLocalStorage(this.props.settingsStore);
+        this.props.sharePointSettingsStore.sharePointSettings.testTenantUrl = newValue;
+        SharePointSettingsStore.saveToLocalStorage(this.props.sharePointSettingsStore);
     }
 }
 
 export interface Step1Props {
     onPrev: (ev: React.MouseEvent<HTMLButtonElement>) => any;
     onNext: (ev: React.MouseEvent<HTMLButtonElement>) => any;
-    settingsStore: SettingsStore;
+    sharePointSettingsStore: SharePointSettingsStore;
 }

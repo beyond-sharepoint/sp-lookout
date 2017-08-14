@@ -1,13 +1,15 @@
-export * from './SettingsStore';
-export * from './SharePointSettings';
 export * from './AppSettings';
+export * from './AppSettingsStore';
 
-export * from './ScriptsStore';
+export * from './SharePointSettings';
+export * from './SharePointSettingsStore';
+
 export * from './ScriptFolder';
 export * from './ScriptFile';
+export * from './ScriptsStore';
 
-export * from './PagesStore';
 export * from './PageSettings';
 export * from './WebPartSettings';
+export * from './PagesStore';
 
 export * from './Util';

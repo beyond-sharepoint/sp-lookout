@@ -12,7 +12,7 @@ import { Dropdown, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
 import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react/lib/Button';
 import { Toggle } from 'office-ui-fabric-react/lib/Toggle';
 
-import { SettingsStore, PagesStore, ScriptsStore, SharePointSettings, AppSettings } from '../../models';
+import { AppSettingsStore, PagesStore, ScriptsStore, SharePointSettingsStore, SharePointSettings, AppSettings } from '../../models';
 import './index.css';
 
 @observer
@@ -21,7 +21,7 @@ export class WorkspaceSettingsModal extends React.Component<WorkspaceSettingsPro
         const {
             showWorkspaceSettingsModal,
             onDismiss,
-            settingsStore,
+            sharePointSettingsStore,
         } = this.props;
 
         return (
@@ -40,12 +40,12 @@ export class WorkspaceSettingsModal extends React.Component<WorkspaceSettingsPro
                             <TextField
                                 addonString="https://"
                                 label="SharePoint Tenant Url"
-                                value={settingsStore.sharePointSettings.tenantUrl}
+                                value={sharePointSettingsStore.sharePointSettings.tenantUrl}
                                 onChanged={this.updateTenantUrl}
                             />
                             <TextField
                                 label="HostWebProxy Server Relative Url"
-                                value={settingsStore.sharePointSettings.spContextConfig.proxyServerRelativeUrl}
+                                value={sharePointSettingsStore.sharePointSettings.spContextConfig.proxyServerRelativeUrl}
                                 onChanged={this.updateHostWebProxyUrl}
                             />
                             <DefaultButton text="Download Host Web Proxy" onClick={this.downloadHostWebProxy} />
@@ -61,12 +61,12 @@ export class WorkspaceSettingsModal extends React.Component<WorkspaceSettingsPro
 
     @action.bound
     private updateTenantUrl(newValue: string) {
-        this.props.settingsStore.sharePointSettings.tenantUrl = newValue;
+        this.props.sharePointSettingsStore.sharePointSettings.tenantUrl = newValue;
     }
 
     @action.bound
     private updateHostWebProxyUrl(newValue: string) {
-        this.props.settingsStore.sharePointSettings.spContextConfig.proxyServerRelativeUrl = newValue;
+        this.props.sharePointSettingsStore.sharePointSettings.spContextConfig.proxyServerRelativeUrl = newValue;
     }
 
     @action.bound
@@ -90,7 +90,7 @@ export class WorkspaceSettingsModal extends React.Component<WorkspaceSettingsPro
     private async resetSettingsToDefaults() {
         await ScriptsStore.removeSettings();
         await PagesStore.removeSettings();
-        await SettingsStore.removeSettings();
+        await AppSettingsStore.removeSettings();
 
         location.reload();
     }
@@ -99,5 +99,5 @@ export class WorkspaceSettingsModal extends React.Component<WorkspaceSettingsPro
 export interface WorkspaceSettingsProps {
     showWorkspaceSettingsModal: boolean;
     onDismiss: (ev?: React.MouseEvent<HTMLButtonElement>) => any;
-    settingsStore: SettingsStore;
+    sharePointSettingsStore: SharePointSettingsStore;
 }

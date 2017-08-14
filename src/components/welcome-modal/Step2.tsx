@@ -6,7 +6,7 @@ import * as URI from 'urijs';
 import { PrimaryButton, DefaultButton, IButtonProps } from 'office-ui-fabric-react/lib/Button';
 import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
 
-import { SettingsStore, SharePointSettings, AppSettings } from '../../models';
+import { SharePointSettingsStore, SharePointSettings } from '../../models';
 
 @observer
 export class Step2 extends React.Component<Step2Props, Step2State> {
@@ -33,7 +33,7 @@ export class Step2 extends React.Component<Step2Props, Step2State> {
 
     public render() {
         const {
-            settingsStore,
+            sharePointSettingsStore,
             onPrev,
             onNext
         } = this.props;
@@ -99,7 +99,7 @@ export class Step2 extends React.Component<Step2Props, Step2State> {
         });
 
         //Compose the URL to the SharePoint authentication endpoint.
-        const sharePointBaseUrl = this.props.settingsStore.sharePointSettings.testTenantUrl;
+        const sharePointBaseUrl = this.props.sharePointSettingsStore.sharePointSettings.testTenantUrl;
         const authenticationEndpointWebRelativeUrl = '/_layouts/15/authenticate.aspx';
         const currentUri: uri.URI = URI();
 
@@ -130,5 +130,5 @@ export interface Step2State {
 export interface Step2Props {
     onPrev: () => void;
     onNext: () => void;
-    settingsStore: SettingsStore;
+    sharePointSettingsStore: SharePointSettingsStore;
 }

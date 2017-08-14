@@ -12,7 +12,7 @@ import SplitPane from '../split-pane/SplitPane';
 import { FolderView, Folder, File } from '../folder-view';
 
 import {
-    SettingsStore,
+    AppSettingsStore,
     PagesStore,
     PageSettings,
     ScriptsStore,
@@ -30,7 +30,7 @@ export default class Aside extends React.Component<AsideProps, any> {
 
     public render() {
         const {
-            settingsStore,
+            appSettingsStore,
             pagesStore,
             fiddlesStore,
             onFiddleSelected,
@@ -84,7 +84,7 @@ export default class Aside extends React.Component<AsideProps, any> {
         return (
             <SplitPane
                 split="horizontal"
-                primaryPaneSize={settingsStore.lookoutSettings.asidePrimaryPaneHeight}
+                primaryPaneSize={appSettingsStore.appSettings.asidePrimaryPaneHeight}
                 primaryPaneMinSize={250}
                 onPaneResized={this.onPaneResized}
                 onResizerDoubleClick={(paneStyle, e, splitPane) => {
@@ -167,7 +167,7 @@ export default class Aside extends React.Component<AsideProps, any> {
 
     @autobind
     private onPaneResized(newSize: number | string) {
-        this.props.settingsStore.lookoutSettings.asidePrimaryPaneHeight = newSize;
+        this.props.appSettingsStore.appSettings.asidePrimaryPaneHeight = newSize;
     }
 
     @action.bound
@@ -255,7 +255,7 @@ export default class Aside extends React.Component<AsideProps, any> {
 }
 
 export interface AsideProps {
-    settingsStore: SettingsStore;
+    appSettingsStore: AppSettingsStore;
     pagesStore: PagesStore;
     fiddlesStore: ScriptsStore;
     onPageSelected: (ev?: React.MouseEvent<HTMLElement>, item?: INavLink) => void;

@@ -5,7 +5,7 @@ import { observer } from 'mobx-react';
 import { PrimaryButton, DefaultButton, IButtonProps } from 'office-ui-fabric-react/lib/Button';
 import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
 
-import { SettingsStore, SharePointSettings, AppSettings } from '../../models';
+import { SharePointSettingsStore, SharePointSettings } from '../../models';
 import { SPContext } from '../../services/spcontext';
 
 @observer
@@ -31,7 +31,7 @@ export class Step4 extends React.Component<Step4Props, Step4State> {
 
     public render() {
         const {
-            settingsStore,
+            sharePointSettingsStore,
             onPrev
         } = this.props;
         const {
@@ -66,11 +66,11 @@ export class Step4 extends React.Component<Step4Props, Step4State> {
                             : null
                         }
                         {!isRetrievingContext && !didSucceed
-                            ? <div style={{paddingBottom: '5px'}}>Uhoh, an error occurred:</div>
+                            ? <div style={{ paddingBottom: '5px' }}>Uhoh, an error occurred:</div>
                             : null
                         }
                         {!isRetrievingContext && !didSucceed
-                            ? <div style={{textAlign: 'center'}}>{error}</div>
+                            ? <div style={{ textAlign: 'center' }}>{error}</div>
                             : null
                         }
                     </div>
@@ -85,10 +85,10 @@ export class Step4 extends React.Component<Step4Props, Step4State> {
 
     @action.bound
     private async ensureSPContext() {
-        const sharepointBaseUrl = 'https://' + this.props.settingsStore.sharePointSettings.testTenantUrl;
+        const sharepointBaseUrl = 'https://' + this.props.sharePointSettingsStore.sharePointSettings.testTenantUrl;
 
         try {
-            const context = await SPContext.getContext(sharepointBaseUrl, this.props.settingsStore.sharePointSettings.spContextConfig);
+            const context = await SPContext.getContext(sharepointBaseUrl, this.props.sharePointSettingsStore.sharePointSettings.spContextConfig);
             await context.ensureContext(false);
         } catch (ex) {
             this.setState({
@@ -96,7 +96,7 @@ export class Step4 extends React.Component<Step4Props, Step4State> {
                 didSucceed: false,
                 error: ex.message
             });
-            
+
             SPContext.removeContext(sharepointBaseUrl);
             return;
         }
@@ -109,10 +109,10 @@ export class Step4 extends React.Component<Step4Props, Step4State> {
 
     @action.bound
     private completeConfiguration() {
-        const { settingsStore } = this.props;
-        settingsStore.sharePointSettings.tenantUrl = settingsStore.sharePointSettings.testTenantUrl;
-        settingsStore.sharePointSettings.testTenantUrl = '';
-        SettingsStore.saveToLocalStorage(settingsStore);
+        const { sharePointSettingsStore } = this.props;
+        sharePointSettingsStore.sharePointSettings.tenantUrl = sharePointSettingsStore.sharePointSettings.testTenantUrl;
+        sharePointSettingsStore.sharePointSettings.testTenantUrl = '';
+        SharePointSettingsStore.saveToLocalStorage(sharePointSettingsStore);
         this.props.onFinish();
     }
 }
@@ -126,5 +126,5 @@ export interface Step4State {
 export interface Step4Props {
     onPrev: (ev: React.MouseEvent<HTMLButtonElement>) => any;
     onFinish: () => any;
-    settingsStore: SettingsStore;
+    sharePointSettingsStore: SharePointSettingsStore;
 }

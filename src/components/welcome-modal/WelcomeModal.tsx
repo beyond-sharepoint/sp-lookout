@@ -6,7 +6,7 @@ import * as URI from 'urijs';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { PrimaryButton, DefaultButton, IButtonProps } from 'office-ui-fabric-react/lib/Button';
 
-import { SettingsStore, SharePointSettings, AppSettings } from '../../models';
+import { SharePointSettingsStore, SharePointSettings } from '../../models';
 import { Step0 } from './Step0';
 import { Step1 } from './Step1';
 import { Step2 } from './Step2';
@@ -24,7 +24,7 @@ export class WelcomeModal extends React.Component<WorkspaceSettingsProps, any> {
             showWelcomeModal,
             onSkip,
             onFinish,
-            settingsStore,
+            sharePointSettingsStore,
         } = this.props;
 
         //Authenticate.aspx on SPO and 2016 won't redirect to a non-localhost url.
@@ -43,7 +43,7 @@ export class WelcomeModal extends React.Component<WorkspaceSettingsProps, any> {
                         <Step1
                             onPrev={() => { innerProps.history.push('/welcome'); }}
                             onNext={() => { shouldValidate ? innerProps.history.push('/welcome/step2') : innerProps.history.push('/welcome/step3'); }}
-                            settingsStore={settingsStore}
+                            sharePointSettingsStore={sharePointSettingsStore}
                         />
                     );
                 }
@@ -56,7 +56,7 @@ export class WelcomeModal extends React.Component<WorkspaceSettingsProps, any> {
                         <Step2
                             onPrev={() => { innerProps.history.push('/welcome/step1'); }}
                             onNext={() => { innerProps.history.push('/welcome/step3'); }}
-                            settingsStore={settingsStore}
+                            sharePointSettingsStore={sharePointSettingsStore}
                         />
                     );
                 }
@@ -69,7 +69,7 @@ export class WelcomeModal extends React.Component<WorkspaceSettingsProps, any> {
                         <Step3
                             onPrev={() => { shouldValidate ? innerProps.history.push('/welcome/step2') : innerProps.history.push('/welcome/step1'); }}
                             onNext={() => { innerProps.history.push('/welcome/step4'); }}
-                            settingsStore={settingsStore}
+                            sharePointSettingsStore={sharePointSettingsStore}
                         />
                     );
                 }
@@ -82,7 +82,7 @@ export class WelcomeModal extends React.Component<WorkspaceSettingsProps, any> {
                         <Step4
                             onPrev={() => { innerProps.history.push('/welcome/step3'); }}
                             onFinish={onFinish}
-                            settingsStore={settingsStore}
+                            sharePointSettingsStore={sharePointSettingsStore}
                         />
                     );
                 }
@@ -103,7 +103,7 @@ export class WelcomeModal extends React.Component<WorkspaceSettingsProps, any> {
         const {
             showWelcomeModal,
             onSkip,
-            settingsStore,
+            sharePointSettingsStore,
         } = this.props;
 
         return (
@@ -135,5 +135,5 @@ export interface WorkspaceSettingsProps {
     showWelcomeModal: boolean;
     onSkip: (ev: React.MouseEvent<HTMLButtonElement>) => any;
     onFinish: () => any;
-    settingsStore: SettingsStore;
+    sharePointSettingsStore: SharePointSettingsStore;
 }

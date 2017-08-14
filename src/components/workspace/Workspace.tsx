@@ -25,7 +25,7 @@ import { WelcomeModal } from '../welcome-modal';
 import { WorkspaceSettingsModal } from '../workspace-settings-modal';
 import Fiddle from '../fiddle';
 
-import { SettingsStore, PagesStore, ScriptsStore, ScriptFolder, ScriptFile, Util } from '../../models';
+import { AppSettingsStore, SharePointSettingsStore, PagesStore, ScriptsStore, ScriptFolder, ScriptFile, Util } from '../../models';
 
 import './Workspace.css';
 
@@ -39,7 +39,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
     public constructor(props: WorkspaceProps) {
         super(props);
 
-        const { settingsStore } = this.props;
+        const { sharePointSettingsStore } = this.props;
 
         this.state = {
             welcomeSkipped: false,
@@ -157,7 +157,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
         }
 
         //If the settings store doesn't have a tenant url configured, show the welcome modal
-        if (!this.props.settingsStore.sharePointSettings.tenantUrl || this.props.settingsStore.sharePointSettings.tenantUrl.length < 1) {
+        if (!this.props.sharePointSettingsStore.sharePointSettings.tenantUrl || this.props.sharePointSettingsStore.sharePointSettings.tenantUrl.length < 1) {
             if (!this.state.welcomeSkipped) {
                 this.setState({
                     showWelcomeModal: true
@@ -183,8 +183,8 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
     }
 
     public render() {
-        const { settingsStore, pagesStore, fiddlesStore } = this.props;
-        const { lookoutSettings } = settingsStore;
+        const { appSettingsStore, sharePointSettingsStore, pagesStore, fiddlesStore } = this.props;
+        const { appSettings } = appSettingsStore;
         const { showAuthenticationRequiredModal, showInvalidOriginModal, showNoProxyModal } = this.state;
 
         return (
@@ -200,7 +200,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
                         <SplitPane
                             split="vertical"
                             className="left-sidebar"
-                            primaryPaneSize={lookoutSettings.sidebarWidth}
+                            primaryPaneSize={appSettings.sidebarWidth}
                             primaryPaneMinSize={0}
                             primaryPaneMaxSize={700}
                             onPaneResized={this.updateSidebarSize}
@@ -213,7 +213,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
                             }}
                         >
                             <Aside
-                                settingsStore={settingsStore}
+                                appSettingsStore={appSettingsStore}
                                 pagesStore={pagesStore}
                                 fiddlesStore={fiddlesStore}
                                 onPageSelected={this.onPageSelected}
@@ -236,13 +236,13 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
                 <WorkspaceSettingsModal
                     showWorkspaceSettingsModal={this.state.showSettingsModal}
                     onDismiss={this.hideSettings}
-                    settingsStore={settingsStore}
+                    sharePointSettingsStore={sharePointSettingsStore}
                 />
                 <WelcomeModal
                     showWelcomeModal={this.state.showWelcomeModal}
                     onSkip={this.onWelcomeSkipped}
                     onFinish={this.onWelcomeFinished}
-                    settingsStore={settingsStore}
+                    sharePointSettingsStore={sharePointSettingsStore}
                 />
                 <Modal
                     isOpen={showAuthenticationRequiredModal}
@@ -306,8 +306,8 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
     }
 
     private initializeBarista() {
-        const { settingsStore } = this.props;
-        const { tenantUrl } = settingsStore.sharePointSettings;
+        const { appSettingsStore, sharePointSettingsStore } = this.props;
+        const { tenantUrl } = sharePointSettingsStore.sharePointSettings;
         if (!tenantUrl || tenantUrl.length <= 0) {
             return;
         }
@@ -322,7 +322,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
             .href();
 
         const contextConfig: SPContextConfig = defaultsDeep(
-            toJS(settingsStore.sharePointSettings.spContextConfig),
+            toJS(sharePointSettingsStore.sharePointSettings.spContextConfig),
             defaultSPContextConfig
         );
 
@@ -392,7 +392,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
             showSettingsModal: false
         });
         this.initializeBarista();
-        SettingsStore.saveToLocalStorage(this.props.settingsStore);
+        AppSettingsStore.saveToLocalStorage(this.props.appSettingsStore);
     }
 
     @autobind
@@ -409,15 +409,15 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
             showWelcomeModal: false
         });
         this.initializeBarista();
-        SettingsStore.saveToLocalStorage(this.props.settingsStore);
+        AppSettingsStore.saveToLocalStorage(this.props.appSettingsStore);
 
         location.href = URI().removeQuery('splauth').hash('/').href();
     }
 
     @action.bound
     private updateSidebarSize(newSize: any) {
-        this.props.settingsStore.lookoutSettings.sidebarWidth = newSize;
-        SettingsStore.saveToLocalStorage(this.props.settingsStore);
+        this.props.appSettingsStore.appSettings.sidebarWidth = newSize;
+        AppSettingsStore.saveToLocalStorage(this.props.appSettingsStore);
 
         //Trigger a resize
         this.triggerWindowResizeEvent();
@@ -436,7 +436,7 @@ export default class Workspace extends React.Component<WorkspaceProps, Workspace
 
     @autobind
     private toggleSidebar() {
-        if (this.props.settingsStore.lookoutSettings.sidebarWidth === 0) {
+        if (this.props.appSettingsStore.appSettings.sidebarWidth === 0) {
             this.updateSidebarSize(215);
         } else {
             this.updateSidebarSize(0);
@@ -457,7 +457,8 @@ export interface WorkspaceState {
 }
 
 export interface WorkspaceProps {
-    settingsStore: SettingsStore;
+    appSettingsStore: AppSettingsStore;
+    sharePointSettingsStore: SharePointSettingsStore;
     pagesStore: PagesStore;
     fiddlesStore: ScriptsStore;
 }

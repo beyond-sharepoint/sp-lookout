@@ -3,7 +3,7 @@ import './App.css';
 import { observer } from 'mobx-react';
 import { Fabric } from 'office-ui-fabric-react';
 import Workspace from './components/workspace/Workspace';
-import { SettingsStore, PagesStore, ScriptsStore } from './models';
+import { AppSettingsStore, SharePointSettingsStore, PagesStore, ScriptsStore } from './models';
 
 @observer
 export default class App extends React.Component<any, AppStoreState> {
@@ -14,24 +14,35 @@ export default class App extends React.Component<any, AppStoreState> {
       isLoading: true
     };
 
-    Promise.all([SettingsStore.loadFromLocalStorage(), PagesStore.loadFromLocalStorage(), ScriptsStore.loadFromLocalStorage()])
+    Promise.all([
+      AppSettingsStore.loadFromLocalStorage(),
+      SharePointSettingsStore.loadFromLocalStorage(),
+      PagesStore.loadFromLocalStorage(),
+      ScriptsStore.loadFromLocalStorage()
+    ])
       .then(results => {
         this.setState({
           isLoading: false,
-          settingsStore: results[0],
-          pagesStore: results[1],
-          fiddlesStore: results[2]
+          appSettingsStore: results[0],
+          sharePointSettingsStore: results[1],
+          pagesStore: results[2],
+          fiddlesStore: results[3]
         });
       });
   }
 
   render() {
-    const { isLoading, settingsStore, pagesStore, fiddlesStore } = this.state;
+    const { isLoading, appSettingsStore, sharePointSettingsStore, pagesStore, fiddlesStore } = this.state;
     return (
       <Fabric>
-        {isLoading || !settingsStore || !pagesStore || !fiddlesStore
+        {isLoading || !appSettingsStore || !sharePointSettingsStore || !pagesStore || !fiddlesStore
           ? <div>loading...</div>
-          : <Workspace settingsStore={settingsStore} pagesStore={pagesStore} fiddlesStore={fiddlesStore} />
+          : <Workspace
+            appSettingsStore={appSettingsStore}
+            sharePointSettingsStore={sharePointSettingsStore}
+            pagesStore={pagesStore}
+            fiddlesStore={fiddlesStore}
+          />
         }
       </Fabric>
     );
@@ -40,7 +51,8 @@ export default class App extends React.Component<any, AppStoreState> {
 
 export interface AppStoreState {
   isLoading: boolean;
-  settingsStore?: SettingsStore;
+  appSettingsStore?: AppSettingsStore;
+  sharePointSettingsStore?: SharePointSettingsStore;
   pagesStore?: PagesStore;
   fiddlesStore?: ScriptsStore;
 }

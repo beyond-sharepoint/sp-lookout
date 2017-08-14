@@ -7,20 +7,20 @@ import * as FileSaver from 'file-saver';
 import { PrimaryButton, DefaultButton, IButtonProps } from 'office-ui-fabric-react/lib/Button';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
 
-import { SettingsStore, SharePointSettings, AppSettings } from '../../models';
+import { SharePointSettingsStore, SharePointSettings } from '../../models';
 
 @observer
 export class Step3 extends React.Component<Step3Props, any> {
 
     public render() {
         const {
-            settingsStore,
+            sharePointSettingsStore,
             onPrev,
             onNext
         } = this.props;
 
-        const targetDocumentLibrary = URI('https://' + settingsStore.sharePointSettings.testTenantUrl)
-            .pathname(settingsStore.sharePointSettings.spContextConfig.proxyServerRelativeUrl)
+        const targetDocumentLibrary = URI('https://' + sharePointSettingsStore.sharePointSettings.testTenantUrl)
+            .pathname(sharePointSettingsStore.sharePointSettings.spContextConfig.proxyServerRelativeUrl)
             .filename('')
             .href();
 
@@ -44,7 +44,7 @@ export class Step3 extends React.Component<Step3Props, any> {
                     </p>
                     <TextField
                         label="HostWebProxy Server Relative Url"
-                        value={settingsStore.sharePointSettings.spContextConfig.proxyServerRelativeUrl}
+                        value={sharePointSettingsStore.sharePointSettings.spContextConfig.proxyServerRelativeUrl}
                         onChanged={this.updateHostWebProxyUrl}
                     />
                     <a href={targetDocumentLibrary} target="_blank" style={{color: 'white'}}>Open HostWebProxy target library in new window.</a>
@@ -79,13 +79,13 @@ export class Step3 extends React.Component<Step3Props, any> {
 
     @action.bound
     private updateHostWebProxyUrl(newValue: string) {
-        this.props.settingsStore.sharePointSettings.spContextConfig.proxyServerRelativeUrl = newValue;
-        SettingsStore.saveToLocalStorage(this.props.settingsStore);
+        this.props.sharePointSettingsStore.sharePointSettings.spContextConfig.proxyServerRelativeUrl = newValue;
+        SharePointSettingsStore.saveToLocalStorage(this.props.sharePointSettingsStore);
     }
 }
 
 export interface Step3Props {
     onPrev: (ev: React.MouseEvent<HTMLButtonElement>) => any;
     onNext: (ev: React.MouseEvent<HTMLButtonElement>) => any;
-    settingsStore: SettingsStore;
+    sharePointSettingsStore: SharePointSettingsStore;
 }
